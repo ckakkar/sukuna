@@ -1,5 +1,5 @@
 import { auth } from "@/auth"
-import { Scene } from "@/components/Visualizer/Scene"
+import { SceneWrapper } from "@/components/Visualizer/SceneWrapper"
 import { Overlay } from "@/components/UI/Overlay"
 import { SpotifyWebPlayer } from "@/components/SpotifyWebPlayer"
 import { AuthInitializer } from "@/components/AuthInitializer"
@@ -12,7 +12,7 @@ export default async function Home() {
     <main className="relative w-screen h-screen bg-black overflow-hidden">
       {/* 3D Scene - Full screen background */}
       <div className="absolute inset-0">
-        <Scene />
+        <SceneWrapper />
       </div>
 
       {/* Auth Initializer - handles token sync to store */}

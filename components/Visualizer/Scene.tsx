@@ -1,11 +1,37 @@
 "use client"
 
-import { Canvas } from "@react-three/fiber"
-import { OrbitControls } from "@react-three/drei"
-import { Effects } from "./Effects"
-import { CursedCore } from "./CursedCore"
+import { useEffect, useState } from "react"
 
 export function Scene() {
+  const [mounted, setMounted] = useState(false)
+  const [Canvas, setCanvas] = useState<any>(null)
+  const [OrbitControls, setOrbitControls] = useState<any>(null)
+  const [Effects, setEffects] = useState<any>(null)
+  const [CursedCore, setCursedCore] = useState<any>(null)
+
+  useEffect(() => {
+    setMounted(true)
+    // Only import on client
+    if (typeof window !== "undefined") {
+      Promise.all([
+        import("@react-three/fiber").then((mod) => mod.Canvas),
+        import("@react-three/drei").then((mod) => mod.OrbitControls),
+        import("./Effects").then((mod) => mod.Effects),
+        import("./CursedCore").then((mod) => mod.CursedCore),
+      ]).then(([CanvasComponent, OrbitControlsComponent, EffectsComponent, CursedCoreComponent]) => {
+        setCanvas(() => CanvasComponent)
+        setOrbitControls(() => OrbitControlsComponent)
+        setEffects(() => EffectsComponent)
+        setCursedCore(() => CursedCoreComponent)
+      })
+    }
+  }, [])
+
+  // Prevent any rendering until client-side and components loaded
+  if (!mounted || typeof window === "undefined" || !Canvas || !OrbitControls || !Effects || !CursedCore) {
+    return null
+  }
+
   return (
     <Canvas
       shadows

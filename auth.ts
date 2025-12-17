@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import SpotifyProvider from "next-auth/providers/spotify"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true, // Required for NextAuth v5 to work properly
   providers: [
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID!,

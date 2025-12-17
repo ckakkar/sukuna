@@ -13,10 +13,11 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: #000000;
+  background-color: #0a0a0f;
   font-smooth: antialiased;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
 }
 
 #__next {

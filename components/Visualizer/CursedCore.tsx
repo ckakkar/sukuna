@@ -14,9 +14,9 @@ function damp(current: number, target: number, lambda: number, delta: number): n
 export function CursedCore() {
   const meshRef = useRef<Mesh>(null)
   const materialRef = useRef<MeshPhysicalMaterial>(null)
-  const emissiveRef = useRef({ r: 138 / 255, g: 0, b: 147 / 255 })
+  const emissiveRef = useRef({ r: 90 / 255, g: 0, b: 120 / 255 })
   const scaleCurrent = useRef(1)
-  const colorCurrent = useRef({ r: 138 / 255, g: 0, b: 147 / 255 }) // Dark red-purple cursed energy
+  const colorCurrent = useRef({ r: 90 / 255, g: 0, b: 120 / 255 }) // Deep dark cursed energy (Sukuna's base)
 
   useFrame((_state, delta: number) => {
     if (!meshRef.current || !materialRef.current) return
@@ -31,9 +31,10 @@ export function CursedCore() {
       const scaleTarget = 1 + energy * 1.8
 
       // Interpolate color based on energy (dark purple/red cursed energy to bright violet/pink)
-      const lowColor = { r: 138 / 255, g: 0, b: 147 / 255 } // Dark cursed energy
-      const midColor = { r: 147 / 255, g: 51 / 255, b: 234 / 255 } // Purple cursed energy
-      const highColor = { r: 255 / 255, g: 100 / 255, b: 255 / 255 } // Bright pink/violet
+      // Sukuna's cursed energy colors: deep dark red-purple to bright purple-pink
+      const lowColor = { r: 90 / 255, g: 0, b: 120 / 255 } // Deep dark cursed energy (almost black-purple)
+      const midColor = { r: 147 / 255, g: 51 / 255, b: 234 / 255 } // Purple cursed energy (Sukuna's signature)
+      const highColor = { r: 255 / 255, g: 120 / 255, b: 255 / 255 } // Bright pink/violet (Domain Expansion intensity)
 
       // Use energy to interpolate between low -> mid -> high
       const colorTarget = energy > 0.5
@@ -66,15 +67,15 @@ export function CursedCore() {
       meshRef.current.rotation.y += delta * (bpm / 120)
       meshRef.current.rotation.x += delta * (bpm / 240) * 0.3
     } else {
-      // Default state when no track - idle cursed energy
+      // Default state when no track - idle cursed energy (Sukuna's dormant state)
       scaleCurrent.current = damp(scaleCurrent.current, 1, 15, delta)
       meshRef.current.scale.setScalar(scaleCurrent.current)
-      colorCurrent.current.r = damp(colorCurrent.current.r, 138 / 255, 15, delta)
+      colorCurrent.current.r = damp(colorCurrent.current.r, 90 / 255, 15, delta)
       colorCurrent.current.g = damp(colorCurrent.current.g, 0, 15, delta)
-      colorCurrent.current.b = damp(colorCurrent.current.b, 147 / 255, 15, delta)
-      emissiveRef.current.r = damp(emissiveRef.current.r, 138 / 255, 15, delta)
+      colorCurrent.current.b = damp(colorCurrent.current.b, 120 / 255, 15, delta)
+      emissiveRef.current.r = damp(emissiveRef.current.r, 90 / 255, 15, delta)
       emissiveRef.current.g = damp(emissiveRef.current.g, 0, 15, delta)
-      emissiveRef.current.b = damp(emissiveRef.current.b, 147 / 255, 15, delta)
+      emissiveRef.current.b = damp(emissiveRef.current.b, 120 / 255, 15, delta)
       
       // Slow idle rotation
       meshRef.current.rotation.y += delta * 0.1
@@ -101,7 +102,7 @@ export function CursedCore() {
         ref={materialRef}
         metalness={0.85}
         roughness={0.05}
-        emissive="#8a0093"
+        emissive="#5a0078"
         emissiveIntensity={0.5}
         clearcoat={1}
         clearcoatRoughness={0.1}

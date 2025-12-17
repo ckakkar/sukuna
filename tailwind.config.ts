@@ -15,10 +15,13 @@ const config: Config = {
           purple: '#8b5cf6',
           violet: '#a78bfa',
           dark: '#0a0a0f',
+          energy: '#9333ea',
         },
         jujutsu: {
           energy: '#9333ea',
           domain: '#7c3aed',
+          shrine: '#a78bfa',
+          dark: '#1a0a1f',
         },
       },
       fontFamily: {

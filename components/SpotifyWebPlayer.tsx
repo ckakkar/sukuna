@@ -59,13 +59,19 @@ export function SpotifyWebPlayer() {
   useEffect(() => {
     if (!accessToken) return
 
-    // Load Spotify SDK script
-    const script = document.createElement("script")
-    script.src = "https://sdk.scdn.co/spotify-player.js"
-    script.async = true
-    document.body.appendChild(script)
+    let script: HTMLScriptElement | null = null
 
-    script.onload = () => {
+    const initializePlayer = () => {
+      if (!window.Spotify) {
+        console.error("Spotify SDK not available")
+        return
+      }
+
+      // Don't create a new player if one already exists
+      if (playerRef.current) {
+        return
+      }
+
       const player = new window.Spotify.Player({
         name: "Sukuna Player",
         getOAuthToken: (cb) => {
@@ -143,11 +149,27 @@ export function SpotifyWebPlayer() {
       player.connect()
     }
 
+    // Check if SDK is already loaded
+    if (window.Spotify) {
+      initializePlayer()
+    } else {
+      // Load Spotify SDK script
+      script = document.createElement("script")
+      script.src = "https://sdk.scdn.co/spotify-player.js"
+      script.async = true
+      document.body.appendChild(script)
+
+      script.onload = () => {
+        initializePlayer()
+      }
+    }
+
     return () => {
       if (playerRef.current) {
         playerRef.current.disconnect()
+        playerRef.current = null
       }
-      if (script.parentNode) {
+      if (script && script.parentNode) {
         script.parentNode.removeChild(script)
       }
     }

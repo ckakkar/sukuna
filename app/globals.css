@@ -14,10 +14,31 @@ body {
   width: 100%;
   overflow: hidden;
   background-color: #000000;
+  font-smooth: antialiased;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #__next {
   height: 100%;
   width: 100%;
+}
+
+/* Custom scrollbar for terminal aesthetic */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #9333ea;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a78bfa;
 }
 

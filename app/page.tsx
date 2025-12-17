@@ -26,15 +26,29 @@ export default async function Home() {
 
       {/* Auth Button - centered if not authenticated */}
       {!session && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
-          <form action={signInWithSpotify}>
-            <button
-              type="submit"
-              className="px-8 py-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-mono font-bold text-lg rounded-lg transition-colors duration-200 shadow-lg shadow-[#1db954]/50"
-            >
-              CONNECT SPOTIFY
-            </button>
-          </form>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-auto z-20">
+          <div className="text-center space-y-6">
+            <div className="space-y-2 mb-8">
+              <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-jujutsu-energy to-cursed-neon font-mono tracking-wider">
+                SUKUNA
+              </h1>
+              <p className="text-gray-400 font-mono text-sm tracking-widest">
+                CURSED ENERGY VISUALIZER
+              </p>
+            </div>
+            <form action={signInWithSpotify}>
+              <button
+                type="submit"
+                className="group relative px-8 py-4 bg-gradient-to-r from-jujutsu-energy to-jujutsu-domain hover:from-jujutsu-domain hover:to-jujutsu-energy text-white font-mono font-bold text-sm uppercase tracking-widest rounded-lg transition-all duration-300 shadow-lg shadow-jujutsu-energy/50 hover:shadow-jujutsu-energy/70 hover:scale-105"
+              >
+                <span className="relative z-10">CONNECT SPOTIFY</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-jujutsu-energy to-jujutsu-domain opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300"></div>
+              </button>
+            </form>
+            <p className="text-gray-500 font-mono text-xs mt-6">
+              Summon cursed energy through music
+            </p>
+          </div>
         </div>
       )}
     </main>

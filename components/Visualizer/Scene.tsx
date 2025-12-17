@@ -13,17 +13,18 @@ export function Scene() {
       gl={{ antialias: false }}
       camera={{ position: [0, 0, 5], fov: 50 }}
     >
-      {/* Dark fog */}
-      <fog attach="fog" args={["#050505", 10, 50]} />
+      {/* Dark fog with slight purple tint */}
+      <fog attach="fog" args={["#0a0a0f", 8, 45]} />
       
-      {/* Lighting */}
-      <ambientLight intensity={0.2} />
-      <pointLight position={[10, 10, 10]} intensity={1} color="#ff3c00" />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#8a0000" />
+      {/* Lighting - Cursed Energy themed */}
+      <ambientLight intensity={0.15} />
+      <pointLight position={[10, 10, 10]} intensity={1.2} color="#9333ea" />
+      <pointLight position={[-10, -10, -10]} intensity={0.6} color="#8a0093" />
+      <pointLight position={[0, 10, 0]} intensity={0.8} color="#a78bfa" />
       <directionalLight
         position={[5, 5, 5]}
-        intensity={0.8}
-        color="#ff3c00"
+        intensity={0.9}
+        color="#9333ea"
         castShadow
       />
 

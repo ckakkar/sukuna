@@ -1,13 +1,19 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { EffectComposer, Bloom, ChromaticAberration, Noise } from "@react-three/postprocessing"
 import { Vector2 } from "three"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 
 export function Effects() {
+  const [energy, setEnergy] = useState(0)
   const trackData = useSpotifyStore((state) => state.trackData)
-  const energy = trackData?.energy ?? 0
+  
+  useEffect(() => {
+    if (trackData?.energy !== undefined) {
+      setEnergy(trackData.energy)
+    }
+  }, [trackData?.energy])
   
   const offset = useMemo(() => new Vector2(energy * 0.015, energy * 0.015), [energy])
 
@@ -28,4 +34,3 @@ export function Effects() {
     </EffectComposer>
   )
 }
-

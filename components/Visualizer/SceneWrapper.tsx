@@ -2,11 +2,21 @@
 
 import dynamic from "next/dynamic"
 
-// Use Next.js dynamic import with ssr: false - this is allowed in client components
-const Scene = dynamic(() => import("./Scene").then((mod) => ({ default: mod.Scene })), {
-  ssr: false,
-  loading: () => <div className="absolute inset-0 bg-black" />,
-})
+// Dynamically import the Scene component with no SSR
+// This prevents Three.js from trying to render on the server
+const Scene = dynamic(
+  () => import("./Scene").then((mod) => ({ default: mod.Scene })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="absolute inset-0 bg-black flex items-center justify-center">
+        <div className="text-jujutsu-energy font-mono text-sm animate-pulse">
+          Loading Domain...
+        </div>
+      </div>
+    ),
+  }
+)
 
 export function SceneWrapper() {
   return <Scene />

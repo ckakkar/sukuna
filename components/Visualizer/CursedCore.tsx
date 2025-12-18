@@ -11,73 +11,95 @@ import { damp } from "maath/easing"
 export function CursedCore() {
   const meshRef = useRef<Mesh>(null)
   const materialRef = useRef<MeshPhysicalMaterial>(null)
-  const emissiveRef = useRef({ r: 90 / 255, g: 0, b: 120 / 255 })
-  const scaleCurrent = useRef(1)
-  const colorCurrent = useRef({ r: 90 / 255, g: 0, b: 120 / 255 })
 
   useFrame((_state, delta: number) => {
     if (!meshRef.current || !materialRef.current) return
 
     const { trackData, selectedCharacter } = useSpotifyStore.getState()
     const character = CHARACTERS[selectedCharacter]
-    
+
+    // Current values from Three.js objects (avoids mutating React refs)
+    const currentScale = meshRef.current.scale.x
+    const currentColor = materialRef.current.color
+    const currentEmissive = materialRef.current.emissive
+
     if (trackData) {
       const { energy, bpm } = trackData
 
+      // Target scale based on track energy
       const scaleTarget = 1 + energy * 1.8
+      const nextScale = damp(currentScale, scaleTarget, 15, delta)
+      meshRef.current.scale.setScalar(nextScale)
 
-      const colorTarget = energy > 0.5
-        ? {
-            r: character.energy.mid.r + (character.energy.high.r - character.energy.mid.r) * ((energy - 0.5) * 2),
-            g: character.energy.mid.g + (character.energy.high.g - character.energy.mid.g) * ((energy - 0.5) * 2),
-            b: character.energy.mid.b + (character.energy.high.b - character.energy.mid.b) * ((energy - 0.5) * 2),
-          }
-        : {
-            r: character.energy.low.r + (character.energy.mid.r - character.energy.low.r) * (energy * 2),
-            g: character.energy.low.g + (character.energy.mid.g - character.energy.low.g) * (energy * 2),
-            b: character.energy.low.b + (character.energy.mid.b - character.energy.low.b) * (energy * 2),
-          }
+      // Target color based on character theme + energy
+      const colorTarget =
+        energy > 0.5
+          ? {
+              r:
+                character.energy.mid.r +
+                (character.energy.high.r - character.energy.mid.r) * ((energy - 0.5) * 2),
+              g:
+                character.energy.mid.g +
+                (character.energy.high.g - character.energy.mid.g) * ((energy - 0.5) * 2),
+              b:
+                character.energy.mid.b +
+                (character.energy.high.b - character.energy.mid.b) * ((energy - 0.5) * 2),
+            }
+          : {
+              r:
+                character.energy.low.r +
+                (character.energy.mid.r - character.energy.low.r) * (energy * 2),
+              g:
+                character.energy.low.g +
+                (character.energy.mid.g - character.energy.low.g) * (energy * 2),
+              b:
+                character.energy.low.b +
+                (character.energy.mid.b - character.energy.low.b) * (energy * 2),
+            }
 
-      scaleCurrent.current = damp(scaleCurrent.current, scaleTarget, 15, delta)
-      meshRef.current.scale.setScalar(scaleCurrent.current)
+      // Smoothly damp color & emissive towards target
+      const nextR = damp(currentColor.r, colorTarget.r, 15, delta)
+      const nextG = damp(currentColor.g, colorTarget.g, 15, delta)
+      const nextB = damp(currentColor.b, colorTarget.b, 15, delta)
+      materialRef.current.color.setRGB(nextR, nextG, nextB)
 
-      colorCurrent.current.r = damp(colorCurrent.current.r, colorTarget.r, 15, delta)
-      colorCurrent.current.g = damp(colorCurrent.current.g, colorTarget.g, 15, delta)
-      colorCurrent.current.b = damp(colorCurrent.current.b, colorTarget.b, 15, delta)
-
-      emissiveRef.current.r = damp(emissiveRef.current.r, colorTarget.r * 1.2, 15, delta)
-      emissiveRef.current.g = damp(emissiveRef.current.g, colorTarget.g * 1.2, 15, delta)
-      emissiveRef.current.b = damp(emissiveRef.current.b, colorTarget.b * 1.2, 15, delta)
+      const targetEmissiveR = colorTarget.r * 1.2
+      const targetEmissiveG = colorTarget.g * 1.2
+      const targetEmissiveB = colorTarget.b * 1.2
+      const nextEmissiveR = damp(currentEmissive.r, targetEmissiveR, 15, delta)
+      const nextEmissiveG = damp(currentEmissive.g, targetEmissiveG, 15, delta)
+      const nextEmissiveB = damp(currentEmissive.b, targetEmissiveB, 15, delta)
+      materialRef.current.emissive.setRGB(
+        Math.min(nextEmissiveR, 1),
+        Math.min(nextEmissiveG, 1),
+        Math.min(nextEmissiveB, 1)
+      )
 
       meshRef.current.rotation.y += delta * (bpm / 120)
       meshRef.current.rotation.x += delta * (bpm / 240) * 0.3
+      materialRef.current.emissiveIntensity = 0.8 + energy * 0.7
     } else {
-      scaleCurrent.current = damp(scaleCurrent.current, 1, 15, delta)
-      meshRef.current.scale.setScalar(scaleCurrent.current)
-      
-      colorCurrent.current.r = damp(colorCurrent.current.r, character.energy.low.r, 15, delta)
-      colorCurrent.current.g = damp(colorCurrent.current.g, character.energy.low.g, 15, delta)
-      colorCurrent.current.b = damp(colorCurrent.current.b, character.energy.low.b, 15, delta)
-      
-      emissiveRef.current.r = damp(emissiveRef.current.r, character.energy.low.r, 15, delta)
-      emissiveRef.current.g = damp(emissiveRef.current.g, character.energy.low.g, 15, delta)
-      emissiveRef.current.b = damp(emissiveRef.current.b, character.energy.low.b, 15, delta)
-      
-      meshRef.current.rotation.y += delta * 0.1
-    }
+      // Idle / no track: gently return to character's base energy color & default scale
+      const idleScale = damp(currentScale, 1, 15, delta)
+      meshRef.current.scale.setScalar(idleScale)
 
-    materialRef.current.color.setRGB(
-      colorCurrent.current.r,
-      colorCurrent.current.g,
-      colorCurrent.current.b
-    )
-    
-    materialRef.current.emissive.setRGB(
-      Math.min(emissiveRef.current.r, 1),
-      Math.min(emissiveRef.current.g, 1),
-      Math.min(emissiveRef.current.b, 1)
-    )
-    materialRef.current.emissiveIntensity = trackData ? 0.8 + trackData.energy * 0.7 : 0.5
+      const nextIdleR = damp(currentColor.r, character.energy.low.r, 15, delta)
+      const nextIdleG = damp(currentColor.g, character.energy.low.g, 15, delta)
+      const nextIdleB = damp(currentColor.b, character.energy.low.b, 15, delta)
+      materialRef.current.color.setRGB(nextIdleR, nextIdleG, nextIdleB)
+
+      const nextIdleEmissiveR = damp(currentEmissive.r, character.energy.low.r, 15, delta)
+      const nextIdleEmissiveG = damp(currentEmissive.g, character.energy.low.g, 15, delta)
+      const nextIdleEmissiveB = damp(currentEmissive.b, character.energy.low.b, 15, delta)
+      materialRef.current.emissive.setRGB(
+        Math.min(nextIdleEmissiveR, 1),
+        Math.min(nextIdleEmissiveG, 1),
+        Math.min(nextIdleEmissiveB, 1)
+      )
+
+      meshRef.current.rotation.y += delta * 0.1
+      materialRef.current.emissiveIntensity = 0.5
+    }
   })
 
   return (

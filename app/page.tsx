@@ -3,6 +3,7 @@ import { SceneWrapper } from "@/components/Visualizer/SceneWrapper"
 import { Overlay } from "@/components/UI/Overlay"
 import { SpotifyWebPlayer } from "@/components/SpotifyWebPlayer"
 import { AuthInitializer } from "@/components/AuthInitializer"
+import { signInWithSpotify } from "@/app/actions/auth"
 
 export default async function Home() {
   const session = await auth()
@@ -51,7 +52,7 @@ export default async function Home() {
             </div>
 
             {/* Connect Button */}
-            <form action="/api/auth/signin/spotify" method="GET">
+            <form action={signInWithSpotify}>
               <button
                 type="submit"
                 className="group relative px-12 py-5 bg-gradient-to-r from-jujutsu-energy to-jujutsu-domain hover:from-jujutsu-domain hover:to-jujutsu-energy text-white font-mono font-bold text-sm uppercase tracking-widest rounded-lg transition-all duration-300 shadow-2xl shadow-jujutsu-energy/50 hover:shadow-jujutsu-energy/70 hover:scale-105 border border-jujutsu-energy/30"

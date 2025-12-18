@@ -2,9 +2,8 @@ import NextAuth from "next-auth"
 import SpotifyProvider from "next-auth/providers/spotify"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true, // Required for NextAuth v5 to work properly - allows auto-detection of URL from headers
-  basePath: "/api/auth", // Explicitly set the auth base path
-  secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true,
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
   providers: [
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID!,

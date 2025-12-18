@@ -141,7 +141,7 @@ export function Overlay() {
           </div>
         ) : (
           <div className="text-gray-500 text-xs mt-4 space-y-1">
-            <div>[呪力源を待機中...]]</div>
+            <div>[呪力源を待機中...]</div>
             <div className="text-gray-600 text-[10px]">Awaiting cursed energy source...</div>
           </div>
         )}

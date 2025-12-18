@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useMemo, useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import { EffectComposer, Bloom, ChromaticAberration, Noise } from "@react-three/postprocessing"
 import { Vector2 } from "three"

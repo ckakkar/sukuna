@@ -8,7 +8,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID!,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
+      // Explicitly provide the Spotify authorization URL + scopes so Auth.js
+      // can construct a valid URL for the OAuth flow.
       authorization: {
+        url: "https://accounts.spotify.com/authorize",
         params: {
           scope: [
             "streaming",

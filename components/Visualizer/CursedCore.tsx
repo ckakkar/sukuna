@@ -6,7 +6,11 @@ import type { Mesh } from "three"
 import { MeshPhysicalMaterial } from "three"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
-import { damp } from "maath/easing"
+
+const damp = (current: number, target: number, smoothing: number, delta: number) => {
+  const t = 1 - Math.exp(-smoothing * delta)
+  return current + (target - current) * t
+}
 
 export function CursedCore() {
   const meshRef = useRef<Mesh>(null)

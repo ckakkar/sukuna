@@ -61,6 +61,8 @@ export function SpotifyWebPlayer() {
     setTrackData,
     setIsLoadingAnalysis,
     setIsDomainExpanding,
+    setDomainState,
+    notifyTrackSkipped,
   } = useSpotifyStore()
   const lastTrackIdRef = useRef<string | null>(null)
   const initializingRef = useRef(false)
@@ -131,11 +133,19 @@ export function SpotifyWebPlayer() {
           setPlaybackState(state.paused, currentTrack)
 
           if (track.id !== lastTrackIdRef.current) {
+            if (lastTrackIdRef.current) {
+              // Treat any subsequent track change as a \"skip\" event
+              notifyTrackSkipped()
+            }
             lastTrackIdRef.current = track.id
             
             // Trigger domain expansion animation
+            setDomainState(\"expanding\")
             setIsDomainExpanding(true)
-            setTimeout(() => setIsDomainExpanding(false), 3000)
+            setTimeout(() => {
+              setIsDomainExpanding(false)
+              setDomainState(\"active\")
+            }, 3000)
 
             // Fetch track analysis
             setIsLoadingAnalysis(true)
@@ -211,7 +221,16 @@ export function SpotifyWebPlayer() {
       }
       initializingRef.current = false
     }
-  }, [accessToken, setDeviceId, setPlaybackState, setTrackData, setIsLoadingAnalysis, setIsDomainExpanding])
+  }, [
+    accessToken,
+    setDeviceId,
+    setPlaybackState,
+    setTrackData,
+    setIsLoadingAnalysis,
+    setIsDomainExpanding,
+    setDomainState,
+    notifyTrackSkipped,
+  ])
 
   return null
 }

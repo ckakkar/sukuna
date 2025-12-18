@@ -1,5 +1,3 @@
-"use server"
-
 import type { TrackData, Segment } from "@/lib/types/spotify"
 
 interface SpotifyAudioFeatures {

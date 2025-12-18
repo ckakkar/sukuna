@@ -1,4 +1,4 @@
-export type CharacterType = "sukuna" | "yuji" | "yuta" | "toji" | "todo"
+export type CharacterType = "sukuna" | "yuji" | "yuta" | "toji" | "todo" | "gojo"
 
 export interface CharacterTheme {
   id: CharacterType
@@ -40,6 +40,26 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
       low: { r: 90 / 255, g: 0, b: 120 / 255 },
       mid: { r: 147 / 255, g: 51 / 255, b: 234 / 255 },
       high: { r: 255 / 255, g: 120 / 255, b: 255 / 255 },
+    },
+  },
+  gojo: {
+    id: "gojo",
+    name: "Satoru Gojo",
+    japaneseName: "五条 悟",
+    domain: "Unlimited Void",
+    domainJapanese: "無量空処",
+    technique: "Hollow Technique: Purple",
+    techniqueJapanese: "虚式・茈",
+    colors: {
+      primary: "#27254C", // Space Cadet (Dark Blue Uniform/Blindfold)
+      secondary: "#F2ECF8", // Anti-Flash White (Hair/Infinity)
+      accent: "#45B0D2", // Maximum Blue (Six Eyes)
+      glow: "#9B8AB4", // Lavender Purple (Hollow Purple energy)
+    },
+    energy: {
+      low: { r: 39 / 255, g: 37 / 255, b: 76 / 255 }, // Deep dark blue (Idle state)
+      mid: { r: 69 / 255, g: 176 / 255, b: 210 / 255 }, // Bright Cyan (Six Eyes active)
+      high: { r: 155 / 255, g: 138 / 255, b: 180 / 255 }, // Purple/White (Domain/Purple activation)
     },
   },
   yuji: {

@@ -1,16 +1,45 @@
 "use client"
 
-import { useEffect, useMemo, useRef } from "react"
+import { forwardRef, useEffect, useMemo, useRef } from "react"
 import { useFrame } from "@react-three/fiber"
-import {
-  ChromaticAberration,
-  DotScreen,
-  Effect,
-  Noise,
-} from "@react-three/postprocessing"
-import { BlendFunction } from "postprocessing"
+import { ChromaticAberration, DotScreen, Noise } from "@react-three/postprocessing"
+import { BlendFunction, Effect } from "postprocessing"
 import { Vector2, Uniform } from "three"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
+
+const IMPACT_FRAGMENT_SHADER = /* glsl */ `
+  uniform float uInvertStrength;
+
+  void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+    vec3 color = inputColor.rgb;
+
+    if (uInvertStrength > 0.0) {
+      vec3 inverted = vec3(1.0) - color;
+      color = mix(color, inverted, uInvertStrength);
+    }
+
+    outputColor = vec4(color, inputColor.a);
+  }
+`;
+
+class ImpactFrameEffectImpl extends Effect {
+  constructor() {
+    super("ImpactFrameEffect", IMPACT_FRAGMENT_SHADER, {
+      uniforms: new Map<string, Uniform>([["uInvertStrength", new Uniform(0)]]),
+    })
+  }
+
+  get invertUniform() {
+    return this.uniforms.get("uInvertStrength") as Uniform<number>
+  }
+}
+
+const ImpactFrame = forwardRef<ImpactFrameEffectImpl>((_, ref) => {
+  const effect = useMemo(() => new ImpactFrameEffectImpl(), [])
+  return <primitive ref={ref} object={effect} dispose={null} />
+})
+
+ImpactFrame.displayName = "ImpactFrame"
 
 /**
  * MangaPostProcess
@@ -27,13 +56,7 @@ export function MangaPostProcess() {
   const offsetRef = useRef(new Vector2(0, 0))
   const impactTimerRef = useRef(0)
   const lastImpactIdRef = useRef(impactFrameId)
-
-  const uniforms = useMemo(
-    () => ({
-      uInvertStrength: new Uniform(0),
-    }),
-    []
-  )
+  const impactEffectRef = useRef<ImpactFrameEffectImpl | null>(null)
 
   // Start a brief impact-frame window whenever the id increments
   useEffect(() => {
@@ -54,7 +77,9 @@ export function MangaPostProcess() {
       impactTimerRef.current = Math.max(impactTimerRef.current - delta, 0)
     }
 
-    uniforms.uInvertStrength.value = impactTimerRef.current > 0 ? 1 : 0
+    if (impactEffectRef.current) {
+      impactEffectRef.current.invertUniform.value = impactTimerRef.current > 0 ? 1 : 0
+    }
   })
 
   return (
@@ -78,24 +103,7 @@ export function MangaPostProcess() {
       <Noise premultiply opacity={0.035} />
 
       {/* Impact frame – invert colors briefly when Black Flash triggers */}
-      <Effect
-        blendFunction={BlendFunction.NORMAL}
-        fragmentShader={`
-          uniform float uInvertStrength;
-
-          void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
-            vec3 color = inputColor.rgb;
-
-            if (uInvertStrength > 0.0) {
-              vec3 inverted = vec3(1.0) - color;
-              color = mix(color, inverted, uInvertStrength);
-            }
-
-            outputColor = vec4(color, inputColor.a);
-          }
-        `}
-        uniforms={uniforms}
-      />
+      <ImpactFrame ref={impactEffectRef} />
     </>
   )
 }

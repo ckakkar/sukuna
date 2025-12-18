@@ -134,17 +134,17 @@ export function SpotifyWebPlayer() {
 
           if (track.id !== lastTrackIdRef.current) {
             if (lastTrackIdRef.current) {
-              // Treat any subsequent track change as a \"skip\" event
+              // Treat any subsequent track change as a "skip" event
               notifyTrackSkipped()
             }
             lastTrackIdRef.current = track.id
             
             // Trigger domain expansion animation
-            setDomainState(\"expanding\")
+            setDomainState("expanding")
             setIsDomainExpanding(true)
             setTimeout(() => {
               setIsDomainExpanding(false)
-              setDomainState(\"active\")
+              setDomainState("active")
             }, 3000)
 
             // Fetch track analysis

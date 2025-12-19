@@ -6,10 +6,13 @@ import { Effects } from "./Effects"
 import { CursedCore } from "./CursedCore"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
+import { getVisibleTextColor } from "@/lib/utils/colorUtils"
 
 export function Scene() {
   const selectedCharacter = useSpotifyStore((state) => state.selectedCharacter)
   const character = CHARACTERS[selectedCharacter]
+  // Use glow color for lighting when primary is too dark
+  const primaryLightColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   return (
     <Canvas
@@ -24,22 +27,22 @@ export function Scene() {
       <pointLight
         position={[10, 10, 10]}
         intensity={1.2}
-        color={character.colors.primary}
+        color={primaryLightColor}
       />
       <pointLight
         position={[-10, -10, -10]}
         intensity={0.6}
-        color={character.colors.secondary}
+        color={character.colors.secondary || character.colors.glow}
       />
       <pointLight
         position={[0, 10, 0]}
         intensity={0.8}
-        color={character.colors.accent}
+        color={character.colors.accent || character.colors.glow}
       />
       <directionalLight
         position={[5, 5, 5]}
         intensity={0.9}
-        color={character.colors.primary}
+        color={primaryLightColor}
         castShadow
       />
 

@@ -3,6 +3,7 @@
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { MusicPlayerPanel } from "./MusicPlayerPanel"
+import { CharacterSelector } from "./CharacterSelector"
 
 export function Overlay() {
   const { selectedCharacter } = useSpotifyStore()
@@ -30,6 +31,11 @@ export function Overlay() {
         <div className="text-gray-500 text-[9px] italic">
           {character.domain}
         </div>
+      </div>
+
+      {/* Top right - Character selector */}
+      <div className="absolute top-6 right-6 pointer-events-auto z-20">
+        <CharacterSelector />
       </div>
 
       {/* Bottom right - Character branding */}

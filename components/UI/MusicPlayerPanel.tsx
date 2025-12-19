@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { PlaybackControls } from "./PlaybackControls"
 import { Search } from "./Search"
-import { CharacterSelector } from "./CharacterSelector"
 import { signOutAction } from "@/app/actions/auth"
 
 export function MusicPlayerPanel() {
@@ -56,39 +56,34 @@ export function MusicPlayerPanel() {
               <div className="text-gray-500 text-[10px]">{character.domain}</div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 min-w-0">
-              <CharacterSelector />
-            </div>
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1.5 hover:bg-white/5 rounded-lg transition-colors flex-shrink-0"
-              aria-label={isExpanded ? "Collapse" : "Expand"}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-1.5 hover:bg-white/5 rounded-lg transition-colors"
+            aria-label={isExpanded ? "Collapse" : "Expand"}
+          >
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                className="w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                {isExpanded ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
-                  />
-                )}
-              </svg>
-            </button>
-          </div>
+              {isExpanded ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 15l7-7 7 7"
+                />
+              )}
+            </svg>
+          </button>
         </div>
 
         {isExpanded && (
@@ -104,15 +99,18 @@ export function MusicPlayerPanel() {
                 <div className="flex gap-4 items-start">
                   {currentTrack.image && (
                     <div
-                      className="rounded-xl overflow-hidden shadow-lg flex-shrink-0"
+                      className="rounded-xl overflow-hidden shadow-lg flex-shrink-0 relative w-20 h-20"
                       style={{
                         boxShadow: `0 8px 32px ${character.colors.glow}30, 0 0 0 2px ${character.colors.primary}40`,
                       }}
                     >
-                      <img
+                      <Image
                         src={currentTrack.image}
                         alt={currentTrack.album}
-                        className="w-20 h-20 object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                        unoptimized
                       />
                     </div>
                   )}

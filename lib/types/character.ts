@@ -1,4 +1,4 @@
-export type CharacterType = "sukuna" | "yuji" | "yuta" | "toji" | "todo" | "gojo"
+export type CharacterType = "sukuna" | "yuji" | "yuta" | "toji" | "todo" | "gojo" | "kinjihakari" | "choso"
 
 export interface CharacterTheme {
   id: CharacterType
@@ -140,6 +140,46 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
       low: { r: 234 / 255, g: 88 / 255, b: 12 / 255 },
       mid: { r: 249 / 255, g: 115 / 255, b: 22 / 255 },
       high: { r: 254 / 255, g: 215 / 255, b: 170 / 255 },
+    },
+  },
+  kinjihakari: {
+    id: "kinjihakari",
+    name: "Kinji Hakari",
+    japaneseName: "秤 金次",
+    domain: "Idle Death Gamble",
+    domainJapanese: "坐殺博徒",
+    technique: "Private Pure Love Train",
+    techniqueJapanese: "私鉄純愛列車",
+    colors: {
+      primary: "#2E8B57", // SeaGreen (Rough Energy)
+      secondary: "#FFD700", // Gold (Jackpot)
+      accent: "#FF69B4", // HotPink (Romance theme)
+      glow: "#32CD32", // Lime Green
+    },
+    energy: {
+      low: { r: 46 / 255, g: 139 / 255, b: 87 / 255 },
+      mid: { r: 255 / 255, g: 215 / 255, b: 0 / 255 },
+      high: { r: 50 / 255, g: 205 / 255, b: 50 / 255 },
+    },
+  },
+  choso: {
+    id: "choso",
+    name: "Choso",
+    japaneseName: "脹相",
+    domain: "None",
+    domainJapanese: "なし",
+    technique: "Blood Manipulation",
+    techniqueJapanese: "赤血操術",
+    colors: {
+      primary: "#8B0000", // Dark Red (Blood)
+      secondary: "#F5F5F5", // White (Clothing)
+      accent: "#4B0082", // Indigo (Poison aspect)
+      glow: "#FF0000", // Red
+    },
+    energy: {
+      low: { r: 139 / 255, g: 0 / 255, b: 0 / 255 },
+      mid: { r: 245 / 255, g: 245 / 255, b: 245 / 255 },
+      high: { r: 255 / 255, g: 0 / 255, b: 0 / 255 },
     },
   },
 }

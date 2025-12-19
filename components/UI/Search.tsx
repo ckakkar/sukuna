@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect, useRef } from "react"
+import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { searchTracks, playTrack, type SearchTrack } from "@/lib/spotify-actions"
 import { useDebounce } from "@/hooks/useDebounce"
@@ -151,11 +152,16 @@ export function Search() {
                 >
                   <div className="flex items-center gap-3">
                     {track.image && (
-                      <img
-                        src={track.image}
-                        alt={track.album}
-                        className="w-12 h-12 rounded object-cover"
-                      />
+                      <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
+                        <Image
+                          src={track.image}
+                          alt={track.album}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                          unoptimized
+                        />
+                      </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="text-white font-medium truncate group-hover:text-jujutsu-energy transition-colors text-sm">

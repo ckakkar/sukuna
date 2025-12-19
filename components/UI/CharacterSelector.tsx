@@ -1,9 +1,10 @@
 "use client"
 
+import { useState } from "react"
+import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS, type CharacterType } from "@/lib/types/character"
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
-import { useState } from "react"
 
 export function CharacterSelector() {
   const [isOpen, setIsOpen] = useState(false)
@@ -110,15 +111,39 @@ export function CharacterSelector() {
                     }}
                   />
                   
-                  {/* Character indicator dot */}
-                  <div 
-                    className="w-3 h-3 rounded-full flex-shrink-0 transition-all duration-300"
-                    style={{
-                      backgroundColor: isSelected ? (char.colors.glow || char.colors.primary) : "rgba(255,255,255,0.1)",
-                      boxShadow: isSelected ? `0 0 12px ${char.colors.glow}60` : "none",
-                      transform: isSelected ? "scale(1.2)" : "scale(1)",
-                    }}
-                  />
+                  {/* Character Image */}
+                  {char.imagePath && (
+                    <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                      <Image
+                        src={char.imagePath}
+                        alt={char.name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none"
+                        }}
+                      />
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background: `linear-gradient(to top, ${char.colors.glow}40, transparent)`,
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Character indicator dot (fallback if no image) */}
+                  {!char.imagePath && (
+                    <div 
+                      className="w-3 h-3 rounded-full flex-shrink-0 transition-all duration-300"
+                      style={{
+                        backgroundColor: isSelected ? (char.colors.glow || char.colors.primary) : "rgba(255,255,255,0.1)",
+                        boxShadow: isSelected ? `0 0 12px ${char.colors.glow}60` : "none",
+                        transform: isSelected ? "scale(1.2)" : "scale(1)",
+                      }}
+                    />
+                  )}
                   
                   <div className="flex-1 min-w-0 flex flex-col items-start gap-0.5 relative z-10">
                     <div className="flex items-center justify-between w-full">

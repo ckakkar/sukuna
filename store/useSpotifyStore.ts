@@ -36,6 +36,7 @@ interface SpotifyState {
   // Character
   selectedCharacter: CharacterType
   currentTechnique: TechniqueType
+  hasSelectedCharacter: boolean
   // Domain Expansion
   isDomainExpanding: boolean
   domainState: DomainState
@@ -60,6 +61,7 @@ interface SpotifyState {
   setTrackData: (data: TrackData | null) => void
   setIsLoadingAnalysis: (loading: boolean) => void
   setSelectedCharacter: (character: CharacterType) => void
+  setHasSelectedCharacter: (hasSelected: boolean) => void
   setIsDomainExpanding: (expanding: boolean) => void
   setDomainState: (state: DomainState) => void
   setIntensity: (intensity: number) => void
@@ -84,6 +86,7 @@ export const useSpotifyStore = create<SpotifyState>((set, get) => ({
   isLoadingAnalysis: false,
   selectedCharacter: "sukuna",
   currentTechnique: defaultTechniqueForCharacter("sukuna"),
+  hasSelectedCharacter: false,
   isDomainExpanding: false,
   domainState: "idle",
   intensity: 0,
@@ -111,7 +114,9 @@ export const useSpotifyStore = create<SpotifyState>((set, get) => ({
     set({
       selectedCharacter: character,
       currentTechnique: defaultTechniqueForCharacter(character),
+      hasSelectedCharacter: true,
     }),
+  setHasSelectedCharacter: (hasSelected) => set({ hasSelectedCharacter: hasSelected }),
   setIsDomainExpanding: (expanding) =>
     set((state) => ({
       isDomainExpanding: expanding,

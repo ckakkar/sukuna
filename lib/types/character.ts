@@ -8,6 +8,7 @@ export interface CharacterTheme {
   domainJapanese: string
   technique: string
   techniqueJapanese: string
+  imagePath?: string
   colors: {
     primary: string
     secondary: string
@@ -30,6 +31,7 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
     domainJapanese: "伏魔御厨子",
     technique: "Cleave & Dismantle",
     techniqueJapanese: "解・捌",
+    imagePath: "/characters/sukuna.png",
     colors: {
       primary: "#7e22ce",
       secondary: "#c026d3",
@@ -50,6 +52,7 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
     domainJapanese: "無量空処",
     technique: "Limitless",
     techniqueJapanese: "無下限呪術",
+    imagePath: "/characters/gojo.png",
     colors: {
       primary: "#0ea5e9",
       secondary: "#f0f9ff",
@@ -70,6 +73,7 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
     domainJapanese: "なし",
     technique: "Black Flash",
     techniqueJapanese: "黒閃",
+    imagePath: "/characters/yuji.png",
     colors: {
       primary: "#1a1a1a",
       secondary: "#ff69b4",
@@ -90,6 +94,7 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
     domainJapanese: "真贋相愛",
     technique: "Copy",
     techniqueJapanese: "模倣",
+    imagePath: "/characters/yuta.png",
     colors: {
       primary: "#1e1b4b",
       secondary: "#a5b4fc",
@@ -110,6 +115,7 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
     domainJapanese: "なし",
     technique: "Heavenly Restriction",
     techniqueJapanese: "天与呪縛",
+    imagePath: "/characters/toji.png",
     colors: {
       primary: "#0f172a",
       secondary: "#475569",
@@ -130,6 +136,7 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
     domainJapanese: "なし",
     technique: "Boogie Woogie",
     techniqueJapanese: "不義遊戯",
+    imagePath: "/characters/todo.png",
     colors: {
       primary: "#78350f",
       secondary: "#a16207",
@@ -150,6 +157,7 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
     domainJapanese: "坐殺博徒",
     technique: "Rough Energy",
     techniqueJapanese: "ラフエネルギー",
+    imagePath: "/characters/kinjihakari.png",
     colors: {
       primary: "#06b6d4",
       secondary: "#0e7490",
@@ -170,6 +178,7 @@ export const CHARACTERS: Record<CharacterType, CharacterTheme> = {
     domainJapanese: "なし",
     technique: "Blood Manipulation",
     techniqueJapanese: "赤血操術",
+    imagePath: "/characters/choso.png",
     colors: {
       primary: "#450a0a",
       secondary: "#7f1d1d",

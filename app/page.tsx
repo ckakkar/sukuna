@@ -4,6 +4,9 @@ import { Overlay } from "@/components/UI/Overlay"
 import { SpotifyWebPlayer } from "@/components/SpotifyWebPlayer"
 import { AuthInitializer } from "@/components/AuthInitializer"
 import { DomainExpansion } from "@/components/UI/DomainExpansion"
+import { CharacterSelectionModal } from "@/components/UI/CharacterSelectionModal"
+import { BackgroundQuotes } from "@/components/UI/BackgroundQuotes"
+import { CharacterSwitchAnimation } from "@/components/UI/CharacterSwitchAnimation"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { signInWithSpotify } from "@/app/actions/auth"
 
@@ -26,6 +29,15 @@ export default async function Home() {
 
         {/* Domain Expansion Animation */}
         <DomainExpansion />
+
+        {/* Character Selection Modal */}
+        <CharacterSelectionModal />
+
+        {/* Character Switch Animation */}
+        <CharacterSwitchAnimation />
+
+        {/* Background Quotes */}
+        <BackgroundQuotes />
 
         {/* UI Overlay */}
         <Overlay />

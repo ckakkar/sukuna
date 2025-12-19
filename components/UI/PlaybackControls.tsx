@@ -199,7 +199,7 @@ export function PlaybackControls() {
                 />
                 
                 {/* Beat pulse on progress bar */}
-                {beatIntensity && beatIntensity > 0.5 && (
+                {(beatIntensity ?? 0) > 0.5 && (
                   <div
                     className="absolute right-0 top-1/2 w-8 h-8 rounded-full -translate-y-1/2 translate-x-1/2 animate-ping"
                     style={{
@@ -269,13 +269,13 @@ export function PlaybackControls() {
             background: isPaused
               ? `linear-gradient(135deg, ${character.colors.primary} 0%, ${character.colors.glow} 50%, ${character.colors.secondary || character.colors.glow} 100%)`
               : `linear-gradient(135deg, ${character.colors.secondary || character.colors.glow} 0%, ${character.colors.glow} 50%, ${character.colors.primary} 100%)`,
-            boxShadow: `0 10px 40px ${character.colors.glow}${beatIntensity && beatIntensity > 0.5 ? 'AA' : '70'}, 0 0 0 2px rgba(255,255,255,0.1), inset 0 2px 0 rgba(255,255,255,0.3)`,
-            transform: buttonPulse === "play" || (beatIntensity && beatIntensity > 0.7) ? "scale(1.15)" : "scale(1)",
+            boxShadow: `0 10px 40px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '70'}, 0 0 0 2px rgba(255,255,255,0.1), inset 0 2px 0 rgba(255,255,255,0.3)`,
+            transform: buttonPulse === "play" || ((beatIntensity ?? 0) > 0.7) ? "scale(1.15)" : "scale(1)",
           }}
           aria-label={isPaused ? "Play" : "Pause"}
         >
           {/* Glow effect on beat */}
-          {beatIntensity && beatIntensity > 0.6 && (
+          {(beatIntensity ?? 0) > 0.6 && (
             <div
               className="absolute inset-0 rounded-2xl opacity-70"
               style={{

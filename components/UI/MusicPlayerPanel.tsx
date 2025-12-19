@@ -53,12 +53,12 @@ export function MusicPlayerPanel() {
         className="bg-black/60 backdrop-blur-3xl border-2 rounded-3xl shadow-2xl transition-all duration-500 overflow-hidden relative"
         style={{
           borderColor: borderColor,
-          boxShadow: `0 25px 80px rgba(0,0,0,0.6), 0 0 60px ${character.colors.glow}${beatIntensity && beatIntensity > 0.5 ? 'AA' : '50'}, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 40px ${character.colors.primary}20`,
+          boxShadow: `0 25px 80px rgba(0,0,0,0.6), 0 0 60px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 40px ${character.colors.primary}20`,
           width: isExpanded ? "580px" : "auto",
         }}
       >
         {/* Animated glow border on beat */}
-        {beatIntensity && beatIntensity > 0.3 && (
+        {(beatIntensity ?? 0) > 0.3 && (
           <div
             className="absolute inset-0 rounded-3xl pointer-events-none animate-pulse"
             style={{
@@ -77,7 +77,7 @@ export function MusicPlayerPanel() {
           }}
         >
           {/* Animated background on beat */}
-          {beatIntensity && beatIntensity > 0.4 && (
+          {(beatIntensity ?? 0) > 0.4 && (
             <div
               className="absolute inset-0 opacity-30"
               style={{
@@ -93,7 +93,7 @@ export function MusicPlayerPanel() {
               style={{
                 backgroundColor: character.colors.glow || character.colors.primary,
                 boxShadow: `0 0 ${12 + (beatIntensity ?? 0) * 20}px ${character.colors.glow}, 0 0 ${24 + (beatIntensity ?? 0) * 30}px ${character.colors.glow}60`,
-                animation: beatIntensity && beatIntensity > 0.3 ? "ping 0.5s ease-out" : "pulse 2s ease-in-out infinite",
+                animation: (beatIntensity ?? 0) > 0.3 ? "ping 0.5s ease-out" : "pulse 2s ease-in-out infinite",
               }}
             >
               <div 
@@ -122,7 +122,7 @@ export function MusicPlayerPanel() {
                 }}
               >
                 <span>{character.name}</span>
-                {beatIntensity && beatIntensity > 0.6 && (
+                {(beatIntensity ?? 0) > 0.6 && (
                   <span className="text-xs opacity-70 animate-pulse flex-shrink-0">
                     ⚡
                   </span>
@@ -200,7 +200,7 @@ export function MusicPlayerPanel() {
             {currentTrack ? (
               <div className="px-6 py-6 relative">
                 {/* Beat pulse background */}
-                {beatIntensity && beatIntensity > 0.5 && (
+                {(beatIntensity ?? 0) > 0.5 && (
                   <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
@@ -215,8 +215,8 @@ export function MusicPlayerPanel() {
                     <div
                       className="rounded-2xl overflow-hidden shadow-2xl flex-shrink-0 relative w-28 h-28 group"
                       style={{
-                        boxShadow: `0 12px 50px ${character.colors.glow}${beatIntensity && beatIntensity > 0.5 ? 'AA' : '50'}, 0 0 0 3px ${character.colors.primary}30, inset 0 0 30px ${character.colors.glow}30`,
-                        transform: beatIntensity && beatIntensity > 0.7 ? `scale(${1 + beatIntensity * 0.05})` : "scale(1)",
+                        boxShadow: `0 12px 50px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, 0 0 0 3px ${character.colors.primary}30, inset 0 0 30px ${character.colors.glow}30`,
+                        transform: (beatIntensity ?? 0) > 0.7 ? `scale(${1 + (beatIntensity ?? 0) * 0.05})` : "scale(1)",
                         transition: "transform 0.1s ease-out",
                       }}
                     >
@@ -236,7 +236,7 @@ export function MusicPlayerPanel() {
                       />
                       
                       {/* Beat indicator overlay */}
-                      {beatIntensity && beatIntensity > 0.6 && (
+                      {(beatIntensity ?? 0) > 0.6 && (
                         <div
                           className="absolute inset-0 bg-white animate-pulse"
                           style={{
@@ -253,7 +253,7 @@ export function MusicPlayerPanel() {
                       <div 
                         className="text-white font-bold text-lg truncate mb-2.5 leading-tight tracking-wide"
                         style={{
-                          textShadow: `0 2px 10px rgba(0,0,0,0.7), 0 0 ${beatIntensity && beatIntensity > 0.5 ? 15 : 0}px ${character.colors.glow}`,
+                          textShadow: `0 2px 10px rgba(0,0,0,0.7), 0 0 ${(beatIntensity ?? 0) > 0.5 ? 15 : 0}px ${character.colors.glow}`,
                         }}
                       >
                         {currentTrack.name}
@@ -305,7 +305,7 @@ export function MusicPlayerPanel() {
                             >
                               {Math.round(trackData.bpm)}
                             </span>
-                            {beatIntensity && beatIntensity > 0.5 && (
+                            {(beatIntensity ?? 0) > 0.5 && (
                               <span 
                                 className="text-sm animate-pulse"
                                 style={{ color: character.colors.glow }}
@@ -487,4 +487,4 @@ export function MusicPlayerPanel() {
       `}</style>
     </div>
   )
-}
+} 

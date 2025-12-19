@@ -5,6 +5,8 @@ import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { CHARACTER_QUOTES, type CharacterQuote } from "@/lib/data/characterQuotes"
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
+import { Card } from "./shared/Card"
+import { cn } from "@/lib/utils/cn"
 
 export function BackgroundQuotes() {
   const { selectedCharacter, hasSelectedCharacter } = useSpotifyStore()
@@ -59,10 +61,15 @@ export function BackgroundQuotes() {
 
   return (
     <div className="fixed bottom-16 sm:bottom-20 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none w-full px-3 sm:px-0">
-      <div
-        className="bg-black/70 backdrop-blur-2xl border-2 rounded-xl sm:rounded-2xl px-4 py-4 sm:px-8 sm:py-6 max-w-2xl mx-auto animate-quoteSlideIn"
+      <Card
+        variant="glass"
+        glowColor={character.colors.glow}
+        borderColor={getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6)}
+        className={cn(
+          "rounded-xl sm:rounded-2xl px-4 py-4 sm:px-8 sm:py-6 max-w-2xl mx-auto",
+          "animate-fade-in-up"
+        )}
         style={{
-          borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
           boxShadow: `0 10px 40px rgba(0,0,0,0.5), 0 0 30px ${character.colors.glow}40, inset 0 0 20px ${character.colors.glow}10`,
         }}
       >
@@ -96,23 +103,7 @@ export function BackgroundQuotes() {
             — {currentQuote.context}
           </div>
         )}
-      </div>
-
-      <style jsx>{`
-        @keyframes quoteSlideIn {
-          from {
-            opacity: 0;
-            transform: translate(-50%, 20px);
-          }
-          to {
-            opacity: 1;
-            transform: translate(-50%, 0);
-          }
-        }
-        .animate-quoteSlideIn {
-          animation: quoteSlideIn 0.6s ease-out;
-        }
-      `}</style>
+      </Card>
     </div>
   )
 }

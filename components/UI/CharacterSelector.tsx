@@ -5,6 +5,8 @@ import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS, type CharacterType } from "@/lib/types/character"
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
+import { cn } from "@/lib/utils/cn"
+import { Card } from "./shared/Card"
 
 export function CharacterSelector() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,6 +24,9 @@ export function CharacterSelector() {
       {/* Current Character Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={`Select character. Current: ${currentChar.name}`}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
         className="group relative px-3 py-2 sm:px-4 sm:py-2.5 bg-black/30 backdrop-blur-xl border-2 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 hover:scale-105 active:scale-95 touch-manipulation"
         style={{
           borderColor: isOpen ? getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.9) : "rgba(255,255,255,0.15)",
@@ -65,12 +70,21 @@ export function CharacterSelector() {
       {/* Character Selection Menu */}
       {isOpen && (
         <div 
-          className="absolute top-full mt-2 sm:mt-3 right-0 bg-black/70 backdrop-blur-2xl border-2 rounded-xl sm:rounded-2xl overflow-hidden w-[calc(100vw-2rem)] sm:min-w-[320px] sm:max-w-[320px] z-50 shadow-2xl animate-fadeIn"
+          className={cn(
+            "absolute top-full mt-2 sm:mt-3 right-0 overflow-hidden",
+            "w-[calc(100vw-2rem)] sm:min-w-[320px] sm:max-w-[320px] z-50",
+            "animate-fade-in-up"
+          )}
           style={{
             borderColor: getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.7),
             boxShadow: `0 20px 60px rgba(0,0,0,0.5), 0 0 40px ${currentChar.colors.glow}40, inset 0 0 30px ${currentChar.colors.glow}10`,
           }}
         >
+          <Card
+            variant="glass"
+            className="rounded-xl sm:rounded-2xl"
+            borderColor={getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.7)}
+          >
           <div className="px-3 py-2 border-b" style={{ borderColor: getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.2) }}>
             <div 
               className="text-xs font-mono uppercase tracking-widest px-2"
@@ -79,7 +93,11 @@ export function CharacterSelector() {
               SELECT CHARACTER
             </div>
           </div>
-          <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
+          <div 
+            className="max-h-[500px] overflow-y-auto custom-scrollbar"
+            role="listbox"
+            aria-label="Character selection"
+          >
             {Object.values(CHARACTERS).map((char, index) => {
               const charTextColor = getVisibleTextColor(char.colors.primary, char.colors.glow, char.colors.secondary)
               const isSelected = selectedCharacter === char.id
@@ -87,6 +105,9 @@ export function CharacterSelector() {
                 <button
                   key={char.id}
                   onClick={() => handleCharacterChange(char.id)}
+                  aria-label={`Select ${char.name} (${char.japaneseName})`}
+                  aria-selected={isSelected}
+                  role="option"
                   className="w-full px-3 py-2.5 sm:px-4 sm:py-3.5 flex items-center gap-2 sm:gap-3 hover:bg-white/5 active:bg-white/10 transition-all duration-200 border-b last:border-b-0 group relative overflow-hidden touch-manipulation"
                   style={{
                     backgroundColor: isSelected 
@@ -189,23 +210,11 @@ export function CharacterSelector() {
               )
             })}
           </div>
+          </Card>
         </div>
       )}
 
       <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }

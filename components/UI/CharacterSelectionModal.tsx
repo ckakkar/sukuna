@@ -6,6 +6,7 @@ import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS, type CharacterType } from "@/lib/types/character"
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { CHARACTER_QUOTES } from "@/lib/data/characterQuotes"
+import { cn } from "@/lib/utils/cn"
 
 export function CharacterSelectionModal() {
   const { hasSelectedCharacter, setSelectedCharacter, accessToken } = useSpotifyStore()
@@ -69,7 +70,12 @@ export function CharacterSelectionModal() {
                   <button
                     key={character.id}
                     onClick={() => handleSelect(character.id)}
-                    className="group relative bg-black/60 backdrop-blur-xl border-2 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden touch-manipulation"
+                    aria-label={`Select ${character.name} (${character.japaneseName})`}
+                    className={cn(
+                      "group relative border-2 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6",
+                      "transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden touch-manipulation",
+                      "glass animate-scale-in"
+                    )}
                     style={{
                       borderColor: isSelected
                         ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1)

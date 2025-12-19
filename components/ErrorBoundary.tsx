@@ -43,7 +43,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               </div>
               <button
                 onClick={() => window.location.reload()}
-                className="mt-4 px-6 py-2 bg-jujutsu-energy text-white font-mono text-sm rounded hover:bg-jujutsu-domain transition-colors"
+                className="mt-4 px-6 py-2 bg-jujutsu-energy text-white font-mono text-sm rounded hover:bg-jujutsu-domain transition-colors touch-manipulation"
+                aria-label="Reload application"
               >
                 Restart Domain
               </button>

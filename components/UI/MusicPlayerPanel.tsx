@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, memo } from "react"
 import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
@@ -12,6 +12,10 @@ import { Favorites } from "./Favorites"
 import { RecentlyPlayed } from "./RecentlyPlayed"
 import { Queue } from "./Queue"
 import { signOutAction } from "@/app/actions/auth"
+import { Card } from "./shared/Card"
+import { Button } from "./shared/Button"
+import { LoadingSpinner } from "./shared/LoadingSpinner"
+import { cn } from "@/lib/utils/cn"
 
 export function MusicPlayerPanel() {
   const {
@@ -25,9 +29,15 @@ export function MusicPlayerPanel() {
   const [isExpanded, setIsExpanded] = useState(true)
   const [pulseScale, setPulseScale] = useState(1)
   
-  const character = CHARACTERS[selectedCharacter]
-  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
-  const borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6)
+  const character = useMemo(() => CHARACTERS[selectedCharacter], [selectedCharacter])
+  const textColor = useMemo(
+    () => getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary),
+    [character.colors.primary, character.colors.glow, character.colors.secondary]
+  )
+  const borderColor = useMemo(
+    () => getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
+    [character.colors.primary, character.colors.glow]
+  )
 
   // Beat pulse animation
   useEffect(() => {
@@ -49,13 +59,18 @@ export function MusicPlayerPanel() {
       className="absolute bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-auto pointer-events-auto z-20 transition-transform duration-100 ease-out"
       style={{ transform: `scale(${pulseScale})` }}
     >
-      <div
-        className="bg-black/60 backdrop-blur-3xl border-2 rounded-2xl sm:rounded-3xl shadow-2xl transition-all duration-500 overflow-hidden relative w-full sm:w-auto"
+      <Card
+        variant="default"
+        glowColor={character.colors.glow}
+        borderColor={borderColor}
+        className={cn(
+          "rounded-2xl sm:rounded-3xl overflow-hidden w-full sm:w-auto transition-all duration-500",
+          "animate-scale-in"
+        )}
         style={{
-          borderColor: borderColor,
-          boxShadow: `0 25px 80px rgba(0,0,0,0.6), 0 0 60px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 40px ${character.colors.primary}20`,
           width: isExpanded ? "100%" : "auto",
           maxWidth: isExpanded ? "580px" : "none",
+          boxShadow: `0 25px 80px rgba(0,0,0,0.6), 0 0 60px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 40px ${character.colors.primary}20`,
         }}
       >
         {/* Animated glow border on beat */}
@@ -134,11 +149,12 @@ export function MusicPlayerPanel() {
           
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 hover:scale-110 relative z-10 group flex-shrink-0"
+            className="p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 hover:scale-110 active:scale-95 relative z-10 group flex-shrink-0 touch-manipulation"
             style={{
               color: textColor,
             }}
-            aria-label={isExpanded ? "Collapse" : "Expand"}
+            aria-label={isExpanded ? "Collapse player" : "Expand player"}
+            aria-expanded={isExpanded}
           >
             {isExpanded ? (
               <svg
@@ -374,14 +390,10 @@ export function MusicPlayerPanel() {
 
                     {/* Loading state */}
                     {isLoadingAnalysis && (
-                      <div className="pt-5 flex items-center gap-3">
-                        <div
-                          className="w-6 h-6 border-3 rounded-full animate-spin"
-                          style={{
-                            borderColor: `${character.colors.glow || character.colors.primary}30`,
-                            borderTopColor: character.colors.glow || character.colors.primary,
-                            boxShadow: `0 0 15px ${character.colors.glow}60`,
-                          }}
+                      <div className="pt-5 flex items-center gap-3 animate-fade-in">
+                        <LoadingSpinner
+                          size="md"
+                          color={character.colors.glow || character.colors.primary}
                         />
                         <span
                           className="text-sm font-mono font-semibold tracking-wider"
@@ -459,16 +471,18 @@ export function MusicPlayerPanel() {
               >
                 {character.techniqueJapanese}
               </div>
-              <button
+              <Button
                 onClick={handleSignOut}
-                className="px-5 py-2 text-xs font-mono font-semibold tracking-wider bg-red-900/30 border-2 border-red-800/60 hover:border-red-500 hover:bg-red-900/50 rounded-xl transition-all duration-200 text-red-400 hover:text-red-300 hover:scale-105 shadow-lg hover:shadow-red-900/40"
+                variant="danger"
+                size="sm"
+                className="text-xs"
               >
                 DISCONNECT
-              </button>
+              </Button>
             </div>
           </>
         )}
-      </div>
+      </Card>
 
       <style jsx>{`
         @keyframes ping {

@@ -1,15 +1,20 @@
 "use client"
 
+import { useMemo } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { MusicPlayerPanel } from "./MusicPlayerPanel"
 import { CharacterSelector } from "./CharacterSelector"
+import { cn } from "@/lib/utils/cn"
 
 export function Overlay() {
   const { selectedCharacter, beatIntensity, intensity } = useSpotifyStore()
-  const character = CHARACTERS[selectedCharacter]
-  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
+  const character = useMemo(() => CHARACTERS[selectedCharacter], [selectedCharacter])
+  const textColor = useMemo(
+    () => getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary),
+    [character.colors.primary, character.colors.glow, character.colors.secondary]
+  )
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10">

@@ -5,6 +5,8 @@ import { useEffect, useState } from "react"
 import { setVolume, seekToPosition, setRepeatMode, setShuffleMode } from "@/lib/spotify-actions"
 import { CHARACTERS } from "@/lib/types/character"
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
+import { cn } from "@/lib/utils/cn"
+import { formatTime } from "@/lib/utils/format"
 
 export function PlaybackControls() {
   const { 
@@ -50,12 +52,6 @@ export function PlaybackControls() {
     }
   }, [beatIntensity])
 
-  const formatTime = (ms: number) => {
-    const seconds = Math.floor(ms / 1000)
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-  }
 
   const handleSeek = async (newPosition: number) => {
     if (!accessToken || !deviceId || !playerInstance) return
@@ -230,15 +226,16 @@ export function PlaybackControls() {
         {/* Shuffle */}
         <button
           onClick={handleShuffleToggle}
-          className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 touch-manipulation ${
+          aria-label={shuffleMode ? "Disable shuffle" : "Enable shuffle"}
+          className={cn(
+            "p-2.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 touch-manipulation",
             shuffleMode ? "bg-black/60 border-2" : "bg-black/40 hover:bg-white/10 border border-white/10"
-          }`}
+          )}
           style={{
             borderColor: shuffleMode ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1) : "rgba(255,255,255,0.1)",
             color: shuffleMode ? textColor : "rgba(255,255,255,0.7)",
             boxShadow: shuffleMode ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20` : "none",
           }}
-          aria-label="Shuffle"
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
@@ -248,13 +245,13 @@ export function PlaybackControls() {
         {/* Previous */}
         <button
           onClick={handlePrevious}
+          aria-label="Previous track"
           className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-black/40 hover:bg-white/10 border border-white/10 transition-all duration-300 hover:scale-110 active:scale-95 group relative touch-manipulation"
           style={{
             borderColor: buttonPulse === "prev" ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.9) : "rgba(255,255,255,0.1)",
             boxShadow: buttonPulse === "prev" ? `0 0 20px ${character.colors.glow}60` : "none",
             transform: buttonPulse === "prev" ? "scale(1.1)" : "scale(1)",
           }}
-          aria-label="Previous track"
         >
           <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
             <path d="M6 6h2v12H6zm8.5 6L6 18V6l8.5 6z" />
@@ -299,13 +296,13 @@ export function PlaybackControls() {
         {/* Next */}
         <button
           onClick={handleNext}
+          aria-label="Next track"
           className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-black/40 hover:bg-white/10 border border-white/10 transition-all duration-300 hover:scale-110 active:scale-95 group relative touch-manipulation"
           style={{
             borderColor: buttonPulse === "next" ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.9) : "rgba(255,255,255,0.1)",
             boxShadow: buttonPulse === "next" ? `0 0 20px ${character.colors.glow}60` : "none",
             transform: buttonPulse === "next" ? "scale(1.1)" : "scale(1)",
           }}
-          aria-label="Next track"
         >
           <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
             <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
@@ -315,15 +312,16 @@ export function PlaybackControls() {
         {/* Repeat */}
         <button
           onClick={handleRepeatToggle}
-          className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 relative touch-manipulation ${
+          aria-label={`Repeat mode: ${repeatMode}`}
+          className={cn(
+            "p-2.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 relative touch-manipulation",
             repeatMode !== "off" ? "bg-black/60 border-2" : "bg-black/40 hover:bg-white/10 border border-white/10"
-          }`}
+          )}
           style={{
             borderColor: repeatMode !== "off" ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1) : "rgba(255,255,255,0.1)",
             color: repeatMode !== "off" ? textColor : "rgba(255,255,255,0.7)",
             boxShadow: repeatMode !== "off" ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20` : "none",
           }}
-          aria-label="Repeat"
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />

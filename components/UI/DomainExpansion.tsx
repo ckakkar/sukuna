@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { getVisibleTextColor } from "@/lib/utils/colorUtils"
+import { cn } from "@/lib/utils/cn"
 
 export function DomainExpansion() {
   const { isDomainExpanding, selectedCharacter } = useSpotifyStore()

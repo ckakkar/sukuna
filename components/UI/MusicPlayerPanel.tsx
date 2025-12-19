@@ -36,42 +36,45 @@ export function MusicPlayerPanel() {
   return (
     <div className="absolute bottom-6 left-6 pointer-events-auto z-20">
       <div
-        className="bg-black/40 backdrop-blur-2xl border-2 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden"
+        className="bg-black/50 backdrop-blur-3xl border-2 rounded-3xl shadow-2xl transition-all duration-500 overflow-hidden"
         style={{
           borderColor: borderColor,
-          boxShadow: `0 20px 60px rgba(0,0,0,0.3), 0 0 40px ${character.colors.glow}40, inset 0 0 20px ${character.colors.primary}10`,
-          width: isExpanded ? "480px" : "auto",
+          boxShadow: `0 25px 80px rgba(0,0,0,0.4), 0 0 50px ${character.colors.glow}50, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 30px ${character.colors.primary}15`,
+          width: isExpanded ? "520px" : "auto",
         }}
       >
         {/* Header */}
         <div
-          className="px-5 py-3 border-b flex items-center justify-between"
+          className="px-6 py-4 border-b flex items-center justify-between"
           style={{ 
-            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3),
-            background: `linear-gradient(90deg, ${character.colors.primary}05 0%, transparent 100%)`,
+            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
+            background: `linear-gradient(135deg, ${character.colors.primary}08 0%, ${character.colors.glow}05 50%, transparent 100%)`,
           }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div
-              className="w-2 h-2 rounded-full animate-pulse"
+              className="w-3 h-3 rounded-full animate-pulse flex-shrink-0"
               style={{
                 backgroundColor: character.colors.glow || character.colors.primary,
-                boxShadow: `0 0 10px ${character.colors.glow}`,
+                boxShadow: `0 0 12px ${character.colors.glow}, 0 0 24px ${character.colors.glow}40`,
               }}
             />
-            <div className="font-mono text-xs">
+            <div className="font-mono">
               <div 
-                className="font-bold tracking-wider"
+                className="font-bold tracking-widest text-sm"
                 style={{ 
                   color: textColor,
-                  textShadow: `0 0 8px ${character.colors.glow}60`,
+                  textShadow: `0 0 10px ${character.colors.glow}60, 0 2px 4px rgba(0,0,0,0.3)`,
                 }}
               >
                 {character.name.toUpperCase()}
               </div>
               <div 
-                className="text-[10px] opacity-80"
-                style={{ color: character.colors.secondary || character.colors.glow }}
+                className="text-[11px] opacity-90 mt-0.5"
+                style={{ 
+                  color: character.colors.secondary || character.colors.glow,
+                  textShadow: `0 0 6px ${character.colors.glow}40`,
+                }}
               >
                 {character.domain}
               </div>
@@ -79,30 +82,27 @@ export function MusicPlayerPanel() {
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 hover:bg-white/5 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 hover:scale-110"
+            style={{
+              color: textColor,
+            }}
             aria-label={isExpanded ? "Collapse" : "Expand"}
           >
             <svg
-              className="w-4 h-4 text-gray-400"
+              className="w-5 h-5 transition-transform duration-300"
+              style={{
+                transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+              }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              {isExpanded ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 15l7-7 7 7"
-                />
-              )}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
         </div>
@@ -111,14 +111,14 @@ export function MusicPlayerPanel() {
           <>
             {/* Search Section */}
             <div 
-              className="px-5 py-4 border-b space-y-3" 
+              className="px-6 py-5 border-b space-y-4" 
               style={{ 
-                borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3),
-                background: `linear-gradient(90deg, ${character.colors.primary}03 0%, transparent 100%)`,
+                borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
+                background: `linear-gradient(135deg, ${character.colors.primary}04 0%, transparent 100%)`,
               }}
             >
               <Search />
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2.5 flex-wrap">
                 <Playlists />
                 <Favorites />
                 <RecentlyPlayed />
@@ -128,81 +128,123 @@ export function MusicPlayerPanel() {
 
             {/* Track Info */}
             {currentTrack ? (
-              <div className="px-5 py-4">
-                <div className="flex gap-4 items-start">
+              <div className="px-6 py-5">
+                <div className="flex gap-5 items-start">
                   {currentTrack.image && (
                     <div
-                      className="rounded-xl overflow-hidden shadow-lg flex-shrink-0 relative w-20 h-20"
+                      className="rounded-2xl overflow-hidden shadow-2xl flex-shrink-0 relative w-24 h-24 group"
                       style={{
-                        boxShadow: `0 8px 32px ${character.colors.glow}30, 0 0 0 2px ${character.colors.primary}40`,
+                        boxShadow: `0 12px 40px ${character.colors.glow}40, 0 0 0 3px ${character.colors.primary}30, inset 0 0 20px ${character.colors.glow}20`,
                       }}
                     >
                       <Image
                         src={currentTrack.image}
                         alt={currentTrack.album}
                         fill
-                        className="object-cover"
-                        sizes="80px"
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="96px"
                         unoptimized
+                      />
+                      <div 
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        style={{
+                          background: `radial-gradient(circle at center, transparent 0%, ${character.colors.glow}20 100%)`,
+                        }}
                       />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="mb-3">
-                      <div className="text-white font-semibold text-sm truncate mb-1.5">
+                    <div className="mb-4">
+                      <div 
+                        className="text-white font-bold text-base truncate mb-2 leading-tight"
+                        style={{
+                          textShadow: `0 2px 8px rgba(0,0,0,0.5)`,
+                        }}
+                      >
                         {currentTrack.name}
                       </div>
-                      <div className="text-gray-400 text-xs truncate mb-1">
+                      <div 
+                        className="text-gray-300 text-sm truncate mb-1.5 font-medium"
+                        style={{
+                          color: character.colors.secondary || "rgba(255,255,255,0.7)",
+                        }}
+                      >
                         {currentTrack.artist}
                       </div>
-                      <div className="text-gray-600 text-[10px] truncate font-mono">
+                      <div 
+                        className="text-gray-500 text-xs truncate font-mono opacity-80"
+                        style={{
+                          color: character.colors.accent || "rgba(255,255,255,0.5)",
+                        }}
+                      >
                         {currentTrack.album}
                       </div>
                     </div>
 
                     {trackData && !isLoadingAnalysis && (
                       <div
-                        className="flex gap-6 pt-4 border-t"
-                        style={{ borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3) }}
+                        className="flex gap-8 pt-5 border-t"
+                        style={{ 
+                          borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
+                          background: `linear-gradient(90deg, ${character.colors.primary}03 0%, transparent 100%)`,
+                        }}
                       >
-                        <div className="flex flex-col gap-0.5">
+                        <div className="flex flex-col gap-1">
                           <span
-                            className="text-[9px] font-mono uppercase tracking-wider opacity-70"
-                            style={{ color: textColor }}
+                            className="text-[10px] font-mono uppercase tracking-widest opacity-80"
+                            style={{ 
+                              color: textColor,
+                              textShadow: `0 0 6px ${character.colors.glow}30`,
+                            }}
                           >
                             BPM
                           </span>
                           <span
-                            className="text-base font-bold font-mono"
-                            style={{ color: textColor }}
+                            className="text-lg font-black font-mono"
+                            style={{ 
+                              color: textColor,
+                              textShadow: `0 0 12px ${character.colors.glow}50, 0 2px 4px rgba(0,0,0,0.3)`,
+                            }}
                           >
                             {Math.round(trackData.bpm)}
                           </span>
                         </div>
-                        <div className="flex flex-col gap-0.5">
+                        <div className="flex flex-col gap-1">
                           <span
-                            className="text-[9px] font-mono uppercase tracking-wider opacity-70"
-                            style={{ color: textColor }}
+                            className="text-[10px] font-mono uppercase tracking-widest opacity-80"
+                            style={{ 
+                              color: textColor,
+                              textShadow: `0 0 6px ${character.colors.glow}30`,
+                            }}
                           >
                             ENERGY
                           </span>
                           <span
-                            className="text-base font-bold font-mono"
-                            style={{ color: textColor }}
+                            className="text-lg font-black font-mono"
+                            style={{ 
+                              color: textColor,
+                              textShadow: `0 0 12px ${character.colors.glow}50, 0 2px 4px rgba(0,0,0,0.3)`,
+                            }}
                           >
                             {(trackData.energy * 100).toFixed(0)}%
                           </span>
                         </div>
-                        <div className="flex flex-col gap-0.5">
+                        <div className="flex flex-col gap-1">
                           <span
-                            className="text-[9px] font-mono uppercase tracking-wider opacity-70"
-                            style={{ color: textColor }}
+                            className="text-[10px] font-mono uppercase tracking-widest opacity-80"
+                            style={{ 
+                              color: textColor,
+                              textShadow: `0 0 6px ${character.colors.glow}30`,
+                            }}
                           >
                             VALENCE
                           </span>
                           <span
-                            className="text-base font-bold font-mono"
-                            style={{ color: textColor }}
+                            className="text-lg font-black font-mono"
+                            style={{ 
+                              color: textColor,
+                              textShadow: `0 0 12px ${character.colors.glow}50, 0 2px 4px rgba(0,0,0,0.3)`,
+                            }}
                           >
                             {(trackData.valence * 100).toFixed(0)}%
                           </span>
@@ -211,17 +253,21 @@ export function MusicPlayerPanel() {
                     )}
 
                     {isLoadingAnalysis && (
-                      <div className="pt-3 flex items-center gap-2">
+                      <div className="pt-4 flex items-center gap-3">
                         <div
-                          className="w-4 h-4 border-2 rounded-full animate-spin"
+                          className="w-5 h-5 border-2.5 rounded-full animate-spin"
                           style={{
-                            borderColor: `${character.colors.primary}40`,
-                            borderTopColor: character.colors.primary,
+                            borderColor: `${character.colors.glow || character.colors.primary}30`,
+                            borderTopColor: character.colors.glow || character.colors.primary,
+                            boxShadow: `0 0 10px ${character.colors.glow}40`,
                           }}
                         />
                         <span
-                          className="text-xs font-mono"
-                          style={{ color: textColor }}
+                          className="text-xs font-mono font-semibold tracking-wider"
+                          style={{ 
+                            color: textColor,
+                            textShadow: `0 0 8px ${character.colors.glow}40`,
+                          }}
                         >
                           ANALYZING...
                         </span>
@@ -231,26 +277,29 @@ export function MusicPlayerPanel() {
                 </div>
               </div>
             ) : (
-              <div className="px-5 py-8 text-center">
+              <div className="px-6 py-12 text-center">
                 <div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black/20 border-2"
+                  className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-black/30 border-2 backdrop-blur-sm"
                   style={{ 
-                    borderColor: `${character.colors.primary}40`,
-                    boxShadow: `0 0 15px ${character.colors.glow}30`,
+                    borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
+                    boxShadow: `0 0 20px ${character.colors.glow}30, inset 0 0 20px ${character.colors.primary}10`,
                   }}
                 >
                   <div
-                    className="w-2 h-2 rounded-full animate-pulse"
+                    className="w-2.5 h-2.5 rounded-full animate-pulse"
                     style={{ 
-                      backgroundColor: character.colors.primary,
-                      boxShadow: `0 0 8px ${character.colors.glow}`,
+                      backgroundColor: character.colors.glow || character.colors.primary,
+                      boxShadow: `0 0 12px ${character.colors.glow}, 0 0 24px ${character.colors.glow}40`,
                     }}
                   />
                   <span 
-                    className="text-xs font-mono"
-                    style={{ color: character.colors.secondary }}
+                    className="text-sm font-mono font-semibold tracking-wider"
+                    style={{ 
+                      color: textColor,
+                      textShadow: `0 0 8px ${character.colors.glow}40`,
+                    }}
                   >
-                    Waiting for track...
+                    WAITING FOR TRACK...
                   </span>
                 </div>
               </div>
@@ -258,10 +307,10 @@ export function MusicPlayerPanel() {
 
             {/* Playback Controls */}
             <div
-              className="px-5 py-4 border-t flex justify-center"
+              className="px-6 py-5 border-t flex justify-center"
               style={{ 
-                borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3),
-                background: `linear-gradient(90deg, transparent 0%, ${character.colors.primary}05 50%, transparent 100%)`,
+                borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
+                background: `linear-gradient(135deg, transparent 0%, ${character.colors.primary}06 30%, ${character.colors.glow}04 70%, transparent 100%)`,
               }}
             >
               <PlaybackControls />
@@ -269,12 +318,15 @@ export function MusicPlayerPanel() {
 
             {/* Footer Actions */}
             <div
-              className="px-5 py-3 border-t flex justify-end"
-              style={{ borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3) }}
+              className="px-6 py-4 border-t flex justify-end"
+              style={{ 
+                borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
+                background: `linear-gradient(135deg, ${character.colors.primary}03 0%, transparent 100%)`,
+              }}
             >
               <button
                 onClick={handleSignOut}
-                className="px-4 py-1.5 text-xs font-mono bg-red-900/20 border border-red-800/50 hover:border-red-600 hover:bg-red-900/30 rounded-lg transition-all duration-200 text-red-400 hover:text-red-300"
+                className="px-5 py-2 text-xs font-mono font-semibold tracking-wider bg-red-900/30 border-2 border-red-800/60 hover:border-red-500 hover:bg-red-900/40 rounded-xl transition-all duration-200 text-red-400 hover:text-red-300 hover:scale-105 shadow-lg hover:shadow-red-900/30"
               >
                 DISCONNECT
               </button>

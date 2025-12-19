@@ -64,7 +64,7 @@ export function CharacterSelector() {
       {/* Character Selection Menu */}
       {isOpen && (
         <div 
-          className="absolute top-full mt-3 left-0 bg-black/70 backdrop-blur-2xl border-2 rounded-2xl overflow-hidden min-w-[320px] z-50 shadow-2xl animate-fadeIn"
+          className="absolute top-full mt-3 right-0 bg-black/70 backdrop-blur-2xl border-2 rounded-2xl overflow-hidden min-w-[320px] max-w-[320px] z-50 shadow-2xl animate-fadeIn"
           style={{
             borderColor: getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.7),
             boxShadow: `0 20px 60px rgba(0,0,0,0.5), 0 0 40px ${currentChar.colors.glow}40, inset 0 0 30px ${currentChar.colors.glow}10`,

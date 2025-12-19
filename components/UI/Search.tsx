@@ -91,17 +91,18 @@ export function Search() {
   return (
     <div ref={searchRef} className="relative pointer-events-auto">
       <div className="relative">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setIsOpen(true)}
-          placeholder="Search for tracks..."
-          className="w-full px-4 py-2.5 bg-black/30 border rounded-lg focus:outline-none text-white placeholder-gray-500 text-sm font-mono transition-all duration-200"
-          style={{
-            borderColor: isOpen ? "#9333ea" : "rgba(255,255,255,0.1)",
-          }}
-        />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => setIsOpen(true)}
+                placeholder="Search for tracks..."
+                className="w-full px-4 py-2.5 bg-black/20 border-2 rounded-lg focus:outline-none text-white placeholder-gray-400 text-sm font-mono transition-all duration-200"
+                style={{
+                  borderColor: isOpen ? "#9333ea" : "rgba(255,255,255,0.15)",
+                  boxShadow: isOpen ? "0 0 20px rgba(147, 51, 234, 0.3)" : "none",
+                }}
+              />
         <svg
           className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
           fill="none"

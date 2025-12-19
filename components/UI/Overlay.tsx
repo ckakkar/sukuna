@@ -17,18 +17,30 @@ export function Overlay() {
           className="font-bold tracking-wider text-sm animate-glow"
           style={{
             color: character.colors.primary,
-            textShadow: `0 0 10px ${character.colors.glow}`,
+            textShadow: `0 0 15px ${character.colors.glow}, 0 0 30px ${character.colors.glow}40`,
           }}
         >
           DOMAIN EXPANSION
         </div>
-        <div className="text-gray-400 text-[11px] tracking-widest font-semibold">
+        <div 
+          className="text-[11px] tracking-widest font-semibold"
+          style={{ 
+            color: character.colors.secondary,
+            textShadow: `0 0 8px ${character.colors.glow}50`,
+          }}
+        >
           領域展開
         </div>
-        <div className="text-gray-600 text-[10px] mt-1">
+        <div 
+          className="text-[10px] mt-1 opacity-90"
+          style={{ color: character.colors.accent }}
+        >
           {character.domainJapanese}
         </div>
-        <div className="text-gray-500 text-[9px] italic">
+        <div 
+          className="text-[9px] italic opacity-80"
+          style={{ color: character.colors.secondary }}
+        >
           {character.domain}
         </div>
       </div>
@@ -43,12 +55,29 @@ export function Overlay() {
         <div className="text-right">
           <div
             className="text-lg font-black mb-0.5 tracking-widest"
-            style={{ color: character.colors.primary }}
+            style={{ 
+              color: character.colors.primary,
+              textShadow: `0 0 15px ${character.colors.glow}, 0 0 30px ${character.colors.glow}40`,
+            }}
           >
             {character.japaneseName}
           </div>
-          <div className="text-white text-sm font-bold mb-1">{character.name}</div>
-          <div className="text-gray-500 text-[10px] border-t border-gray-800 pt-1 mt-1">
+          <div 
+            className="text-sm font-bold mb-1"
+            style={{ 
+              color: character.colors.secondary,
+              textShadow: `0 0 8px ${character.colors.glow}50`,
+            }}
+          >
+            {character.name}
+          </div>
+          <div 
+            className="text-[10px] border-t pt-1 mt-1 opacity-70"
+            style={{ 
+              color: character.colors.accent,
+              borderColor: `${character.colors.primary}40`,
+            }}
+          >
             呪術廻戦
           </div>
         </div>

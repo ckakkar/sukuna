@@ -19,9 +19,10 @@ export function CharacterSelector() {
       {/* Current Character Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group relative px-3 py-1.5 bg-black/30 backdrop-blur-sm border rounded-lg transition-all duration-300 flex items-center gap-2"
+        className="group relative px-3 py-1.5 bg-black/20 backdrop-blur-md border-2 rounded-lg transition-all duration-300 flex items-center gap-2"
         style={{
-          borderColor: isOpen ? currentChar.colors.primary : "rgba(255,255,255,0.1)",
+          borderColor: isOpen ? `${currentChar.colors.primary}80` : "rgba(255,255,255,0.2)",
+          boxShadow: isOpen ? `0 0 20px ${currentChar.colors.glow}40` : "none",
         }}
       >
         <div className="flex flex-col items-start min-w-0">
@@ -40,7 +41,12 @@ export function CharacterSelector() {
 
       {/* Character Selection Menu */}
       {isOpen && (
-        <div className="absolute top-full mt-2 left-0 bg-black/95 backdrop-blur-md border border-gray-800 rounded-lg overflow-hidden min-w-[280px] z-50 shadow-xl">
+        <div 
+          className="absolute top-full mt-2 left-0 bg-black/60 backdrop-blur-2xl border-2 border-gray-700 rounded-lg overflow-hidden min-w-[280px] z-50 shadow-2xl"
+          style={{
+            boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${currentChar.colors.glow}30`,
+          }}
+        >
           {Object.values(CHARACTERS).map((char) => (
             <button
               key={char.id}

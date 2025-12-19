@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { getSavedTracks, playTrack, type SearchTrack } from "@/lib/spotify-actions"
 import { CHARACTERS } from "@/lib/types/character"
+import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 
 export function Favorites() {
   const { accessToken, deviceId, selectedCharacter } = useSpotifyStore()
@@ -12,6 +13,7 @@ export function Favorites() {
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const character = CHARACTERS[selectedCharacter]
+  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   useEffect(() => {
     if (accessToken && isOpen) {
@@ -55,7 +57,7 @@ export function Favorites() {
         onClick={() => setIsOpen(!isOpen)}
         className="px-4 py-2 bg-black/20 backdrop-blur-md border-2 rounded-lg transition-all duration-300 flex items-center gap-2"
         style={{
-          borderColor: isOpen ? `${character.colors.primary}80` : "rgba(255,255,255,0.2)",
+          borderColor: isOpen ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.8) : "rgba(255,255,255,0.2)",
           boxShadow: isOpen ? `0 0 20px ${character.colors.glow}40` : "none",
         }}
       >
@@ -64,7 +66,7 @@ export function Favorites() {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          style={{ color: character.colors.primary }}
+          style={{ color: textColor }}
         >
           <path
             strokeLinecap="round"
@@ -75,7 +77,7 @@ export function Favorites() {
         </svg>
         <span
           className="text-sm font-mono font-bold"
-          style={{ color: character.colors.primary }}
+          style={{ color: textColor }}
         >
           FAVORITES
         </span>
@@ -85,17 +87,17 @@ export function Favorites() {
         <div
           className="absolute top-full left-0 mt-2 w-96 bg-black/60 backdrop-blur-2xl border-2 rounded-lg shadow-2xl z-50 max-h-[600px] flex flex-col overflow-hidden"
           style={{
-            borderColor: `${character.colors.primary}60`,
+            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
             boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${character.colors.glow}30`,
           }}
         >
           <div
             className="px-4 py-3 border-b"
-            style={{ borderColor: `${character.colors.primary}30` }}
+            style={{ borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3) }}
           >
             <div
               className="font-bold text-sm"
-              style={{ color: character.colors.primary }}
+              style={{ color: textColor }}
             >
               LIKED SONGS
             </div>
@@ -124,7 +126,7 @@ export function Favorites() {
                     border: `1px solid transparent`,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = `${character.colors.primary}40`
+                    e.currentTarget.style.borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4)
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "transparent"

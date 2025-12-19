@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { getRecentlyPlayed, playTrack, addToQueue, type SearchTrack } from "@/lib/spotify-actions"
 import { CHARACTERS } from "@/lib/types/character"
+import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 
 export function RecentlyPlayed() {
   const { accessToken, deviceId, selectedCharacter } = useSpotifyStore()
@@ -12,6 +13,7 @@ export function RecentlyPlayed() {
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const character = CHARACTERS[selectedCharacter]
+  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   useEffect(() => {
     if (accessToken && isOpen) {
@@ -64,7 +66,7 @@ export function RecentlyPlayed() {
         onClick={() => setIsOpen(!isOpen)}
         className="px-4 py-2 bg-black/20 backdrop-blur-md border-2 rounded-lg transition-all duration-300 flex items-center gap-2"
         style={{
-          borderColor: isOpen ? `${character.colors.primary}80` : "rgba(255,255,255,0.2)",
+          borderColor: isOpen ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.8) : "rgba(255,255,255,0.2)",
           boxShadow: isOpen ? `0 0 20px ${character.colors.glow}40` : "none",
         }}
       >
@@ -73,7 +75,7 @@ export function RecentlyPlayed() {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          style={{ color: character.colors.primary }}
+          style={{ color: textColor }}
         >
           <path
             strokeLinecap="round"
@@ -84,7 +86,7 @@ export function RecentlyPlayed() {
         </svg>
         <span
           className="text-sm font-mono font-bold"
-          style={{ color: character.colors.primary }}
+          style={{ color: textColor }}
         >
           RECENT
         </span>
@@ -94,17 +96,17 @@ export function RecentlyPlayed() {
         <div
           className="absolute top-full left-0 mt-2 w-96 bg-black/60 backdrop-blur-2xl border-2 rounded-lg shadow-2xl z-50 max-h-[600px] flex flex-col overflow-hidden"
           style={{
-            borderColor: `${character.colors.primary}60`,
+            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
             boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${character.colors.glow}30`,
           }}
         >
           <div
             className="px-4 py-3 border-b"
-            style={{ borderColor: `${character.colors.primary}30` }}
+            style={{ borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3) }}
           >
             <div
               className="font-bold text-sm"
-              style={{ color: character.colors.primary }}
+              style={{ color: textColor }}
             >
               RECENTLY PLAYED
             </div>
@@ -133,12 +135,12 @@ export function RecentlyPlayed() {
                       style={{
                         border: `1px solid transparent`,
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = `${character.colors.primary}40`
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "transparent"
-                      }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4)
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "transparent"
+                  }}
                     >
                       <div className="flex items-center gap-3">
                         {track.image && (
@@ -170,13 +172,13 @@ export function RecentlyPlayed() {
                       onClick={() => handleAddToQueue(track)}
                       className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200 opacity-0 group-hover:opacity-100"
                       style={{
-                        borderColor: `${character.colors.primary}40`,
+                        borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
                       }}
                       aria-label="Add to queue"
                     >
                       <svg
                         className="w-4 h-4"
-                        style={{ color: character.colors.primary }}
+                        style={{ color: textColor }}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

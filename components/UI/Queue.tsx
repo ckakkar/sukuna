@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { getQueue, playTrack, type SearchTrack } from "@/lib/spotify-actions"
 import { CHARACTERS } from "@/lib/types/character"
+import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 
 export function Queue() {
   const { accessToken, deviceId, selectedCharacter, currentTrack } = useSpotifyStore()
@@ -12,6 +13,7 @@ export function Queue() {
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const character = CHARACTERS[selectedCharacter]
+  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   useEffect(() => {
     if (accessToken && isOpen) {
@@ -62,7 +64,7 @@ export function Queue() {
         onClick={() => setIsOpen(!isOpen)}
         className="px-4 py-2 bg-black/20 backdrop-blur-md border-2 rounded-lg transition-all duration-300 flex items-center gap-2"
         style={{
-          borderColor: isOpen ? `${character.colors.primary}80` : "rgba(255,255,255,0.2)",
+          borderColor: isOpen ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.8) : "rgba(255,255,255,0.2)",
           boxShadow: isOpen ? `0 0 20px ${character.colors.glow}40` : "none",
         }}
       >
@@ -71,7 +73,7 @@ export function Queue() {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
-          style={{ color: character.colors.primary }}
+          style={{ color: textColor }}
         >
           <path
             strokeLinecap="round"
@@ -82,7 +84,7 @@ export function Queue() {
         </svg>
         <span
           className="text-sm font-mono font-bold"
-          style={{ color: character.colors.primary }}
+          style={{ color: textColor }}
         >
           QUEUE
         </span>
@@ -90,7 +92,7 @@ export function Queue() {
           <span
             className="text-xs px-1.5 py-0.5 rounded-full"
             style={{
-              backgroundColor: character.colors.primary,
+              backgroundColor: character.colors.glow || character.colors.primary,
               color: "white",
             }}
           >
@@ -103,17 +105,17 @@ export function Queue() {
         <div
           className="absolute top-full left-0 mt-2 w-96 bg-black/60 backdrop-blur-2xl border-2 rounded-lg shadow-2xl z-50 max-h-[600px] flex flex-col overflow-hidden"
           style={{
-            borderColor: `${character.colors.primary}60`,
+            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
             boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${character.colors.glow}30`,
           }}
         >
           <div
             className="px-4 py-3 border-b"
-            style={{ borderColor: `${character.colors.primary}30` }}
+            style={{ borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3) }}
           >
             <div
               className="font-bold text-sm"
-              style={{ color: character.colors.primary }}
+              style={{ color: textColor }}
             >
               QUEUE
             </div>
@@ -144,7 +146,7 @@ export function Queue() {
                     border: `1px solid transparent`,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = `${character.colors.primary}40`
+                    e.currentTarget.style.borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4)
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "transparent"
@@ -153,7 +155,7 @@ export function Queue() {
                   <div className="flex items-center gap-3">
                     <div
                       className="text-xs font-mono w-6 text-center opacity-50"
-                      style={{ color: character.colors.primary }}
+                      style={{ color: textColor }}
                     >
                       {index + 1}
                     </div>

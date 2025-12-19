@@ -4,6 +4,7 @@ import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { useEffect, useState } from "react"
 import { setVolume, seekToPosition, setRepeatMode, setShuffleMode } from "@/lib/spotify-actions"
 import { CHARACTERS } from "@/lib/types/character"
+import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 
 export function PlaybackControls() {
   const { accessToken, isPaused, deviceId, playerInstance, playbackPosition, playbackDuration, selectedCharacter, repeatMode, shuffleMode, setRepeatMode: setStoreRepeatMode, setShuffleMode: setStoreShuffleMode } = useSpotifyStore()
@@ -163,8 +164,8 @@ export function PlaybackControls() {
             : "bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10"
         }`}
         style={{
-          borderColor: shuffleMode ? character.colors.primary : undefined,
-          color: shuffleMode ? character.colors.primary : undefined,
+          borderColor: shuffleMode ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.8) : undefined,
+          color: shuffleMode ? getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary) : undefined,
         }}
         aria-label="Shuffle"
       >
@@ -243,8 +244,8 @@ export function PlaybackControls() {
             : "bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10"
         }`}
         style={{
-          borderColor: repeatMode !== "off" ? character.colors.primary : undefined,
-          color: repeatMode !== "off" ? character.colors.primary : "rgb(156, 163, 175)",
+          borderColor: repeatMode !== "off" ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.8) : undefined,
+          color: repeatMode !== "off" ? getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary) : "rgb(156, 163, 175)",
         }}
         aria-label="Repeat"
       >
@@ -258,7 +259,7 @@ export function PlaybackControls() {
         {repeatMode === "track" && (
           <span 
             className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full" 
-            style={{ backgroundColor: character.colors.primary }}
+            style={{ backgroundColor: character.colors.glow || character.colors.primary }}
           />
         )}
       </button>

@@ -2,12 +2,14 @@
 
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS, type CharacterType } from "@/lib/types/character"
+import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { useState } from "react"
 
 export function CharacterSelector() {
   const [isOpen, setIsOpen] = useState(false)
   const { selectedCharacter, setSelectedCharacter } = useSpotifyStore()
   const currentChar = CHARACTERS[selectedCharacter]
+  const textColor = getVisibleTextColor(currentChar.colors.primary, currentChar.colors.glow, currentChar.colors.secondary)
 
   const handleCharacterChange = (charId: CharacterType) => {
     setSelectedCharacter(charId)
@@ -21,7 +23,7 @@ export function CharacterSelector() {
         onClick={() => setIsOpen(!isOpen)}
         className="group relative px-3 py-1.5 bg-black/20 backdrop-blur-md border-2 rounded-lg transition-all duration-300 flex items-center gap-2"
         style={{
-          borderColor: isOpen ? `${currentChar.colors.primary}80` : "rgba(255,255,255,0.2)",
+          borderColor: isOpen ? getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.8) : "rgba(255,255,255,0.2)",
           boxShadow: isOpen ? `0 0 20px ${currentChar.colors.glow}40` : "none",
         }}
       >
@@ -29,7 +31,7 @@ export function CharacterSelector() {
           <div className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Sorcerer</div>
           <div
             className="text-xs font-bold font-mono tracking-wider truncate max-w-[120px]"
-            style={{ color: currentChar.colors.primary }}
+            style={{ color: textColor }}
           >
             {currentChar.japaneseName}
           </div>
@@ -47,35 +49,38 @@ export function CharacterSelector() {
             boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${currentChar.colors.glow}30`,
           }}
         >
-          {Object.values(CHARACTERS).map((char) => (
-            <button
-              key={char.id}
-              onClick={() => handleCharacterChange(char.id)}
-              className="w-full px-4 py-3 flex flex-col items-start gap-1 hover:bg-white/5 transition-colors border-b border-gray-900 last:border-b-0"
-              style={{
-                backgroundColor:
-                  selectedCharacter === char.id ? `${char.colors.primary}15` : undefined,
-              }}
-            >
-              <div className="flex items-center justify-between w-full">
-                <div
-                  className="text-sm font-bold font-mono tracking-wider"
-                  style={{ color: char.colors.primary }}
-                >
-                  {char.japaneseName}
-                </div>
-                {selectedCharacter === char.id && (
-                  <div className="text-xs" style={{ color: char.colors.primary }}>
-                    ✓
+          {Object.values(CHARACTERS).map((char) => {
+            const charTextColor = getVisibleTextColor(char.colors.primary, char.colors.glow, char.colors.secondary)
+            return (
+              <button
+                key={char.id}
+                onClick={() => handleCharacterChange(char.id)}
+                className="w-full px-4 py-3 flex flex-col items-start gap-1 hover:bg-white/5 transition-colors border-b border-gray-900 last:border-b-0"
+                style={{
+                  backgroundColor:
+                    selectedCharacter === char.id ? `${char.colors.glow || char.colors.primary}15` : undefined,
+                }}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div
+                    className="text-sm font-bold font-mono tracking-wider"
+                    style={{ color: charTextColor }}
+                  >
+                    {char.japaneseName}
                   </div>
-                )}
-              </div>
+                  {selectedCharacter === char.id && (
+                    <div className="text-xs" style={{ color: charTextColor }}>
+                      ✓
+                    </div>
+                  )}
+                </div>
               <div className="text-xs text-gray-400 font-mono">{char.name}</div>
               <div className="text-[10px] text-gray-600 font-mono mt-1">
                 {char.domainJapanese}
               </div>
             </button>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

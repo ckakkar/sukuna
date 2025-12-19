@@ -2,12 +2,14 @@
 
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
+import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { MusicPlayerPanel } from "./MusicPlayerPanel"
 import { CharacterSelector } from "./CharacterSelector"
 
 export function Overlay() {
   const { selectedCharacter } = useSpotifyStore()
   const character = CHARACTERS[selectedCharacter]
+  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10">
@@ -16,7 +18,7 @@ export function Overlay() {
         <div
           className="font-bold tracking-wider text-sm animate-glow"
           style={{
-            color: character.colors.primary,
+            color: textColor,
             textShadow: `0 0 15px ${character.colors.glow}, 0 0 30px ${character.colors.glow}40`,
           }}
         >
@@ -25,7 +27,7 @@ export function Overlay() {
         <div 
           className="text-[11px] tracking-widest font-semibold"
           style={{ 
-            color: character.colors.secondary,
+            color: character.colors.secondary || character.colors.glow || textColor,
             textShadow: `0 0 8px ${character.colors.glow}50`,
           }}
         >
@@ -33,13 +35,13 @@ export function Overlay() {
         </div>
         <div 
           className="text-[10px] mt-1 opacity-90"
-          style={{ color: character.colors.accent }}
+          style={{ color: character.colors.accent || character.colors.glow || textColor }}
         >
           {character.domainJapanese}
         </div>
         <div 
           className="text-[9px] italic opacity-80"
-          style={{ color: character.colors.secondary }}
+          style={{ color: character.colors.secondary || character.colors.glow || textColor }}
         >
           {character.domain}
         </div>
@@ -56,7 +58,7 @@ export function Overlay() {
           <div
             className="text-lg font-black mb-0.5 tracking-widest"
             style={{ 
-              color: character.colors.primary,
+              color: textColor,
               textShadow: `0 0 15px ${character.colors.glow}, 0 0 30px ${character.colors.glow}40`,
             }}
           >
@@ -65,7 +67,7 @@ export function Overlay() {
           <div 
             className="text-sm font-bold mb-1"
             style={{ 
-              color: character.colors.secondary,
+              color: character.colors.secondary || character.colors.glow || textColor,
               textShadow: `0 0 8px ${character.colors.glow}50`,
             }}
           >
@@ -74,8 +76,8 @@ export function Overlay() {
           <div 
             className="text-[10px] border-t pt-1 mt-1 opacity-70"
             style={{ 
-              color: character.colors.accent,
-              borderColor: `${character.colors.primary}40`,
+              color: character.colors.accent || character.colors.glow || textColor,
+              borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
             }}
           >
             呪術廻戦
@@ -94,6 +96,7 @@ export function Overlay() {
 
 function HighEnergyIndicator({ character }: { character: typeof CHARACTERS[keyof typeof CHARACTERS] }) {
   const { currentTrack, trackData, isLoadingAnalysis } = useSpotifyStore()
+  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   if (!currentTrack || !trackData || trackData.energy <= 0.7 || isLoadingAnalysis) {
     return null
@@ -104,7 +107,7 @@ function HighEnergyIndicator({ character }: { character: typeof CHARACTERS[keyof
       <div
         className="text-4xl font-black animate-glow tracking-widest"
         style={{
-          color: character.colors.primary,
+          color: textColor,
           textShadow: `0 0 20px ${character.colors.glow}, 0 0 40px ${character.colors.glow}`,
         }}
       >

@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
+import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { PlaybackControls } from "./PlaybackControls"
 import { Search } from "./Search"
 import { Playlists } from "./Playlists"
@@ -23,6 +24,8 @@ export function MusicPlayerPanel() {
   const [isExpanded, setIsExpanded] = useState(true)
   
   const character = CHARACTERS[selectedCharacter]
+  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
+  const borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6)
 
   const handleSignOut = async () => {
     await signOutAction()
@@ -35,7 +38,7 @@ export function MusicPlayerPanel() {
       <div
         className="bg-black/40 backdrop-blur-2xl border-2 rounded-2xl shadow-2xl transition-all duration-300 overflow-hidden"
         style={{
-          borderColor: `${character.colors.primary}60`,
+          borderColor: borderColor,
           boxShadow: `0 20px 60px rgba(0,0,0,0.3), 0 0 40px ${character.colors.glow}40, inset 0 0 20px ${character.colors.primary}10`,
           width: isExpanded ? "480px" : "auto",
         }}
@@ -44,7 +47,7 @@ export function MusicPlayerPanel() {
         <div
           className="px-5 py-3 border-b flex items-center justify-between"
           style={{ 
-            borderColor: `${character.colors.primary}30`,
+            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3),
             background: `linear-gradient(90deg, ${character.colors.primary}05 0%, transparent 100%)`,
           }}
         >
@@ -52,7 +55,7 @@ export function MusicPlayerPanel() {
             <div
               className="w-2 h-2 rounded-full animate-pulse"
               style={{
-                backgroundColor: character.colors.primary,
+                backgroundColor: character.colors.glow || character.colors.primary,
                 boxShadow: `0 0 10px ${character.colors.glow}`,
               }}
             />
@@ -60,7 +63,7 @@ export function MusicPlayerPanel() {
               <div 
                 className="font-bold tracking-wider"
                 style={{ 
-                  color: character.colors.primary,
+                  color: textColor,
                   textShadow: `0 0 8px ${character.colors.glow}60`,
                 }}
               >
@@ -68,7 +71,7 @@ export function MusicPlayerPanel() {
               </div>
               <div 
                 className="text-[10px] opacity-80"
-                style={{ color: character.colors.secondary }}
+                style={{ color: character.colors.secondary || character.colors.glow }}
               >
                 {character.domain}
               </div>
@@ -110,7 +113,7 @@ export function MusicPlayerPanel() {
             <div 
               className="px-5 py-4 border-b space-y-3" 
               style={{ 
-                borderColor: `${character.colors.primary}30`,
+                borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3),
                 background: `linear-gradient(90deg, ${character.colors.primary}03 0%, transparent 100%)`,
               }}
             >
@@ -160,18 +163,18 @@ export function MusicPlayerPanel() {
                     {trackData && !isLoadingAnalysis && (
                       <div
                         className="flex gap-6 pt-4 border-t"
-                        style={{ borderColor: `${character.colors.primary}30` }}
+                        style={{ borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3) }}
                       >
                         <div className="flex flex-col gap-0.5">
                           <span
                             className="text-[9px] font-mono uppercase tracking-wider opacity-70"
-                            style={{ color: character.colors.primary }}
+                            style={{ color: textColor }}
                           >
                             BPM
                           </span>
                           <span
                             className="text-base font-bold font-mono"
-                            style={{ color: character.colors.primary }}
+                            style={{ color: textColor }}
                           >
                             {Math.round(trackData.bpm)}
                           </span>
@@ -179,13 +182,13 @@ export function MusicPlayerPanel() {
                         <div className="flex flex-col gap-0.5">
                           <span
                             className="text-[9px] font-mono uppercase tracking-wider opacity-70"
-                            style={{ color: character.colors.primary }}
+                            style={{ color: textColor }}
                           >
                             ENERGY
                           </span>
                           <span
                             className="text-base font-bold font-mono"
-                            style={{ color: character.colors.primary }}
+                            style={{ color: textColor }}
                           >
                             {(trackData.energy * 100).toFixed(0)}%
                           </span>
@@ -193,13 +196,13 @@ export function MusicPlayerPanel() {
                         <div className="flex flex-col gap-0.5">
                           <span
                             className="text-[9px] font-mono uppercase tracking-wider opacity-70"
-                            style={{ color: character.colors.primary }}
+                            style={{ color: textColor }}
                           >
                             VALENCE
                           </span>
                           <span
                             className="text-base font-bold font-mono"
-                            style={{ color: character.colors.primary }}
+                            style={{ color: textColor }}
                           >
                             {(trackData.valence * 100).toFixed(0)}%
                           </span>
@@ -218,7 +221,7 @@ export function MusicPlayerPanel() {
                         />
                         <span
                           className="text-xs font-mono"
-                          style={{ color: character.colors.primary }}
+                          style={{ color: textColor }}
                         >
                           ANALYZING...
                         </span>
@@ -257,7 +260,7 @@ export function MusicPlayerPanel() {
             <div
               className="px-5 py-4 border-t flex justify-center"
               style={{ 
-                borderColor: `${character.colors.primary}30`,
+                borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3),
                 background: `linear-gradient(90deg, transparent 0%, ${character.colors.primary}05 50%, transparent 100%)`,
               }}
             >
@@ -267,7 +270,7 @@ export function MusicPlayerPanel() {
             {/* Footer Actions */}
             <div
               className="px-5 py-3 border-t flex justify-end"
-              style={{ borderColor: `${character.colors.primary}30` }}
+              style={{ borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3) }}
             >
               <button
                 onClick={handleSignOut}

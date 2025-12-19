@@ -19,26 +19,28 @@ export function CharacterSelector() {
       {/* Current Character Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group relative px-4 py-2 bg-black/50 backdrop-blur-sm border border-gray-800 hover:border-jujutsu-energy rounded-lg transition-all duration-300 flex items-center gap-3"
-        style={{ borderColor: isOpen ? currentChar.colors.primary : undefined }}
+        className="group relative px-3 py-1.5 bg-black/30 backdrop-blur-sm border rounded-lg transition-all duration-300 flex items-center gap-2"
+        style={{
+          borderColor: isOpen ? currentChar.colors.primary : "rgba(255,255,255,0.1)",
+        }}
       >
-        <div className="flex flex-col items-start">
-          <div className="text-xs text-gray-500 font-mono">SORCERER</div>
+        <div className="flex flex-col items-start min-w-0">
+          <div className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Sorcerer</div>
           <div
-            className="text-sm font-bold font-mono tracking-wider"
+            className="text-xs font-bold font-mono tracking-wider truncate max-w-[120px]"
             style={{ color: currentChar.colors.primary }}
           >
             {currentChar.japaneseName}
           </div>
         </div>
-        <div className="text-gray-600 text-xs">
+        <div className="text-gray-600 text-[10px] flex-shrink-0">
           {isOpen ? "▲" : "▼"}
         </div>
       </button>
 
       {/* Character Selection Menu */}
       {isOpen && (
-        <div className="absolute top-full mt-2 left-0 bg-black/90 backdrop-blur-md border border-gray-800 rounded-lg overflow-hidden min-w-[280px] z-50">
+        <div className="absolute top-full mt-2 left-0 bg-black/95 backdrop-blur-md border border-gray-800 rounded-lg overflow-hidden min-w-[280px] z-50 shadow-xl">
           {Object.values(CHARACTERS).map((char) => (
             <button
               key={char.id}

@@ -62,14 +62,14 @@ export function PlaybackControls() {
   if (!canControl) return null
 
   return (
-    <div className="flex items-center gap-4 pointer-events-auto relative">
+    <div className="flex items-center gap-3 pointer-events-auto relative">
       <button
         onClick={handlePrevious}
-        className="p-2 rounded-full bg-black/50 border border-gray-800 hover:border-jujutsu-energy hover:bg-jujutsu-energy/10 transition-all duration-200"
+        className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200"
         aria-label="Previous track"
       >
         <svg
-          className="w-5 h-5 text-gray-400 hover:text-jujutsu-energy transition-colors"
+          className="w-4 h-4 text-gray-400 hover:text-white transition-colors"
           fill="currentColor"
           viewBox="0 0 24 24"
         >
@@ -79,12 +79,18 @@ export function PlaybackControls() {
 
       <button
         onClick={handlePlayPause}
-        className="p-3 rounded-full bg-jujutsu-energy hover:bg-jujutsu-domain transition-all duration-200 shadow-lg shadow-jujutsu-energy/30"
+        className="p-3 rounded-xl transition-all duration-200 shadow-lg"
+        style={{
+          background: isPaused
+            ? `linear-gradient(135deg, #9333ea 0%, #7c3aed 100%)`
+            : `linear-gradient(135deg, #7c3aed 0%, #9333ea 100%)`,
+          boxShadow: "0 4px 20px rgba(147, 51, 234, 0.4)",
+        }}
         aria-label={isPaused ? "Play" : "Pause"}
       >
         {isPaused ? (
           <svg
-            className="w-6 h-6 text-white"
+            className="w-5 h-5 text-white"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
@@ -92,7 +98,7 @@ export function PlaybackControls() {
           </svg>
         ) : (
           <svg
-            className="w-6 h-6 text-white"
+            className="w-5 h-5 text-white"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
@@ -103,11 +109,11 @@ export function PlaybackControls() {
 
       <button
         onClick={handleNext}
-        className="p-2 rounded-full bg-black/50 border border-gray-800 hover:border-jujutsu-energy hover:bg-jujutsu-energy/10 transition-all duration-200"
+        className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200"
         aria-label="Next track"
       >
         <svg
-          className="w-5 h-5 text-gray-400 hover:text-jujutsu-energy transition-colors"
+          className="w-4 h-4 text-gray-400 hover:text-white transition-colors"
           fill="currentColor"
           viewBox="0 0 24 24"
         >
@@ -115,14 +121,14 @@ export function PlaybackControls() {
         </svg>
       </button>
 
-      <div className="relative">
+      <div className="relative ml-2">
         <button
           onClick={() => setShowVolumeControl(!showVolumeControl)}
-          className="p-2 rounded-full bg-black/50 border border-gray-800 hover:border-jujutsu-energy hover:bg-jujutsu-energy/10 transition-all duration-200"
+          className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200"
           aria-label="Volume control"
         >
           <svg
-            className="w-5 h-5 text-gray-400 hover:text-jujutsu-energy transition-colors"
+            className="w-4 h-4 text-gray-400 hover:text-white transition-colors"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
@@ -136,10 +142,10 @@ export function PlaybackControls() {
           </svg>
         </button>
         {showVolumeControl && (
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-black/90 backdrop-blur-sm border border-gray-800 rounded-lg p-4 shadow-xl">
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-black/95 backdrop-blur-sm border border-gray-800 rounded-lg p-3 shadow-xl z-50">
             <div className="flex items-center gap-3">
               <svg
-                className="w-4 h-4 text-gray-400"
+                className="w-3 h-3 text-gray-400"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -151,9 +157,9 @@ export function PlaybackControls() {
                 max="100"
                 value={volume}
                 onChange={(e) => handleVolumeChange(Number(e.target.value))}
-                className="w-32 accent-jujutsu-energy"
+                className="w-24 accent-jujutsu-energy"
               />
-              <span className="text-xs text-gray-400 w-8">{volume}%</span>
+              <span className="text-xs text-gray-400 w-6 font-mono">{volume}</span>
             </div>
           </div>
         )}

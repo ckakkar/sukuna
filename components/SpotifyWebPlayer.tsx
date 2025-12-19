@@ -37,6 +37,8 @@ interface SpotifyPlayer {
 interface SpotifyState {
   paused: boolean
   position?: number
+  repeat_mode?: 0 | 1 | 2 // 0 = off, 1 = context, 2 = track
+  shuffle?: boolean
   track_window: {
     current_track: {
       id: string
@@ -60,6 +62,8 @@ export function SpotifyWebPlayer() {
     setDeviceId,
     setPlaybackState,
     setPlaybackPosition,
+    setRepeatMode,
+    setShuffleMode,
     setTrackData,
     setIsLoadingAnalysis,
     setIsDomainExpanding,
@@ -141,6 +145,15 @@ export function SpotifyWebPlayer() {
             setPlaybackPosition(state.position, track.duration_ms)
           }
 
+          // Update repeat and shuffle modes
+          if (state.repeat_mode !== undefined) {
+            const repeatModes: Array<"off" | "context" | "track"> = ["off", "context", "track"]
+            setRepeatMode(repeatModes[state.repeat_mode] || "off")
+          }
+          if (state.shuffle !== undefined) {
+            setShuffleMode(state.shuffle)
+          }
+
           if (track.id !== lastTrackIdRef.current) {
             if (lastTrackIdRef.current) {
               // Treat any subsequent track change as a "skip" event
@@ -176,10 +189,20 @@ export function SpotifyWebPlayer() {
           if (playerRef.current && !initializingRef.current) {
             try {
               const state = await playerRef.current.getCurrentState()
-              if (state && !state.paused && state.position !== undefined) {
-                const track = state.track_window.current_track
-                if (track) {
-                  setPlaybackPosition(state.position, track.duration_ms)
+              if (state) {
+                if (!state.paused && state.position !== undefined) {
+                  const track = state.track_window.current_track
+                  if (track) {
+                    setPlaybackPosition(state.position, track.duration_ms)
+                  }
+                }
+                // Update repeat and shuffle modes
+                if (state.repeat_mode !== undefined) {
+                  const repeatModes: Array<"off" | "context" | "track"> = ["off", "context", "track"]
+                  setRepeatMode(repeatModes[state.repeat_mode] || "off")
+                }
+                if (state.shuffle !== undefined) {
+                  setShuffleMode(state.shuffle)
                 }
               }
             } catch (error) {
@@ -273,6 +296,8 @@ export function SpotifyWebPlayer() {
     notifyTrackSkipped,
     setPlayerInstance,
     setPlaybackPosition,
+    setRepeatMode,
+    setShuffleMode,
   ])
 
   return null

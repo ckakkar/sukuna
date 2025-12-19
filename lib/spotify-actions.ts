@@ -377,3 +377,176 @@ export async function seekToPosition(
   }
 }
 
+export async function setRepeatMode(
+  state: "off" | "track" | "context",
+  deviceId: string,
+  accessToken: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/player/repeat?state=${state}&device_id=${deviceId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    return response.ok
+  } catch (error) {
+    console.error("Error setting repeat mode:", error)
+    return false
+  }
+}
+
+export async function setShuffleMode(
+  state: boolean,
+  deviceId: string,
+  accessToken: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/player/shuffle?state=${state}&device_id=${deviceId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    return response.ok
+  } catch (error) {
+    console.error("Error setting shuffle mode:", error)
+    return false
+  }
+}
+
+export async function getQueue(accessToken: string): Promise<{
+  currently_playing: SearchTrack | null
+  queue: SearchTrack[]
+} | null> {
+  try {
+    const response = await fetch("https://api.spotify.com/v1/me/player/queue", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+
+    if (!response.ok) {
+      // Queue endpoint might not be available, return empty queue
+      return { currently_playing: null, queue: [] }
+    }
+
+    const data = await response.json()
+    
+    const transformTrack = (track: any): SearchTrack => ({
+      id: track.id,
+      name: track.name,
+      artist: track.artists?.map((a: any) => a.name).join(", ") || "Unknown Artist",
+      album: track.album?.name || "Unknown Album",
+      image: track.album?.images?.[0]?.url,
+      duration: track.duration_ms || 0,
+      uri: track.uri,
+    })
+
+    return {
+      currently_playing: data.currently_playing ? transformTrack(data.currently_playing) : null,
+      queue: (data.queue || []).map(transformTrack),
+    }
+  } catch (error) {
+    console.error("Error fetching queue:", error)
+    return { currently_playing: null, queue: [] }
+  }
+}
+
+export async function addToQueue(
+  trackUri: string,
+  deviceId: string,
+  accessToken: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(trackUri)}&device_id=${deviceId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    return response.ok
+  } catch (error) {
+    console.error("Error adding to queue:", error)
+    return false
+  }
+}
+
+export async function getRecentlyPlayed(
+  accessToken: string,
+  limit: number = 20
+): Promise<SearchTrack[]> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      return []
+    }
+
+    const data = await response.json()
+    return data.items.map((item: any) => {
+      const track = item.track
+      return {
+        id: track.id,
+        name: track.name,
+        artist: track.artists.map((a: any) => a.name).join(", "),
+        album: track.album.name,
+        image: track.album.images[0]?.url,
+        duration: track.duration_ms,
+        uri: track.uri,
+      }
+    })
+  } catch (error) {
+    console.error("Error fetching recently played:", error)
+    return []
+  }
+}
+
+export async function playPlaylist(
+  playlistUri: string,
+  deviceId: string,
+  accessToken: string,
+  offset?: number
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          context_uri: playlistUri,
+          offset: offset ? { position: offset } : undefined,
+        }),
+      }
+    )
+
+    return response.ok
+  } catch (error) {
+    console.error("Error playing playlist:", error)
+    return false
+  }
+}
+

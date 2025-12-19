@@ -2,11 +2,11 @@
 
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { useEffect, useState } from "react"
-import { setVolume, seekToPosition } from "@/lib/spotify-actions"
+import { setVolume, seekToPosition, setRepeatMode, setShuffleMode } from "@/lib/spotify-actions"
 import { CHARACTERS } from "@/lib/types/character"
 
 export function PlaybackControls() {
-  const { accessToken, isPaused, deviceId, playerInstance, playbackPosition, playbackDuration, selectedCharacter } = useSpotifyStore()
+  const { accessToken, isPaused, deviceId, playerInstance, playbackPosition, playbackDuration, selectedCharacter, repeatMode, shuffleMode, setRepeatMode: setStoreRepeatMode, setShuffleMode: setStoreShuffleMode } = useSpotifyStore()
   const [canControl, setCanControl] = useState(false)
   const [volume, setVolumeState] = useState(50)
   const [showVolumeControl, setShowVolumeControl] = useState(false)
@@ -92,6 +92,33 @@ export function PlaybackControls() {
     }
   }
 
+  const handleRepeatToggle = async () => {
+    if (!accessToken || !deviceId) return
+    
+    const modes: Array<"off" | "track" | "context"> = ["off", "context", "track"]
+    const currentIndex = modes.indexOf(repeatMode)
+    const nextMode = modes[(currentIndex + 1) % modes.length]
+    
+    try {
+      await setRepeatMode(nextMode, deviceId, accessToken)
+      setStoreRepeatMode(nextMode)
+    } catch (error) {
+      console.error("Error setting repeat mode:", error)
+    }
+  }
+
+  const handleShuffleToggle = async () => {
+    if (!accessToken || !deviceId) return
+    
+    const newShuffle = !shuffleMode
+    try {
+      await setShuffleMode(newShuffle, deviceId, accessToken)
+      setStoreShuffleMode(newShuffle)
+    } catch (error) {
+      console.error("Error setting shuffle mode:", error)
+    }
+  }
+
   if (!canControl) return null
 
   const progress = playbackDuration > 0 ? (seekPosition / playbackDuration) * 100 : 0
@@ -127,7 +154,29 @@ export function PlaybackControls() {
       )}
 
       {/* Controls */}
-      <div className="flex items-center justify-center gap-3 relative">
+      <div className="flex items-center justify-center gap-2 relative">
+      <button
+        onClick={handleShuffleToggle}
+        className={`p-2 rounded-lg transition-all duration-200 ${
+          shuffleMode
+            ? "bg-black/40 border-2"
+            : "bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10"
+        }`}
+        style={{
+          borderColor: shuffleMode ? character.colors.primary : undefined,
+          color: shuffleMode ? character.colors.primary : undefined,
+        }}
+        aria-label="Shuffle"
+      >
+        <svg
+          className="w-4 h-4 transition-colors"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
+        </svg>
+      </button>
+
       <button
         onClick={handlePrevious}
         className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200"
@@ -184,6 +233,34 @@ export function PlaybackControls() {
         >
           <path d="M16 18h2V6h-2zm-11-7l8.5-6v12z" />
         </svg>
+      </button>
+
+      <button
+        onClick={handleRepeatToggle}
+        className={`p-2 rounded-lg transition-all duration-200 relative ${
+          repeatMode !== "off"
+            ? "bg-black/40 border-2"
+            : "bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10"
+        }`}
+        style={{
+          borderColor: repeatMode !== "off" ? character.colors.primary : undefined,
+          color: repeatMode !== "off" ? character.colors.primary : "rgb(156, 163, 175)",
+        }}
+        aria-label="Repeat"
+      >
+        <svg
+          className="w-4 h-4 transition-colors"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
+        </svg>
+        {repeatMode === "track" && (
+          <span 
+            className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full" 
+            style={{ backgroundColor: character.colors.primary }}
+          />
+        )}
       </button>
 
       <div className="relative ml-2">

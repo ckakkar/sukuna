@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
-import { getUserPlaylists, getPlaylistTracks, playTrack, type Playlist, type SearchTrack } from "@/lib/spotify-actions"
+import { getUserPlaylists, getPlaylistTracks, playTrack, playPlaylist, type Playlist, type SearchTrack } from "@/lib/spotify-actions"
 import { CHARACTERS } from "@/lib/types/character"
 
 export function Playlists() {
@@ -39,7 +39,7 @@ export function Playlists() {
     if (!accessToken) return
     setIsLoading(true)
     try {
-      const data = await getPlaylistTracks(playlist.id, accessToken)
+      const data = await getPlaylistTracks(playlist.id, accessToken, 100)
       setTracks(data)
       setSelectedPlaylist(playlist)
     } catch (error) {
@@ -55,6 +55,16 @@ export function Playlists() {
       await playTrack(track.uri, deviceId, accessToken)
     } catch (error) {
       console.error("Error playing track:", error)
+    }
+  }
+
+  const handlePlayPlaylist = async (playlist: Playlist) => {
+    if (!accessToken || !deviceId) return
+    try {
+      await playPlaylist(playlist.uri, deviceId, accessToken)
+      setIsOpen(false)
+    } catch (error) {
+      console.error("Error playing playlist:", error)
     }
   }
 
@@ -108,42 +118,49 @@ export function Playlists() {
           {selectedPlaylist ? (
             <>
               <div
-                className="px-4 py-3 border-b flex items-center gap-3"
+                className="px-4 py-3 border-b"
                 style={{ borderColor: `${character.colors.primary}30` }}
               >
-                <button
-                  onClick={() => {
-                    setSelectedPlaylist(null)
-                    setTracks([])
-                  }}
-                  className="p-1 hover:bg-white/5 rounded transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style={{ color: character.colors.primary }}
+                <div className="flex items-center gap-3 mb-2">
+                  <button
+                    onClick={() => {
+                      setSelectedPlaylist(null)
+                      setTracks([])
+                    }}
+                    className="p-1 hover:bg-white/5 rounded transition-colors"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
-                <div className="flex-1 min-w-0">
-                  <div
-                    className="font-bold text-sm truncate"
-                    style={{ color: character.colors.primary }}
-                  >
-                    {selectedPlaylist.name}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {selectedPlaylist.trackCount} tracks
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      style={{ color: character.colors.primary }}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className="font-bold text-sm truncate"
+                      style={{ color: character.colors.primary }}
+                    >
+                      {selectedPlaylist.name}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {selectedPlaylist.trackCount} tracks
+                    </div>
                   </div>
                 </div>
+                {selectedPlaylist.description && (
+                  <div className="text-xs text-gray-500 mt-2 line-clamp-2">
+                    {selectedPlaylist.description}
+                  </div>
+                )}
               </div>
               <div className="overflow-y-auto flex-1 p-2">
                 {isLoading ? (
@@ -233,46 +250,69 @@ export function Playlists() {
                   </div>
                 ) : playlists.length > 0 ? (
                   playlists.map((playlist) => (
-                    <button
+                    <div
                       key={playlist.id}
-                      onClick={() => loadPlaylistTracks(playlist)}
-                      className="w-full p-3 hover:bg-white/5 rounded-lg transition-all duration-200 text-left group mb-1"
-                      style={{
-                        border: `1px solid transparent`,
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = `${character.colors.primary}40`
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "transparent"
-                      }}
+                      className="group mb-1"
                     >
-                      <div className="flex items-center gap-3">
-                        {playlist.image && (
-                          <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
-                            <Image
-                              src={playlist.image}
-                              alt={playlist.name}
-                              fill
-                              className="object-cover"
-                              sizes="48px"
-                              unoptimized
-                            />
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => loadPlaylistTracks(playlist)}
+                          className="flex-1 p-3 hover:bg-white/5 rounded-lg transition-all duration-200 text-left"
+                          style={{
+                            border: `1px solid transparent`,
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = `${character.colors.primary}40`
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "transparent"
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            {playlist.image && (
+                              <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
+                                <Image
+                                  src={playlist.image}
+                                  alt={playlist.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="48px"
+                                  unoptimized
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div
+                                className="font-medium truncate text-sm"
+                                style={{ color: "white" }}
+                              >
+                                {playlist.name}
+                              </div>
+                              <div className="text-gray-400 text-xs">
+                                {playlist.trackCount} tracks
+                              </div>
+                            </div>
                           </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div
-                            className="font-medium truncate text-sm"
-                            style={{ color: "white" }}
+                        </button>
+                        <button
+                          onClick={() => handlePlayPlaylist(playlist)}
+                          className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200 opacity-0 group-hover:opacity-100"
+                          style={{
+                            borderColor: `${character.colors.primary}40`,
+                          }}
+                          aria-label="Play playlist"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            style={{ color: character.colors.primary }}
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            {playlist.name}
-                          </div>
-                          <div className="text-gray-400 text-xs">
-                            {playlist.trackCount} tracks
-                          </div>
-                        </div>
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </button>
                       </div>
-                    </button>
+                    </div>
                   ))
                 ) : (
                   <div className="p-8 text-center text-gray-400 text-sm">

@@ -8,6 +8,8 @@ import { PlaybackControls } from "./PlaybackControls"
 import { Search } from "./Search"
 import { Playlists } from "./Playlists"
 import { Favorites } from "./Favorites"
+import { RecentlyPlayed } from "./RecentlyPlayed"
+import { Queue } from "./Queue"
 import { signOutAction } from "@/app/actions/auth"
 
 export function MusicPlayerPanel() {
@@ -113,9 +115,11 @@ export function MusicPlayerPanel() {
               }}
             >
               <Search />
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Playlists />
                 <Favorites />
+                <RecentlyPlayed />
+                <Queue />
               </div>
             </div>
 

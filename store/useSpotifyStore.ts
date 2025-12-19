@@ -28,6 +28,8 @@ interface SpotifyState {
   currentTrack: CurrentTrack | null
   playbackPosition: number // in milliseconds
   playbackDuration: number // in milliseconds
+  repeatMode: "off" | "track" | "context"
+  shuffleMode: boolean
   // Analysis
   trackData: TrackData | null
   isLoadingAnalysis: boolean
@@ -50,6 +52,8 @@ interface SpotifyState {
   setDeviceId: (deviceId: string | null) => void
   setPlaybackState: (isPaused: boolean, track?: CurrentTrack | null) => void
   setPlaybackPosition: (position: number, duration: number) => void
+  setRepeatMode: (mode: "off" | "track" | "context") => void
+  setShuffleMode: (enabled: boolean) => void
   setTrackData: (data: TrackData | null) => void
   setIsLoadingAnalysis: (loading: boolean) => void
   setSelectedCharacter: (character: CharacterType) => void
@@ -69,6 +73,8 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
   currentTrack: null,
   playbackPosition: 0,
   playbackDuration: 0,
+  repeatMode: "off",
+  shuffleMode: false,
   trackData: null,
   isLoadingAnalysis: false,
   selectedCharacter: "sukuna",
@@ -84,6 +90,8 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
   setDeviceId: (deviceId) => set({ deviceId }),
   setPlaybackState: (isPaused, track) => set({ isPaused, currentTrack: track ?? null }),
   setPlaybackPosition: (position, duration) => set({ playbackPosition: position, playbackDuration: duration }),
+  setRepeatMode: (mode) => set({ repeatMode: mode }),
+  setShuffleMode: (enabled) => set({ shuffleMode: enabled }),
   setTrackData: (data) =>
     set({
       trackData: data,

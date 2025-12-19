@@ -87,7 +87,7 @@ export function MusicPlayerPanel() {
             />
           )}
           
-          <div className="flex items-center gap-4 relative z-10">
+          <div className="flex items-center gap-4 relative z-10 flex-1 min-w-0">
             <div
               className="w-4 h-4 rounded-full flex-shrink-0 relative"
               style={{
@@ -104,58 +104,76 @@ export function MusicPlayerPanel() {
                 }}
               />
             </div>
-            <div className="font-mono">
+            <div className="font-mono min-w-0 flex-1">
               <div 
-                className="font-bold tracking-widest text-base flex items-center gap-2"
+                className="text-lg font-black tracking-widest mb-0.5 truncate"
                 style={{ 
                   color: textColor,
-                  textShadow: `0 0 15px ${character.colors.glow}80, 0 2px 4px rgba(0,0,0,0.5)`,
+                  textShadow: `0 0 ${15 + (beatIntensity ?? 0) * 25}px ${character.colors.glow}80, 0 2px 4px rgba(0,0,0,0.5)`,
                 }}
               >
-                {character.name.toUpperCase()}
-                {beatIntensity && beatIntensity > 0.6 && (
-                  <span className="text-xs opacity-70 animate-pulse">
-                    ⚡
-                  </span>
-                )}
+                {character.japaneseName}
               </div>
               <div 
-                className="text-xs opacity-90 mt-0.5 tracking-wide"
+                className="text-xs font-semibold tracking-wide truncate flex items-center gap-2"
                 style={{ 
-                  color: character.colors.secondary || character.colors.glow,
+                  color: character.colors.secondary || character.colors.glow || textColor,
                   textShadow: `0 0 8px ${character.colors.glow}60`,
                 }}
               >
-                {character.domain}
+                <span>{character.name}</span>
+                {beatIntensity && beatIntensity > 0.6 && (
+                  <span className="text-xs opacity-70 animate-pulse flex-shrink-0">
+                    ⚡
+                  </span>
+                )}
               </div>
             </div>
           </div>
           
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 hover:scale-110 relative z-10 group"
+            className="p-2.5 hover:bg-white/10 rounded-xl transition-all duration-200 hover:scale-110 relative z-10 group flex-shrink-0"
             style={{
               color: textColor,
             }}
             aria-label={isExpanded ? "Collapse" : "Expand"}
           >
-            <svg
-              className="w-5 h-5 transition-transform duration-300 group-hover:drop-shadow-lg"
-              style={{
-                transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                filter: `drop-shadow(0 0 8px ${character.colors.glow}80)`,
-              }}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={2.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+            {isExpanded ? (
+              <svg
+                className="w-5 h-5 transition-all duration-300 group-hover:drop-shadow-lg"
+                style={{
+                  filter: `drop-shadow(0 0 8px ${character.colors.glow}80)`,
+                }}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 15l7-7 7 7"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5 transition-all duration-300 group-hover:drop-shadow-lg"
+                style={{
+                  filter: `drop-shadow(0 0 8px ${character.colors.glow}80)`,
+                }}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            )}
           </button>
         </div>
 

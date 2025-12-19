@@ -40,6 +40,9 @@ interface SpotifyState {
   impactFrameId: number
   skipEventId: number
 
+  // Player instance (for direct control)
+  playerInstance: any | null
+
   // Actions
   setToken: (token: string | null) => void
   setDeviceId: (deviceId: string | null) => void
@@ -53,6 +56,7 @@ interface SpotifyState {
   setCurrentTechnique: (technique: TechniqueType) => void
   triggerImpactFrame: () => void
   notifyTrackSkipped: () => void
+  setPlayerInstance: (instance: any | null) => void
 }
 
 export const useSpotifyStore = create<SpotifyState>((set) => ({
@@ -69,6 +73,7 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
   intensity: 0,
   impactFrameId: 0,
   skipEventId: 0,
+  playerInstance: null,
 
   setToken: (token) => set({ accessToken: token }),
   setDeviceId: (deviceId) => set({ deviceId }),
@@ -100,4 +105,5 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
     set((state) => ({
       skipEventId: state.skipEventId + 1,
     })),
+  setPlayerInstance: (instance) => set({ playerInstance: instance }),
 }))

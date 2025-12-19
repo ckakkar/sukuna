@@ -4,6 +4,7 @@ import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { CharacterSelector } from "./CharacterSelector"
 import { PlaybackControls } from "./PlaybackControls"
+import { Search } from "./Search"
 import { signOutAction } from "@/app/actions/auth"
 
 export function Overlay() {
@@ -45,11 +46,12 @@ export function Overlay() {
         </div>
       </div>
 
-      {/* Top right - Character selector & logout */}
+      {/* Top right - Character selector, search & logout */}
       <div className="absolute top-6 right-6 font-mono text-xs space-y-3">
         {accessToken && (
           <>
             <CharacterSelector />
+            <Search />
             <button
               onClick={handleSignOut}
               className="w-full px-4 py-2 bg-red-900/30 border border-red-800 hover:border-red-600 rounded-lg transition-all duration-200 text-red-400 hover:text-red-300 text-sm pointer-events-auto"

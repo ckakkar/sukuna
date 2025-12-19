@@ -63,6 +63,7 @@ export function SpotifyWebPlayer() {
     setIsDomainExpanding,
     setDomainState,
     notifyTrackSkipped,
+    setPlayerInstance,
   } = useSpotifyStore()
   const lastTrackIdRef = useRef<string | null>(null)
   const initializingRef = useRef(false)
@@ -94,6 +95,7 @@ export function SpotifyWebPlayer() {
         })
 
         playerRef.current = player
+        setPlayerInstance(player)
 
         player.addListener("ready", ({ device_id }: { device_id: string }) => {
           console.log("Spotify player ready with device ID:", device_id)
@@ -215,6 +217,7 @@ export function SpotifyWebPlayer() {
           console.error("Error disconnecting player:", error)
         }
         playerRef.current = null
+        setPlayerInstance(null)
       }
       if (script && script.parentNode) {
         script.parentNode.removeChild(script)
@@ -230,6 +233,7 @@ export function SpotifyWebPlayer() {
     setIsDomainExpanding,
     setDomainState,
     notifyTrackSkipped,
+    setPlayerInstance,
   ])
 
   return null

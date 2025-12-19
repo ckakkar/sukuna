@@ -83,7 +83,7 @@ export function CursedCore() {
     const beat = beatIntensity ?? 0
 
     // Main core animation with beat reaction
-    const scaleTarget = 1 + energy * 1.5 + beat * 0.8
+    const scaleTarget = 1 + energy * 1.2 + beat * 0.65
     const currentScale = meshRef.current.scale.x
     const nextScale = damp(currentScale, scaleTarget, 20, delta)
     meshRef.current.scale.setScalar(nextScale)
@@ -112,7 +112,7 @@ export function CursedCore() {
       const time = state.clock.elapsedTime + i * 0.1
       
       // Spiral outward on beat
-      const radius = 3 + Math.sin(time * 0.5) * 1 + beat * 2
+      const radius = 3 + Math.sin(time * 0.5) * 0.8 + beat * 1.6
       const theta = time * 0.3 + i * 0.1
       const phi = Math.sin(time * 0.2) * Math.PI
       
@@ -124,12 +124,12 @@ export function CursedCore() {
 
     // Ring pulse on beat
     if (ringRef.current) {
-      const ringScale = 1 + energy * 0.5 + beat * 1.5
+      const ringScale = 1 + energy * 0.4 + beat * 1.2
       ringRef.current.scale.setScalar(damp(ringRef.current.scale.x, ringScale, 15, delta))
       ringRef.current.rotation.z += delta * 0.5
       
       const ringMaterial = ringRef.current.material as THREE.MeshStandardMaterial
-      ringMaterial.emissiveIntensity = 0.5 + beat * 2
+      ringMaterial.emissiveIntensity = 0.5 + beat * 1.6
     }
 
     // Cleave technique slash animation
@@ -171,7 +171,7 @@ export function CursedCore() {
       Math.min(colorTarget.g * 1.5, 1),
       Math.min(colorTarget.b * 1.5, 1)
     )
-    material.emissiveIntensity = 0.7 + energy * 0.5 + beat * 1.5
+    material.emissiveIntensity = 0.7 + energy * 0.4 + beat * 1.2
   })
 
   return (

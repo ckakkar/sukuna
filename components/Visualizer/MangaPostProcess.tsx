@@ -180,8 +180,8 @@ export function MangaPostProcess() {
 
     // Dynamic chromatic aberration based on energy and beats
     const baseAberration = 0.001
-    const energyAberration = energy * 0.02
-    const beatAberration = beat * 0.04
+    const energyAberration = energy * 0.016
+    const beatAberration = beat * 0.032
     offsetRef.current.set(
       baseAberration + energyAberration + beatAberration,
       baseAberration + energyAberration + beatAberration

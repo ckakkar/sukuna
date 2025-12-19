@@ -22,16 +22,16 @@ function BeatReactiveLights() {
     const beat = beatIntensity ?? 0
 
     if (light1Ref.current) {
-      light1Ref.current.intensity = 1.2 + beat * 3
-      light1Ref.current.distance = 20 + beat * 10
+      light1Ref.current.intensity = 1.2 + beat * 2.4
+      light1Ref.current.distance = 20 + beat * 8
     }
     
     if (light2Ref.current) {
-      light2Ref.current.intensity = 0.6 + beat * 2
+      light2Ref.current.intensity = 0.6 + beat * 1.6
     }
     
     if (light3Ref.current) {
-      light3Ref.current.intensity = 0.8 + beat * 2.5
+      light3Ref.current.intensity = 0.8 + beat * 2
     }
   })
 
@@ -82,11 +82,11 @@ function CursedEnergyField() {
     meshRef.current.rotation.y = state.clock.elapsedTime * 0.1
     meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.2
     
-    const scale = 8 + (intensity ?? 0) * 2 + (beatIntensity ?? 0) * 1
+    const scale = 8 + (intensity ?? 0) * 1.6 + (beatIntensity ?? 0) * 0.8
     meshRef.current.scale.setScalar(scale)
     
     const material = meshRef.current.material as THREE.MeshBasicMaterial
-    material.opacity = 0.05 + (beatIntensity ?? 0) * 0.1
+    material.opacity = 0.05 + (beatIntensity ?? 0) * 0.08
   })
 
   const selectedCharacter = useSpotifyStore((state) => state.selectedCharacter)

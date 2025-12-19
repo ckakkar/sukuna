@@ -7,7 +7,7 @@ export function Effects() {
   return (
     <EffectComposer enableNormalPass={false}>
       <Bloom
-        intensity={3.0}
+        intensity={2.5}
         luminanceThreshold={0.5}
         luminanceSmoothing={0.9}
         height={300}

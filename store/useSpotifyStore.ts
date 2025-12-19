@@ -26,8 +26,8 @@ interface SpotifyState {
   // Playback
   isPaused: boolean
   currentTrack: CurrentTrack | null
-  playbackPosition: number // in milliseconds
-  playbackDuration: number // in milliseconds
+  playbackPosition: number
+  playbackDuration: number
   repeatMode: "off" | "track" | "context"
   shuffleMode: boolean
   // Analysis
@@ -39,12 +39,15 @@ interface SpotifyState {
   // Domain Expansion
   isDomainExpanding: boolean
   domainState: DomainState
-  intensity: number // 0–1, derived from audio analysis
-  // Transient event counters (used by hooks/postprocessing)
+  intensity: number
+  // Beat detection
+  beatIntensity: number
+  lastBeatTime: number
+  bpm: number
+  // Transient event counters
   impactFrameId: number
   skipEventId: number
-
-  // Player instance (for direct control)
+  // Player instance
   playerInstance: any | null
 
   // Actions
@@ -60,13 +63,15 @@ interface SpotifyState {
   setIsDomainExpanding: (expanding: boolean) => void
   setDomainState: (state: DomainState) => void
   setIntensity: (intensity: number) => void
+  setBeatIntensity: (intensity: number) => void
   setCurrentTechnique: (technique: TechniqueType) => void
   triggerImpactFrame: () => void
   notifyTrackSkipped: () => void
   setPlayerInstance: (instance: any | null) => void
+  registerBeat: () => void
 }
 
-export const useSpotifyStore = create<SpotifyState>((set) => ({
+export const useSpotifyStore = create<SpotifyState>((set, get) => ({
   accessToken: null,
   deviceId: null,
   isPaused: true,
@@ -82,6 +87,9 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
   isDomainExpanding: false,
   domainState: "idle",
   intensity: 0,
+  beatIntensity: 0,
+  lastBeatTime: 0,
+  bpm: 120,
   impactFrameId: 0,
   skipEventId: 0,
   playerInstance: null,
@@ -96,6 +104,7 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
     set({
       trackData: data,
       intensity: data?.energy ?? 0,
+      bpm: data?.bpm ?? 120,
     }),
   setIsLoadingAnalysis: (loading) => set({ isLoadingAnalysis: loading }),
   setSelectedCharacter: (character) =>
@@ -110,6 +119,7 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
     })),
   setDomainState: (domainState) => set({ domainState }),
   setIntensity: (intensity) => set({ intensity }),
+  setBeatIntensity: (intensity) => set({ beatIntensity: intensity }),
   setCurrentTechnique: (currentTechnique) => set({ currentTechnique }),
   triggerImpactFrame: () =>
     set((state) => ({
@@ -120,4 +130,21 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
       skipEventId: state.skipEventId + 1,
     })),
   setPlayerInstance: (instance) => set({ playerInstance: instance }),
+  registerBeat: () => {
+    const now = performance.now()
+    set((state) => {
+      // Calculate time since last beat
+      const timeSinceLastBeat = now - state.lastBeatTime
+      const expectedBeatInterval = (60 / state.bpm) * 1000
+      
+      // Only register if enough time has passed (avoid double-triggering)
+      if (timeSinceLastBeat > expectedBeatInterval * 0.7) {
+        return {
+          lastBeatTime: now,
+          beatIntensity: 1.0, // Will decay in beat detector
+        }
+      }
+      return state
+    })
+  },
 }))

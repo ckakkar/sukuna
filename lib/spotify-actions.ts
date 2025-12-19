@@ -184,3 +184,196 @@ export async function setVolume(
   }
 }
 
+export interface Playlist {
+  id: string
+  name: string
+  description?: string
+  image?: string
+  owner: string
+  trackCount: number
+  uri: string
+}
+
+export async function getUserPlaylists(
+  accessToken: string,
+  limit: number = 50
+): Promise<Playlist[]> {
+  try {
+    const playlists: Playlist[] = []
+    let url = `https://api.spotify.com/v1/me/playlists?limit=${limit}`
+    
+    while (url) {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch playlists")
+        break
+      }
+
+      const data = await response.json()
+      const items: Playlist[] = data.items.map((playlist: any) => ({
+        id: playlist.id,
+        name: playlist.name,
+        description: playlist.description,
+        image: playlist.images[0]?.url,
+        owner: playlist.owner.display_name,
+        trackCount: playlist.tracks.total,
+        uri: playlist.uri,
+      }))
+
+      playlists.push(...items)
+      url = data.next
+    }
+
+    return playlists
+  } catch (error) {
+    console.error("Error fetching playlists:", error)
+    return []
+  }
+}
+
+export async function getPlaylistTracks(
+  playlistId: string,
+  accessToken: string,
+  limit: number = 50
+): Promise<SearchTrack[]> {
+  try {
+    const tracks: SearchTrack[] = []
+    let url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=${limit}`
+    
+    while (url) {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch playlist tracks")
+        break
+      }
+
+      const data = await response.json()
+      const items: SearchTrack[] = data.items
+        .filter((item: any) => item.track && !item.track.is_local)
+        .map((item: any) => {
+          const track = item.track
+          return {
+            id: track.id,
+            name: track.name,
+            artist: track.artists.map((a: any) => a.name).join(", "),
+            album: track.album.name,
+            image: track.album.images[0]?.url,
+            duration: track.duration_ms,
+            uri: track.uri,
+          }
+        })
+
+      tracks.push(...items)
+      url = data.next
+    }
+
+    return tracks
+  } catch (error) {
+    console.error("Error fetching playlist tracks:", error)
+    return []
+  }
+}
+
+export async function getSavedTracks(
+  accessToken: string,
+  limit: number = 50
+): Promise<SearchTrack[]> {
+  try {
+    const tracks: SearchTrack[] = []
+    let url = `https://api.spotify.com/v1/me/tracks?limit=${limit}`
+    
+    while (url) {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      if (!response.ok) {
+        console.error("Failed to fetch saved tracks")
+        break
+      }
+
+      const data = await response.json()
+      const items: SearchTrack[] = data.items.map((item: any) => {
+        const track = item.track
+        return {
+          id: track.id,
+          name: track.name,
+          artist: track.artists.map((a: any) => a.name).join(", "),
+          album: track.album.name,
+          image: track.album.images[0]?.url,
+          duration: track.duration_ms,
+          uri: track.uri,
+        }
+      })
+
+      tracks.push(...items)
+      url = data.next
+    }
+
+    return tracks
+  } catch (error) {
+    console.error("Error fetching saved tracks:", error)
+    return []
+  }
+}
+
+export async function getCurrentPlaybackState(
+  accessToken: string
+): Promise<{ position: number; duration: number } | null> {
+  try {
+    const response = await fetch("https://api.spotify.com/v1/me/player", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+
+    if (!response.ok) {
+      return null
+    }
+
+    const data = await response.json()
+    return {
+      position: data.progress_ms || 0,
+      duration: data.item?.duration_ms || 0,
+    }
+  } catch (error) {
+    console.error("Error fetching playback state:", error)
+    return null
+  }
+}
+
+export async function seekToPosition(
+  positionMs: number,
+  deviceId: string,
+  accessToken: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/player/seek?position_ms=${positionMs}&device_id=${deviceId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    return response.ok
+  } catch (error) {
+    console.error("Error seeking:", error)
+    return false
+  }
+}
+

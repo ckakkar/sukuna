@@ -36,6 +36,7 @@ interface SpotifyPlayer {
 
 interface SpotifyState {
   paused: boolean
+  position?: number
   track_window: {
     current_track: {
       id: string
@@ -58,6 +59,7 @@ export function SpotifyWebPlayer() {
     deviceId,
     setDeviceId,
     setPlaybackState,
+    setPlaybackPosition,
     setTrackData,
     setIsLoadingAnalysis,
     setIsDomainExpanding,
@@ -133,6 +135,11 @@ export function SpotifyWebPlayer() {
           }
 
           setPlaybackState(state.paused, currentTrack)
+          
+          // Update playback position
+          if (state.position !== undefined && track.duration_ms) {
+            setPlaybackPosition(state.position, track.duration_ms)
+          }
 
           if (track.id !== lastTrackIdRef.current) {
             if (lastTrackIdRef.current) {
@@ -163,6 +170,31 @@ export function SpotifyWebPlayer() {
             }
           }
         })
+
+        // Poll for position updates when playing
+        const positionInterval = setInterval(async () => {
+          if (playerRef.current && !initializingRef.current) {
+            try {
+              const state = await playerRef.current.getCurrentState()
+              if (state && !state.paused && state.position !== undefined) {
+                const track = state.track_window.current_track
+                if (track) {
+                  setPlaybackPosition(state.position, track.duration_ms)
+                }
+              }
+            } catch (error) {
+              // Ignore errors
+            }
+          }
+        }, 1000)
+        
+        // Store interval for cleanup
+        if (typeof window !== 'undefined') {
+          if (!(window as any).__spotifyIntervals) {
+            (window as any).__spotifyIntervals = []
+          }
+          (window as any).__spotifyIntervals.push(positionInterval)
+        }
 
         player.addListener("not_ready", ({ device_id }: { device_id: string }) => {
           console.error("Device has gone offline", device_id)
@@ -223,6 +255,12 @@ export function SpotifyWebPlayer() {
         script.parentNode.removeChild(script)
       }
       initializingRef.current = false
+      // Clear any intervals
+      if (typeof window !== 'undefined') {
+        const intervals = (window as any).__spotifyIntervals || []
+        intervals.forEach((id: any) => clearInterval(id))
+        delete (window as any).__spotifyIntervals
+      }
     }
   }, [
     accessToken,
@@ -234,6 +272,7 @@ export function SpotifyWebPlayer() {
     setDomainState,
     notifyTrackSkipped,
     setPlayerInstance,
+    setPlaybackPosition,
   ])
 
   return null

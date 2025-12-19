@@ -6,6 +6,8 @@ import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { PlaybackControls } from "./PlaybackControls"
 import { Search } from "./Search"
+import { Playlists } from "./Playlists"
+import { Favorites } from "./Favorites"
 import { signOutAction } from "@/app/actions/auth"
 
 export function MusicPlayerPanel() {
@@ -104,13 +106,17 @@ export function MusicPlayerPanel() {
           <>
             {/* Search Section */}
             <div 
-              className="px-5 py-4 border-b" 
+              className="px-5 py-4 border-b space-y-3" 
               style={{ 
                 borderColor: `${character.colors.primary}30`,
                 background: `linear-gradient(90deg, ${character.colors.primary}03 0%, transparent 100%)`,
               }}
             >
               <Search />
+              <div className="flex gap-2">
+                <Playlists />
+                <Favorites />
+              </div>
             </div>
 
             {/* Track Info */}

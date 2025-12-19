@@ -2,17 +2,50 @@
 
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { useEffect, useState } from "react"
-import { setVolume } from "@/lib/spotify-actions"
+import { setVolume, seekToPosition } from "@/lib/spotify-actions"
+import { CHARACTERS } from "@/lib/types/character"
 
 export function PlaybackControls() {
-  const { accessToken, isPaused, deviceId, playerInstance } = useSpotifyStore()
+  const { accessToken, isPaused, deviceId, playerInstance, playbackPosition, playbackDuration, selectedCharacter } = useSpotifyStore()
   const [canControl, setCanControl] = useState(false)
   const [volume, setVolumeState] = useState(50)
   const [showVolumeControl, setShowVolumeControl] = useState(false)
+  const [isSeeking, setIsSeeking] = useState(false)
+  const [seekPosition, setSeekPosition] = useState(0)
+  const character = CHARACTERS[selectedCharacter]
 
   useEffect(() => {
     setCanControl(!!accessToken && !!deviceId)
   }, [accessToken, deviceId])
+
+  useEffect(() => {
+    if (!isSeeking && playbackPosition !== undefined) {
+      setSeekPosition(playbackPosition)
+    }
+  }, [playbackPosition, isSeeking])
+
+  const formatTime = (ms: number) => {
+    const seconds = Math.floor(ms / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+  }
+
+  const handleSeek = async (newPosition: number) => {
+    if (!accessToken || !deviceId || !playerInstance) return
+    setIsSeeking(true)
+    setSeekPosition(newPosition)
+    try {
+      await seekToPosition(newPosition, deviceId, accessToken)
+      if (playerInstance) {
+        await playerInstance.seek(newPosition)
+      }
+    } catch (error) {
+      console.error("Error seeking:", error)
+    } finally {
+      setIsSeeking(false)
+    }
+  }
 
   const handlePlayPause = async () => {
     if (!playerInstance) return
@@ -61,8 +94,40 @@ export function PlaybackControls() {
 
   if (!canControl) return null
 
+  const progress = playbackDuration > 0 ? (seekPosition / playbackDuration) * 100 : 0
+
   return (
-    <div className="flex items-center gap-3 pointer-events-auto relative">
+    <div className="w-full pointer-events-auto">
+      {/* Progress Bar */}
+      {playbackDuration > 0 && (
+        <div className="mb-4">
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="text-gray-400 font-mono">{formatTime(seekPosition)}</span>
+            <span className="text-gray-400 font-mono">{formatTime(playbackDuration)}</span>
+          </div>
+          <div className="relative h-1.5 bg-black/30 rounded-full overflow-hidden">
+            <div
+              className="absolute top-0 left-0 h-full rounded-full transition-all duration-100"
+              style={{
+                width: `${progress}%`,
+                background: `linear-gradient(90deg, ${character.colors.primary}, ${character.colors.glow})`,
+                boxShadow: `0 0 10px ${character.colors.glow}60`,
+              }}
+            />
+            <input
+              type="range"
+              min="0"
+              max={playbackDuration}
+              value={seekPosition}
+              onChange={(e) => handleSeek(Number(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Controls */}
+      <div className="flex items-center justify-center gap-3 relative">
       <button
         onClick={handlePrevious}
         className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200"
@@ -82,9 +147,9 @@ export function PlaybackControls() {
         className="p-3 rounded-xl transition-all duration-200 shadow-lg"
         style={{
           background: isPaused
-            ? `linear-gradient(135deg, #9333ea 0%, #7c3aed 100%)`
-            : `linear-gradient(135deg, #7c3aed 0%, #9333ea 100%)`,
-          boxShadow: "0 4px 20px rgba(147, 51, 234, 0.4)",
+            ? `linear-gradient(135deg, ${character.colors.primary} 0%, ${character.colors.secondary} 100%)`
+            : `linear-gradient(135deg, ${character.colors.secondary} 0%, ${character.colors.primary} 100%)`,
+          boxShadow: `0 4px 20px ${character.colors.glow}40`,
         }}
         aria-label={isPaused ? "Play" : "Pause"}
       >
@@ -163,6 +228,7 @@ export function PlaybackControls() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   )

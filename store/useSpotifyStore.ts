@@ -26,6 +26,8 @@ interface SpotifyState {
   // Playback
   isPaused: boolean
   currentTrack: CurrentTrack | null
+  playbackPosition: number // in milliseconds
+  playbackDuration: number // in milliseconds
   // Analysis
   trackData: TrackData | null
   isLoadingAnalysis: boolean
@@ -47,6 +49,7 @@ interface SpotifyState {
   setToken: (token: string | null) => void
   setDeviceId: (deviceId: string | null) => void
   setPlaybackState: (isPaused: boolean, track?: CurrentTrack | null) => void
+  setPlaybackPosition: (position: number, duration: number) => void
   setTrackData: (data: TrackData | null) => void
   setIsLoadingAnalysis: (loading: boolean) => void
   setSelectedCharacter: (character: CharacterType) => void
@@ -64,6 +67,8 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
   deviceId: null,
   isPaused: true,
   currentTrack: null,
+  playbackPosition: 0,
+  playbackDuration: 0,
   trackData: null,
   isLoadingAnalysis: false,
   selectedCharacter: "sukuna",
@@ -78,6 +83,7 @@ export const useSpotifyStore = create<SpotifyState>((set) => ({
   setToken: (token) => set({ accessToken: token }),
   setDeviceId: (deviceId) => set({ deviceId }),
   setPlaybackState: (isPaused, track) => set({ isPaused, currentTrack: track ?? null }),
+  setPlaybackPosition: (position, duration) => set({ playbackPosition: position, playbackDuration: duration }),
   setTrackData: (data) =>
     set({
       trackData: data,

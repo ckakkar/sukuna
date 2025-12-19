@@ -14,24 +14,39 @@ export function Playlists() {
   const [tracks, setTracks] = useState<SearchTrack[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const character = CHARACTERS[selectedCharacter]
   const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   useEffect(() => {
-    if (accessToken && isOpen) {
+    if (accessToken && isOpen && playlists.length === 0 && !isLoading) {
       loadPlaylists()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, isOpen])
 
   const loadPlaylists = async () => {
-    if (!accessToken) return
+    if (!accessToken) {
+      setError("No access token available. Please reconnect to Spotify.")
+      return
+    }
     setIsLoading(true)
+    setError(null)
     try {
-      const data = await getUserPlaylists(accessToken)
-      setPlaylists(data)
+      console.log("Loading playlists with token:", accessToken.substring(0, 20) + "...")
+      const data = await getUserPlaylists(accessToken, 50)
+      console.log("Playlists loaded:", data.length, "playlists found")
+      
+      if (data.length === 0) {
+        setError("No playlists found. Make sure you have playlists in your Spotify account and that you've granted playlist access permissions.")
+      } else {
+        setPlaylists(data)
+        setError(null)
+      }
     } catch (error) {
       console.error("Error loading playlists:", error)
+      const errorMessage = error instanceof Error ? error.message : "Failed to load playlists"
+      setError(`${errorMessage}. Please check your Spotify connection and permissions.`)
     } finally {
       setIsLoading(false)
     }
@@ -61,12 +76,17 @@ export function Playlists() {
   }
 
   const handlePlayPlaylist = async (playlist: Playlist) => {
-    if (!accessToken || !deviceId) return
+    if (!accessToken || !deviceId) {
+      setError("Device not connected. Please ensure Spotify is open.")
+      return
+    }
     try {
+      setError(null)
       await playPlaylist(playlist.uri, deviceId, accessToken)
       setIsOpen(false)
     } catch (error) {
       console.error("Error playing playlist:", error)
+      setError(error instanceof Error ? error.message : "Failed to play playlist")
     }
   }
 
@@ -80,12 +100,20 @@ export function Playlists() {
   return (
     <div className="relative pointer-events-auto">
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="px-4 py-2 bg-black/20 backdrop-blur-md border-2 rounded-lg transition-all duration-300 flex items-center gap-2"
+        onClick={() => {
+          setIsOpen(!isOpen)
+          if (!isOpen && accessToken && playlists.length === 0) {
+            // Load playlists when opening for the first time
+            loadPlaylists()
+          }
+        }}
+        className="px-4 py-2 bg-black/20 backdrop-blur-md border-2 rounded-lg transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 touch-manipulation"
         style={{
           borderColor: isOpen ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.8) : "rgba(255,255,255,0.2)",
           boxShadow: isOpen ? `0 0 20px ${character.colors.glow}40` : "none",
         }}
+        aria-label="Open playlists"
+        aria-expanded={isOpen}
       >
         <svg
           className="w-5 h-5"
@@ -107,11 +135,22 @@ export function Playlists() {
         >
           PLAYLISTS
         </span>
+        {playlists.length > 0 && (
+          <span 
+            className="text-xs font-mono px-1.5 py-0.5 rounded bg-black/40"
+            style={{ 
+              color: character.colors.glow,
+              backgroundColor: `${character.colors.glow}20`,
+            }}
+          >
+            {playlists.length}
+          </span>
+        )}
       </button>
 
       {isOpen && (
         <div
-          className="absolute top-full left-0 mt-2 w-96 bg-black/60 backdrop-blur-2xl border-2 rounded-lg shadow-2xl z-50 max-h-[600px] flex flex-col overflow-hidden"
+          className="absolute top-full left-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-black/60 backdrop-blur-2xl border-2 rounded-lg shadow-2xl z-50 max-h-[600px] flex flex-col overflow-hidden animate-fade-in-up"
           style={{
             borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
             boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${character.colors.glow}30`,
@@ -229,15 +268,38 @@ export function Playlists() {
           ) : (
             <>
               <div
-                className="px-4 py-3 border-b"
+                className="px-4 py-3 border-b flex items-center justify-between"
                 style={{ borderColor: `${character.colors.primary}30` }}
               >
-                  <div
-                    className="font-bold text-sm"
-                    style={{ color: textColor }}
+                <div
+                  className="font-bold text-sm"
+                  style={{ color: textColor }}
+                >
+                  YOUR PLAYLISTS
+                </div>
+                {playlists.length > 0 && (
+                  <button
+                    onClick={loadPlaylists}
+                    className="p-1.5 hover:bg-white/5 rounded transition-colors"
+                    aria-label="Refresh playlists"
+                    title="Refresh playlists"
                   >
-                    YOUR PLAYLISTS
-                  </div>
+                    <svg
+                      className="w-4 h-4"
+                      style={{ color: textColor }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                  </button>
+                )}
               </div>
               <div className="overflow-y-auto flex-1 p-2">
                 {isLoading ? (
@@ -250,6 +312,22 @@ export function Playlists() {
                       }}
                     />
                   </div>
+                ) : error ? (
+                  <div className="p-8 text-center space-y-3">
+                    <div className="text-red-400 text-sm font-mono">
+                      {error}
+                    </div>
+                    <button
+                      onClick={loadPlaylists}
+                      className="px-4 py-2 bg-black/40 border border-white/20 rounded-lg hover:bg-white/10 transition-colors text-sm font-mono"
+                      style={{
+                        borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
+                        color: textColor,
+                      }}
+                    >
+                      Retry
+                    </button>
+                  </div>
                 ) : playlists.length > 0 ? (
                   playlists.map((playlist) => (
                     <div
@@ -259,7 +337,7 @@ export function Playlists() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => loadPlaylistTracks(playlist)}
-                          className="flex-1 p-3 hover:bg-white/5 rounded-lg transition-all duration-200 text-left"
+                          className="flex-1 p-3 hover:bg-white/5 rounded-lg transition-all duration-200 text-left touch-manipulation"
                           style={{
                             border: `1px solid transparent`,
                           }}
@@ -269,6 +347,7 @@ export function Playlists() {
                           onMouseLeave={(e) => {
                             e.currentTarget.style.borderColor = "transparent"
                           }}
+                          aria-label={`View tracks in ${playlist.name}`}
                         >
                           <div className="flex items-center gap-3">
                             {playlist.image && (
@@ -298,11 +377,12 @@ export function Playlists() {
                         </button>
                         <button
                           onClick={() => handlePlayPlaylist(playlist)}
-                          className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200 opacity-0 group-hover:opacity-100"
+                          className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200 opacity-0 group-hover:opacity-100 touch-manipulation active:scale-95"
                           style={{
                             borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
                           }}
-                          aria-label="Play playlist"
+                          aria-label={`Play playlist ${playlist.name}`}
+                          title={`Play ${playlist.name}`}
                         >
                           <svg
                             className="w-4 h-4"
@@ -317,8 +397,20 @@ export function Playlists() {
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center text-gray-400 text-sm">
-                    No playlists found
+                  <div className="p-8 text-center space-y-3">
+                    <div className="text-gray-400 text-sm font-mono">
+                      No playlists found
+                    </div>
+                    <button
+                      onClick={loadPlaylists}
+                      className="px-4 py-2 bg-black/40 border border-white/20 rounded-lg hover:bg-white/10 transition-colors text-xs font-mono"
+                      style={{
+                        borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
+                        color: textColor,
+                      }}
+                    >
+                      Refresh
+                    </button>
                   </div>
                 )}
               </div>

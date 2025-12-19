@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { CHARACTER_QUOTES, type CharacterQuote } from "@/lib/data/characterQuotes"
@@ -12,19 +12,33 @@ export function BackgroundQuotes() {
   const { selectedCharacter, hasSelectedCharacter } = useSpotifyStore()
   const [currentQuote, setCurrentQuote] = useState<CharacterQuote | null>(null)
   const [isVisible, setIsVisible] = useState(false)
+  const timeoutRefs = useRef<NodeJS.Timeout[]>([])
 
   useEffect(() => {
+    // Clear all existing timeouts when character changes
+    timeoutRefs.current.forEach(timeout => clearTimeout(timeout))
+    timeoutRefs.current = []
+    
+    // Reset state immediately when character changes
+    setIsVisible(false)
+    setCurrentQuote(null)
+
     if (!hasSelectedCharacter) {
-      setIsVisible(false)
       return
     }
 
-    const quotes = CHARACTER_QUOTES[selectedCharacter]
+    // Get quotes for the CURRENT character (not from closure)
+    const currentCharacter = selectedCharacter
+    const quotes = CHARACTER_QUOTES[currentCharacter]
     if (!quotes || quotes.length === 0) return
 
     // Show a random quote
     const showQuote = () => {
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)]
+      // Always use the current character's quotes
+      const currentQuotes = CHARACTER_QUOTES[currentCharacter]
+      if (!currentQuotes || currentQuotes.length === 0) return
+      
+      const randomQuote = currentQuotes[Math.floor(Math.random() * currentQuotes.length)]
       setCurrentQuote(randomQuote)
       setIsVisible(true)
 
@@ -32,25 +46,25 @@ export function BackgroundQuotes() {
       const hideTimeout = setTimeout(() => {
         setIsVisible(false)
       }, 5000 + Math.random() * 3000)
+      timeoutRefs.current.push(hideTimeout)
 
       // Show next quote after 10-15 seconds
       const nextQuoteTimeout = setTimeout(() => {
         showQuote()
       }, 10000 + Math.random() * 5000)
-
-      return () => {
-        clearTimeout(hideTimeout)
-        clearTimeout(nextQuoteTimeout)
-      }
+      timeoutRefs.current.push(nextQuoteTimeout)
     }
 
     // Initial delay
     const initialTimeout = setTimeout(() => {
       showQuote()
     }, 3000)
+    timeoutRefs.current.push(initialTimeout)
 
     return () => {
-      clearTimeout(initialTimeout)
+      // Clear all timeouts on cleanup
+      timeoutRefs.current.forEach(timeout => clearTimeout(timeout))
+      timeoutRefs.current = []
     }
   }, [selectedCharacter, hasSelectedCharacter])
 

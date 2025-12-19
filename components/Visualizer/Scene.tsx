@@ -144,15 +144,16 @@ export function Scene() {
         autoRotate={false}
         enableDamping
         dampingFactor={0.05}
-        minDistance={3}
-        maxDistance={15}
+        minDistance={2}
+        maxDistance={20}
         maxPolarAngle={Math.PI / 1.5}
         minPolarAngle={Math.PI / 3}
         enablePan={false}
-        enableZoom={false}
+        enableZoom={true}
+        zoomSpeed={0.8}
         touches={{
           ONE: 2, // Rotate
-          TWO: 0, // Disable zoom on mobile
+          TWO: 1, // Zoom on mobile (pinch)
         }}
       />
 

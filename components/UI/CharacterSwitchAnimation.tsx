@@ -22,7 +22,7 @@ export function CharacterSwitchAnimation() {
       setIsAnimating(true)
       setShowQuote(true)
 
-      // Hide animation after 2 seconds
+      // Hide animation after 2.5 seconds
       const timeout = setTimeout(() => {
         setIsAnimating(false)
         setShowQuote(false)
@@ -31,7 +31,10 @@ export function CharacterSwitchAnimation() {
       return () => clearTimeout(timeout)
     }
 
-    setPrevCharacter(currentCharId)
+    // Update prevCharacter after checking, but only if it's different
+    if (prevCharacter !== currentCharId) {
+      setPrevCharacter(currentCharId)
+    }
   }, [selectedCharacter, hasSelectedCharacter, prevCharacter])
 
   if (!isAnimating || !prevCharacter) return null

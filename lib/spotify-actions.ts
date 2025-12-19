@@ -200,39 +200,57 @@ export async function getUserPlaylists(
 ): Promise<Playlist[]> {
   try {
     const playlists: Playlist[] = []
-    let url = `https://api.spotify.com/v1/me/playlists?limit=${limit}`
+    let url = `https://api.spotify.com/v1/me/playlists?limit=${limit}&offset=0`
     
     while (url) {
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
       })
 
       if (!response.ok) {
-        console.error("Failed to fetch playlists")
-        break
+        const errorData = await response.json().catch(() => ({}))
+        console.error("Failed to fetch playlists:", response.status, response.statusText, errorData)
+        throw new Error(`Failed to fetch playlists: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()
-      const items: Playlist[] = data.items.map((playlist: any) => ({
-        id: playlist.id,
-        name: playlist.name,
-        description: playlist.description,
-        image: playlist.images[0]?.url,
-        owner: playlist.owner.display_name,
-        trackCount: playlist.tracks.total,
-        uri: playlist.uri,
-      }))
+      
+      if (!data.items || !Array.isArray(data.items)) {
+        console.error("Invalid playlist data structure:", data)
+        break
+      }
+
+      const items: Playlist[] = data.items
+        .filter((playlist: any) => playlist && playlist.id) // Filter out null/undefined
+        .map((playlist: any) => ({
+          id: playlist.id,
+          name: playlist.name || "Unnamed Playlist",
+          description: playlist.description || null,
+          image: playlist.images && playlist.images.length > 0 ? playlist.images[0]?.url : null,
+          owner: playlist.owner?.display_name || playlist.owner?.id || "Unknown",
+          trackCount: playlist.tracks?.total || 0,
+          uri: playlist.uri,
+        }))
 
       playlists.push(...items)
-      url = data.next
+      
+      // Continue pagination if there's a next page
+      url = data.next || null
+      
+      // Limit total playlists to prevent excessive API calls
+      if (playlists.length >= 100) {
+        break
+      }
     }
 
+    console.log(`Successfully fetched ${playlists.length} playlists`)
     return playlists
   } catch (error) {
     console.error("Error fetching playlists:", error)
-    return []
+    throw error // Re-throw to let component handle it
   }
 }
 
@@ -528,6 +546,21 @@ export async function playPlaylist(
   offset?: number
 ): Promise<boolean> {
   try {
+    // First, ensure device is active
+    await fetch(`https://api.spotify.com/v1/me/player`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        device_ids: [deviceId],
+      }),
+    })
+
+    // Small delay to ensure device is active
+    await new Promise(resolve => setTimeout(resolve, 200))
+
     const response = await fetch(
       `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
       {
@@ -543,10 +576,16 @@ export async function playPlaylist(
       }
     )
 
-    return response.ok
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      console.error("Failed to play playlist:", response.status, errorData)
+      throw new Error(`Failed to play playlist: ${response.status}`)
+    }
+
+    return true
   } catch (error) {
     console.error("Error playing playlist:", error)
-    return false
+    throw error
   }
 }
 

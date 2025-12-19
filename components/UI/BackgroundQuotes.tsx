@@ -58,9 +58,9 @@ export function BackgroundQuotes() {
   const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   return (
-    <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
+    <div className="fixed bottom-16 sm:bottom-20 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none w-full px-3 sm:px-0">
       <div
-        className="bg-black/70 backdrop-blur-2xl border-2 rounded-2xl px-8 py-6 max-w-2xl animate-quoteSlideIn"
+        className="bg-black/70 backdrop-blur-2xl border-2 rounded-xl sm:rounded-2xl px-4 py-4 sm:px-8 sm:py-6 max-w-2xl mx-auto animate-quoteSlideIn"
         style={{
           borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
           boxShadow: `0 10px 40px rgba(0,0,0,0.5), 0 0 30px ${character.colors.glow}40, inset 0 0 20px ${character.colors.glow}10`,
@@ -68,7 +68,7 @@ export function BackgroundQuotes() {
       >
         {currentQuote.japanese && (
           <div
-            className="text-2xl font-bold mb-2 text-center"
+            className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 text-center"
             style={{
               color: character.colors.glow,
               textShadow: `0 0 20px ${character.colors.glow}60`,
@@ -78,7 +78,7 @@ export function BackgroundQuotes() {
           </div>
         )}
         <div
-          className="text-lg font-mono text-center"
+          className="text-sm sm:text-base md:text-lg font-mono text-center"
           style={{
             color: textColor,
             textShadow: `0 0 10px ${character.colors.glow}40`,

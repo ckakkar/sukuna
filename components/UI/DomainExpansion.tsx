@@ -102,7 +102,7 @@ export function DomainExpansion() {
       >
         {/* Domain Expansion text */}
         <div
-          className="text-9xl font-black tracking-widest relative"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-black tracking-widest relative"
           style={{
             color: textColor,
             textShadow: `0 0 40px ${character.colors.glow}, 0 0 80px ${character.colors.glow}, 0 0 120px ${character.colors.glow}80`,
@@ -150,7 +150,7 @@ export function DomainExpansion() {
 
         {/* Domain name - Japanese */}
         <div
-          className="text-7xl font-bold tracking-[0.4em] relative"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.4em] relative"
           style={{
             color: character.colors.accent || character.colors.glow || textColor,
             textShadow: `0 0 30px ${character.colors.glow}, 0 0 60px ${character.colors.glow}70`,
@@ -171,7 +171,7 @@ export function DomainExpansion() {
 
         {/* Domain name - English */}
         <div
-          className="text-3xl font-mono tracking-widest uppercase"
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono tracking-widest uppercase"
           style={{ 
             color: character.colors.secondary || character.colors.glow || textColor,
             textShadow: `0 0 20px ${character.colors.glow}80`,

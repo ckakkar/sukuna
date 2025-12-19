@@ -46,15 +46,16 @@ export function MusicPlayerPanel() {
 
   return (
     <div 
-      className="absolute bottom-6 left-6 pointer-events-auto z-20 transition-transform duration-100 ease-out"
+      className="absolute bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-auto pointer-events-auto z-20 transition-transform duration-100 ease-out"
       style={{ transform: `scale(${pulseScale})` }}
     >
       <div
-        className="bg-black/60 backdrop-blur-3xl border-2 rounded-3xl shadow-2xl transition-all duration-500 overflow-hidden relative"
+        className="bg-black/60 backdrop-blur-3xl border-2 rounded-2xl sm:rounded-3xl shadow-2xl transition-all duration-500 overflow-hidden relative w-full sm:w-auto"
         style={{
           borderColor: borderColor,
           boxShadow: `0 25px 80px rgba(0,0,0,0.6), 0 0 60px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 40px ${character.colors.primary}20`,
-          width: isExpanded ? "580px" : "auto",
+          width: isExpanded ? "100%" : "auto",
+          maxWidth: isExpanded ? "580px" : "none",
         }}
       >
         {/* Animated glow border on beat */}
@@ -70,7 +71,7 @@ export function MusicPlayerPanel() {
 
         {/* Header with character info */}
         <div
-          className="px-6 py-4 border-b flex items-center justify-between relative overflow-hidden"
+          className="px-3 py-3 sm:px-6 sm:py-4 border-b flex items-center justify-between relative overflow-hidden"
           style={{ 
             borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.3),
             background: `linear-gradient(135deg, ${character.colors.primary}15 0%, ${character.colors.glow}08 50%, transparent 100%)`,
@@ -106,7 +107,7 @@ export function MusicPlayerPanel() {
             </div>
             <div className="font-mono min-w-0 flex-1">
               <div 
-                className="text-lg font-black tracking-widest mb-0.5 truncate"
+                className="text-sm sm:text-lg font-black tracking-widest mb-0.5 truncate"
                 style={{ 
                   color: textColor,
                   textShadow: `0 0 ${15 + (beatIntensity ?? 0) * 25}px ${character.colors.glow}80, 0 2px 4px rgba(0,0,0,0.5)`,
@@ -115,7 +116,7 @@ export function MusicPlayerPanel() {
                 {character.japaneseName}
               </div>
               <div 
-                className="text-xs font-semibold tracking-wide truncate flex items-center gap-2"
+                className="text-[10px] sm:text-xs font-semibold tracking-wide truncate flex items-center gap-2"
                 style={{ 
                   color: character.colors.secondary || character.colors.glow || textColor,
                   textShadow: `0 0 8px ${character.colors.glow}60`,
@@ -181,7 +182,7 @@ export function MusicPlayerPanel() {
           <>
             {/* Search and Quick Actions */}
             <div 
-              className="px-6 py-5 border-b space-y-4" 
+              className="px-3 py-3 sm:px-6 sm:py-5 border-b space-y-3 sm:space-y-4" 
               style={{ 
                 borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
                 background: `linear-gradient(135deg, ${character.colors.primary}06 0%, transparent 100%)`,
@@ -198,7 +199,7 @@ export function MusicPlayerPanel() {
 
             {/* Now Playing */}
             {currentTrack ? (
-              <div className="px-6 py-6 relative">
+              <div className="px-3 py-4 sm:px-6 sm:py-6 relative">
                 {/* Beat pulse background */}
                 {(beatIntensity ?? 0) > 0.5 && (
                   <div
@@ -213,7 +214,7 @@ export function MusicPlayerPanel() {
                 <div className="flex gap-5 items-start relative z-10">
                   {currentTrack.image && (
                     <div
-                      className="rounded-2xl overflow-hidden shadow-2xl flex-shrink-0 relative w-28 h-28 group"
+                      className="rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl flex-shrink-0 relative w-20 h-20 sm:w-28 sm:h-28 group"
                       style={{
                         boxShadow: `0 12px 50px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, 0 0 0 3px ${character.colors.primary}30, inset 0 0 30px ${character.colors.glow}30`,
                         transform: (beatIntensity ?? 0) > 0.7 ? `scale(${1 + (beatIntensity ?? 0) * 0.05})` : "scale(1)",
@@ -251,7 +252,7 @@ export function MusicPlayerPanel() {
                   <div className="flex-1 min-w-0">
                     <div className="mb-5">
                       <div 
-                        className="text-white font-bold text-lg truncate mb-2.5 leading-tight tracking-wide"
+                        className="text-white font-bold text-sm sm:text-lg truncate mb-2 sm:mb-2.5 leading-tight tracking-wide"
                         style={{
                           textShadow: `0 2px 10px rgba(0,0,0,0.7), 0 0 ${(beatIntensity ?? 0) > 0.5 ? 15 : 0}px ${character.colors.glow}`,
                         }}
@@ -259,7 +260,7 @@ export function MusicPlayerPanel() {
                         {currentTrack.name}
                       </div>
                       <div 
-                        className="text-base truncate mb-2 font-medium tracking-wide"
+                        className="text-sm sm:text-base truncate mb-1.5 sm:mb-2 font-medium tracking-wide"
                         style={{
                           color: character.colors.secondary || "rgba(255,255,255,0.8)",
                         }}
@@ -297,7 +298,7 @@ export function MusicPlayerPanel() {
                           </span>
                           <div className="flex items-baseline gap-2">
                             <span
-                              className="text-2xl font-black font-mono"
+                              className="text-xl sm:text-2xl font-black font-mono"
                               style={{ 
                                 color: textColor,
                                 textShadow: `0 0 ${12 + (beatIntensity ?? 0) * 20}px ${character.colors.glow}70, 0 2px 4px rgba(0,0,0,0.5)`,
@@ -359,7 +360,7 @@ export function MusicPlayerPanel() {
                             VALENCE
                           </span>
                           <span
-                            className="text-2xl font-black font-mono"
+                            className="text-xl sm:text-2xl font-black font-mono"
                             style={{ 
                               color: textColor,
                               textShadow: `0 0 ${12 + trackData.valence * 15}px ${character.colors.glow}70, 0 2px 4px rgba(0,0,0,0.5)`,
@@ -397,7 +398,7 @@ export function MusicPlayerPanel() {
                 </div>
               </div>
             ) : (
-              <div className="px-6 py-14 text-center">
+              <div className="px-3 py-8 sm:px-6 sm:py-14 text-center">
                 <div
                   className="inline-flex flex-col items-center gap-4 px-8 py-6 rounded-2xl bg-black/40 border-2 backdrop-blur-sm"
                   style={{ 
@@ -435,7 +436,7 @@ export function MusicPlayerPanel() {
 
             {/* Playback Controls */}
             <div
-              className="px-6 py-5 border-t flex justify-center"
+              className="px-3 py-4 sm:px-6 sm:py-5 border-t flex justify-center"
               style={{ 
                 borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
                 background: `linear-gradient(135deg, transparent 0%, ${character.colors.primary}08 30%, ${character.colors.glow}06 70%, transparent 100%)`,
@@ -446,7 +447,7 @@ export function MusicPlayerPanel() {
 
             {/* Footer */}
             <div
-              className="px-6 py-4 border-t flex justify-between items-center"
+              className="px-3 py-3 sm:px-6 sm:py-4 border-t flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0"
               style={{ 
                 borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
                 background: `linear-gradient(135deg, ${character.colors.primary}04 0%, transparent 100%)`,

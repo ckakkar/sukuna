@@ -148,6 +148,12 @@ export function Scene() {
         maxDistance={15}
         maxPolarAngle={Math.PI / 1.5}
         minPolarAngle={Math.PI / 3}
+        enablePan={false}
+        enableZoom={false}
+        touches={{
+          ONE: 2, // Rotate
+          TWO: 0, // Disable zoom on mobile
+        }}
       />
 
       {/* Main visualizations */}

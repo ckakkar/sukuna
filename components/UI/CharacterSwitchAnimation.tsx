@@ -55,7 +55,7 @@ export function CharacterSwitchAnimation() {
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         {/* Character image */}
         {character.imagePath && (
-          <div className="relative w-48 h-48 md:w-64 md:h-64 mb-6 rounded-2xl overflow-hidden animate-characterReveal">
+          <div className="relative w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 mb-4 sm:mb-6 rounded-xl sm:rounded-2xl overflow-hidden animate-characterReveal">
             <Image
               src={character.imagePath}
               alt={character.name}
@@ -77,7 +77,7 @@ export function CharacterSwitchAnimation() {
 
         {/* Character name */}
         <div
-          className="text-5xl md:text-7xl font-black mb-4 tracking-widest animate-fadeInUp"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-2 sm:mb-3 md:mb-4 tracking-widest animate-fadeInUp"
           style={{
             color: textColor,
             textShadow: `0 0 40px ${character.colors.glow}80, 0 0 80px ${character.colors.glow}60`,
@@ -88,10 +88,10 @@ export function CharacterSwitchAnimation() {
 
         {/* Quote */}
         {showQuote && randomQuote && (
-          <div className="text-center max-w-2xl px-8 animate-fadeInUp" style={{ animationDelay: "0.3s" }}>
+          <div className="text-center max-w-2xl px-4 sm:px-6 md:px-8 animate-fadeInUp" style={{ animationDelay: "0.3s" }}>
             {randomQuote.japanese && (
               <div
-                className="text-2xl md:text-3xl font-bold mb-3"
+                className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3"
                 style={{
                   color: character.colors.glow,
                   textShadow: `0 0 20px ${character.colors.glow}60`,
@@ -101,7 +101,7 @@ export function CharacterSwitchAnimation() {
               </div>
             )}
             <div
-              className="text-lg md:text-xl font-mono"
+              className="text-sm sm:text-base md:text-lg lg:text-xl font-mono"
               style={{
                 color: character.colors.secondary || character.colors.glow,
                 textShadow: `0 0 15px ${character.colors.glow}40`,

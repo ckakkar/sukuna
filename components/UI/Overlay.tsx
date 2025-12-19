@@ -14,7 +14,7 @@ export function Overlay() {
   return (
     <div className="absolute inset-0 pointer-events-none z-10">
       {/* Top left - Domain info with beat animation */}
-      <div className="absolute top-6 left-6 font-mono text-xs space-y-3 pointer-events-none">
+      <div className="absolute top-3 left-3 sm:top-6 sm:left-6 font-mono text-[10px] sm:text-xs space-y-2 sm:space-y-3 pointer-events-none">
         <div className="relative">
           {/* Glow effect on beat */}
           {beatIntensity && beatIntensity > 0.5 && (
@@ -28,7 +28,7 @@ export function Overlay() {
           )}
           
           <div
-            className="font-bold tracking-wider text-base animate-glow relative"
+            className="font-bold tracking-wider text-xs sm:text-sm md:text-base animate-glow relative"
             style={{
               color: textColor,
               textShadow: `0 0 ${15 + (beatIntensity ?? 0) * 25}px ${character.colors.glow}, 0 0 ${30 + (beatIntensity ?? 0) * 40}px ${character.colors.glow}50`,
@@ -96,13 +96,13 @@ export function Overlay() {
       </div>
 
       {/* Top right - Character selector */}
-      <div className="absolute top-6 right-6 pointer-events-auto z-20">
+      <div className="absolute top-3 right-3 sm:top-6 sm:right-6 pointer-events-auto z-20">
         <CharacterSelector />
       </div>
 
       {/* Bottom right - Character branding with beat pulse */}
       <div 
-        className="absolute bottom-6 right-6 font-mono text-xs space-y-2 pointer-events-none"
+        className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 font-mono text-[10px] sm:text-xs space-y-1 sm:space-y-2 pointer-events-none"
         style={{
           transform: beatIntensity && beatIntensity > 0.5 ? `scale(${1 + beatIntensity * 0.05})` : "scale(1)",
           transition: "transform 0.1s ease-out",
@@ -129,7 +129,7 @@ export function Overlay() {
           )}
           
           <div
-            className="text-2xl font-black mb-1 tracking-widest"
+            className="text-lg sm:text-xl md:text-2xl font-black mb-0.5 sm:mb-1 tracking-widest"
             style={{ 
               color: textColor,
               textShadow: `0 0 ${15 + (beatIntensity ?? 0) * 20}px ${character.colors.glow}, 0 0 ${30 + (beatIntensity ?? 0) * 35}px ${character.colors.glow}50`,
@@ -138,7 +138,7 @@ export function Overlay() {
             {character.japaneseName}
           </div>
           <div 
-            className="text-base font-bold mb-2"
+            className="text-sm sm:text-base font-bold mb-1 sm:mb-2"
             style={{ 
               color: character.colors.secondary || character.colors.glow || textColor,
               textShadow: `0 0 10px ${character.colors.glow}60`,

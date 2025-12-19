@@ -22,7 +22,7 @@ export function CharacterSelector() {
       {/* Current Character Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group relative px-4 py-2.5 bg-black/30 backdrop-blur-xl border-2 rounded-xl transition-all duration-300 flex items-center gap-3 hover:scale-105"
+        className="group relative px-3 py-2 sm:px-4 sm:py-2.5 bg-black/30 backdrop-blur-xl border-2 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 hover:scale-105 active:scale-95 touch-manipulation"
         style={{
           borderColor: isOpen ? getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.9) : "rgba(255,255,255,0.15)",
           boxShadow: isOpen 
@@ -39,9 +39,9 @@ export function CharacterSelector() {
             }}
           />
           <div className="flex flex-col items-start min-w-0 flex-1">
-            <div className="text-[9px] text-gray-400 font-mono uppercase tracking-widest opacity-70">SORCERER</div>
+            <div className="text-[8px] sm:text-[9px] text-gray-400 font-mono uppercase tracking-widest opacity-70">SORCERER</div>
             <div
-              className="text-sm font-bold font-mono tracking-wider truncate max-w-[140px]"
+              className="text-xs sm:text-sm font-bold font-mono tracking-wider truncate max-w-[100px] sm:max-w-[140px]"
               style={{ 
                 color: textColor,
                 textShadow: `0 0 8px ${currentChar.colors.glow}40`,
@@ -65,7 +65,7 @@ export function CharacterSelector() {
       {/* Character Selection Menu */}
       {isOpen && (
         <div 
-          className="absolute top-full mt-3 right-0 bg-black/70 backdrop-blur-2xl border-2 rounded-2xl overflow-hidden min-w-[320px] max-w-[320px] z-50 shadow-2xl animate-fadeIn"
+          className="absolute top-full mt-2 sm:mt-3 right-0 bg-black/70 backdrop-blur-2xl border-2 rounded-xl sm:rounded-2xl overflow-hidden w-[calc(100vw-2rem)] sm:min-w-[320px] sm:max-w-[320px] z-50 shadow-2xl animate-fadeIn"
           style={{
             borderColor: getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.7),
             boxShadow: `0 20px 60px rgba(0,0,0,0.5), 0 0 40px ${currentChar.colors.glow}40, inset 0 0 30px ${currentChar.colors.glow}10`,
@@ -87,7 +87,7 @@ export function CharacterSelector() {
                 <button
                   key={char.id}
                   onClick={() => handleCharacterChange(char.id)}
-                  className="w-full px-4 py-3.5 flex items-center gap-3 hover:bg-white/5 transition-all duration-200 border-b last:border-b-0 group relative overflow-hidden"
+                  className="w-full px-3 py-2.5 sm:px-4 sm:py-3.5 flex items-center gap-2 sm:gap-3 hover:bg-white/5 active:bg-white/10 transition-all duration-200 border-b last:border-b-0 group relative overflow-hidden touch-manipulation"
                   style={{
                     backgroundColor: isSelected 
                       ? `${char.colors.glow || char.colors.primary}20` 
@@ -148,7 +148,7 @@ export function CharacterSelector() {
                   <div className="flex-1 min-w-0 flex flex-col items-start gap-0.5 relative z-10">
                     <div className="flex items-center justify-between w-full">
                       <div
-                        className="text-base font-bold font-mono tracking-wider"
+                        className="text-sm sm:text-base font-bold font-mono tracking-wider"
                         style={{ 
                           color: charTextColor,
                           textShadow: isSelected ? `0 0 8px ${char.colors.glow}40` : "none",

@@ -104,10 +104,9 @@ export function MusicPlayerPanel() {
                 <div className="flex gap-4 items-start">
                   {currentTrack.image && (
                     <div
-                      className="rounded-xl overflow-hidden shadow-lg flex-shrink-0 ring-2"
+                      className="rounded-xl overflow-hidden shadow-lg flex-shrink-0"
                       style={{
-                        boxShadow: `0 8px 32px ${character.colors.glow}30`,
-                        ringColor: `${character.colors.primary}40`,
+                        boxShadow: `0 8px 32px ${character.colors.glow}30, 0 0 0 2px ${character.colors.primary}40`,
                       }}
                     >
                       <img

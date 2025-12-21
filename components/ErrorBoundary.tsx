@@ -42,11 +42,21 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 {this.state.error?.message || "Unknown error occurred"}
               </div>
               <button
-                onClick={() => window.location.reload()}
-                className="mt-4 px-6 py-2 bg-jujutsu-energy text-white font-mono text-sm rounded hover:bg-jujutsu-domain transition-colors touch-manipulation"
+                onClick={() => {
+                  this.setState({ hasError: false, error: null })
+                  window.location.reload()
+                }}
+                className="mt-4 px-6 py-2 bg-jujutsu-energy text-white font-mono text-sm rounded hover:bg-jujutsu-domain transition-colors touch-manipulation min-h-[44px]"
                 aria-label="Reload application"
               >
                 Restart Domain
+              </button>
+              <button
+                onClick={() => this.setState({ hasError: false, error: null })}
+                className="mt-2 px-6 py-2 bg-black/40 border border-white/20 text-white font-mono text-sm rounded hover:bg-white/10 transition-colors touch-manipulation min-h-[44px]"
+                aria-label="Dismiss error"
+              >
+                Dismiss
               </button>
             </div>
           </div>

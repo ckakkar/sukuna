@@ -10,13 +10,20 @@ import { CharacterSwitchAnimation } from "@/components/UI/CharacterSwitchAnimati
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { JJKLoginScreen } from "@/components/UI/JJKLoginScreen"
 import { signInWithSpotify } from "@/app/actions/auth"
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts"
 
 export default async function Home() {
   const session = await auth()
 
   return (
     <ErrorBoundary>
-      <main className="relative w-screen h-screen bg-black overflow-hidden">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-jujutsu-energy focus:text-white focus:rounded-lg focus:font-mono focus:text-sm"
+      >
+        Skip to main content
+      </a>
+      <main id="main-content" className="relative w-screen h-screen min-h-screen bg-black overflow-hidden">
         {/* Only show 3D Scene after login */}
         {session && (
           <div className="absolute inset-0">
@@ -47,6 +54,9 @@ export default async function Home() {
 
         {/* JJK-Inspired Login Screen */}
         {!session && <JJKLoginScreen onLogin={signInWithSpotify} />}
+
+        {/* Keyboard Shortcuts */}
+        {session && <KeyboardShortcuts />}
       </main>
     </ErrorBoundary>
   )

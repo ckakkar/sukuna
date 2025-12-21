@@ -72,7 +72,10 @@ export function MusicPlayerPanel() {
   return (
     <div 
       className="absolute bottom-0 left-0 right-0 sm:bottom-6 sm:left-6 sm:right-auto pointer-events-auto z-20 transition-transform duration-100 ease-out safe-area-inset-bottom"
-      style={{ transform: `scale(${pulseScale})` }}
+      style={{ 
+        transform: `scale(${pulseScale})`,
+        maxHeight: 'calc(100vh - env(safe-area-inset-bottom, 0px))',
+      }}
     >
       <Card
         variant="default"
@@ -81,7 +84,8 @@ export function MusicPlayerPanel() {
         className={cn(
           "rounded-t-3xl sm:rounded-2xl sm:rounded-3xl overflow-hidden w-full sm:w-auto transition-all duration-500",
           "animate-scale-in",
-          "border-b-0 sm:border-b"
+          "border-b-0 sm:border-b",
+          "max-h-[85vh] sm:max-h-none"
         )}
         style={{
           width: isExpanded ? "100%" : "auto",
@@ -275,10 +279,10 @@ export function MusicPlayerPanel() {
         )}
 
         {isExpanded && (
-          <>
+          <div className="flex flex-col max-h-[85vh] sm:max-h-none overflow-hidden">
             {/* Search and Quick Actions */}
             <div 
-              className="px-3 py-3 sm:px-6 sm:py-5 border-b space-y-3 sm:space-y-4" 
+              className="px-3 py-3 sm:px-6 sm:py-5 border-b space-y-3 sm:space-y-4 flex-shrink-0" 
               style={{ 
                 borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
                 background: `linear-gradient(135deg, ${character.colors.primary}06 0%, transparent 100%)`,
@@ -293,9 +297,9 @@ export function MusicPlayerPanel() {
               </div>
             </div>
 
-            {/* Now Playing */}
+            {/* Now Playing - Scrollable on mobile */}
             {currentTrack ? (
-              <div className="px-3 py-4 sm:px-6 sm:py-6 relative">
+              <div className="px-3 py-4 sm:px-6 sm:py-6 relative flex-1 overflow-y-auto overscroll-contain">
                 {/* Beat pulse background */}
                 {(beatIntensity ?? 0) > 0.5 && (
                   <div
@@ -528,7 +532,7 @@ export function MusicPlayerPanel() {
 
             {/* Playback Controls */}
             <div
-              className="px-3 py-4 sm:px-6 sm:py-5 border-t flex justify-center"
+              className="px-3 py-4 sm:px-6 sm:py-5 border-t flex justify-center flex-shrink-0"
               style={{ 
                 borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
                 background: `linear-gradient(135deg, transparent 0%, ${character.colors.primary}08 30%, ${character.colors.glow}06 70%, transparent 100%)`,
@@ -539,7 +543,7 @@ export function MusicPlayerPanel() {
 
             {/* Footer */}
             <div
-              className="px-3 py-3 sm:px-6 sm:py-4 border-t flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0"
+              className="px-3 py-3 sm:px-6 sm:py-4 border-t flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 flex-shrink-0"
               style={{ 
                 borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
                 background: `linear-gradient(135deg, ${character.colors.primary}04 0%, transparent 100%)`,
@@ -560,7 +564,7 @@ export function MusicPlayerPanel() {
                 DISCONNECT
               </Button>
             </div>
-          </>
+          </div>
         )}
       </Card>
 

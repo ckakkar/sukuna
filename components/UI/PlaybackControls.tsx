@@ -64,6 +64,8 @@ export function PlaybackControls() {
       }
     } catch (error) {
       console.error("Error seeking:", error)
+      // Reset position on error
+      setSeekPosition(playbackPosition ?? 0)
     } finally {
       setIsSeeking(false)
     }
@@ -76,6 +78,7 @@ export function PlaybackControls() {
       await playerInstance.togglePlay()
     } catch (error) {
       console.error("Error controlling playback:", error)
+      // Could show toast notification here
     }
   }
 

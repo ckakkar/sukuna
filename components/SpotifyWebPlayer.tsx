@@ -178,6 +178,13 @@ export function SpotifyWebPlayer() {
               }
             } catch (error) {
               console.error("Error fetching track analysis:", error)
+              // Set a fallback track data to prevent infinite loading
+              setTrackData({
+                bpm: 120,
+                energy: 0.5,
+                valence: 0.5,
+                segments: [],
+              })
             } finally {
               setIsLoadingAnalysis(false)
             }

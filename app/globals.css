@@ -320,7 +320,8 @@ select:focus {
 
 /* Safe area insets for mobile devices (notches, home indicators) */
 .safe-area-inset-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 12px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+  margin-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .safe-area-inset-top {
@@ -368,4 +369,80 @@ select:focus {
     max-height: calc(100vh - 2rem);
     overflow-y: auto;
   }
+  
+  /* Ensure viewport height accounts for browser UI */
+  html,
+  body {
+    height: 100%;
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Prevent player from being cut off */
+  #__next {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+  }
+}
+
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Prevent layout shift for dynamic content */
+.reserve-space {
+  min-height: 200px;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #9333ea;
+  outline-offset: 2px;
+}
+
+/* Loading skeleton animation */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(147, 51, 234, 0.1) 0%,
+    rgba(147, 51, 234, 0.2) 50%,
+    rgba(147, 51, 234, 0.1) 100%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
 }

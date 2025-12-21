@@ -29,10 +29,13 @@ export function Search() {
       const response = await searchTracks(debouncedQuery, accessToken, 20)
       if (response) {
         setResults(response.tracks)
+      } else {
+        setResults([])
       }
     } catch (error) {
       console.error("Search error:", error)
       setResults([])
+      // Could add toast notification for network errors
     } finally {
       setIsSearching(false)
     }
@@ -78,9 +81,13 @@ export function Search() {
         setIsOpen(false)
         setQuery("")
         setResults([])
+      } else {
+        // Show error feedback
+        console.error("Failed to play track")
       }
     } catch (error) {
       console.error("Error playing track:", error)
+      // Could add toast notification here
     }
   }
 

@@ -1,17 +1,19 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS, type CharacterType } from "@/lib/types/character"
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { CHARACTER_QUOTES } from "@/lib/data/characterQuotes"
 import { cn } from "@/lib/utils/cn"
+import { useFocusTrap } from "@/hooks/useFocusTrap"
 
 export function CharacterSelectionModal() {
   const { hasSelectedCharacter, setSelectedCharacter, accessToken } = useSpotifyStore()
   const [selectedId, setSelectedId] = useState<CharacterType | null>(null)
   const [isAnimating, setIsAnimating] = useState(false)
+  const containerRef = useFocusTrap(!hasSelectedCharacter && !!accessToken)
 
   // Only show if user is logged in and hasn't selected a character
   if (!accessToken || hasSelectedCharacter) return null
@@ -32,12 +34,19 @@ export function CharacterSelectionModal() {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-50 flex flex-col items-center justify-center overflow-y-auto safe-area-inset-top safe-area-inset-bottom">
+      <div 
+        ref={containerRef}
+        className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-50 flex flex-col items-center justify-center overflow-y-auto safe-area-inset-top safe-area-inset-bottom"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="character-selection-title"
+      >
         {/* Selection Screen */}
         {!isAnimating && (
           <div className="w-full max-w-6xl px-4 py-4 sm:py-6 sm:px-8 sm:py-12 min-h-full flex flex-col">
             <div className="text-center mb-4 sm:mb-6 md:mb-12 flex-shrink-0">
               <h1 
+                id="character-selection-title"
                 className="text-3xl sm:text-5xl md:text-6xl font-black mb-2 sm:mb-4 tracking-widest"
                 style={{
                   background: "linear-gradient(135deg, #9333ea, #a855f7, #c026d3)",

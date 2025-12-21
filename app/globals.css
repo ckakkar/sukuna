@@ -18,10 +18,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
-  /* Mobile optimizations */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  /* Performance optimizations */
   will-change: auto;
   transform: translateZ(0);
 }
@@ -32,14 +30,14 @@ body {
   isolation: isolate;
 }
 
-/* Custom scrollbar for terminal aesthetic */
+/* Enhanced custom scrollbar with JJK theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(10, 10, 15, 0.5);
+  background: rgba(10, 10, 15, 0.8);
   border-radius: 4px;
 }
 
@@ -47,28 +45,32 @@ body {
   background: linear-gradient(180deg, #9333ea, #7c3aed);
   border-radius: 4px;
   transition: background 0.2s ease;
+  box-shadow: 0 0 10px rgba(147, 51, 234, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #a78bfa, #9333ea);
+  box-shadow: 0 0 15px rgba(147, 51, 234, 0.8);
 }
 
-/* Selection styling */
+/* Enhanced selection styling with cursed energy glow */
 ::selection {
-  background-color: rgba(147, 51, 234, 0.3);
+  background-color: rgba(147, 51, 234, 0.4);
   color: #ffffff;
+  text-shadow: 0 0 10px rgba(147, 51, 234, 0.8);
 }
 
 ::-moz-selection {
-  background-color: rgba(147, 51, 234, 0.3);
+  background-color: rgba(147, 51, 234, 0.4);
   color: #ffffff;
+  text-shadow: 0 0 10px rgba(147, 51, 234, 0.8);
 }
 
 /* Smooth transitions for all interactive elements */
 button,
 a,
 [role="button"] {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
 }
 
@@ -78,18 +80,20 @@ a:focus-visible,
   outline: 2px solid #9333ea;
   outline-offset: 2px;
   border-radius: 4px;
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.6);
 }
 
-/* Improved focus states */
+/* Improved focus states with glow */
 input:focus,
 textarea:focus,
 select:focus {
   outline: 2px solid #9333ea;
   outline-offset: 2px;
   border-radius: 4px;
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.4);
 }
 
-/* Loading skeleton animation */
+/* Enhanced skeleton animation with cursed energy */
 @keyframes skeleton {
   0% {
     background-position: -200px 0;
@@ -102,28 +106,51 @@ select:focus {
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.05) 100%
+    rgba(147, 51, 234, 0.05) 0%,
+    rgba(147, 51, 234, 0.15) 50%,
+    rgba(147, 51, 234, 0.05) 100%
   );
   background-size: 200px 100%;
   animation: skeleton 1.5s ease-in-out infinite;
 }
 
-/* Glass morphism utility */
+/* Enhanced glass morphism with better JJK aesthetic */
 .glass {
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(147, 51, 234, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 0 20px rgba(147, 51, 234, 0.05);
 }
 
-/* Glow effect utility */
+/* Enhanced glow effect utility with multiple layers */
 .glow-text {
-  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  text-shadow: 
+    0 0 10px currentColor, 
+    0 0 20px currentColor, 
+    0 0 30px currentColor,
+    0 0 40px currentColor;
 }
 
-/* Smooth fade animations */
+/* Cursed energy pulse animation */
+@keyframes cursedPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(147, 51, 234, 0.8);
+    transform: scale(1.05);
+  }
+}
+
+.cursed-pulse {
+  animation: cursedPulse 2s ease-in-out infinite;
+}
+
+/* Smooth fade animations with enhanced easing */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -136,7 +163,7 @@ select:focus {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -147,7 +174,7 @@ select:focus {
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-30px);
   }
   to {
     opacity: 1;
@@ -158,7 +185,7 @@ select:focus {
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
@@ -166,26 +193,110 @@ select:focus {
   }
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Enhanced glow animation */
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 30px currentColor;
+  }
+  50% {
+    text-shadow: 
+      0 0 20px currentColor,
+      0 0 40px currentColor,
+      0 0 60px currentColor,
+      0 0 80px currentColor;
+  }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-fade-in-down {
-  animation: fadeInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeInDown 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.4s ease-out;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+/* Enhanced hexagonal clip path for JJK domains */
+.hexagon-clip {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Cursed energy shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(147, 51, 234, 0.2) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s linear infinite;
 }
 
 /* Performance optimizations */
 .gpu-accelerated {
   transform: translateZ(0);
   will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Enhanced text stroke for JJK titles */
+.text-stroke {
+  -webkit-text-stroke: 2px rgba(147, 51, 234, 0.5);
+  text-stroke: 2px rgba(147, 51, 234, 0.5);
 }
 
 /* Disable animations for users who prefer reduced motion */
@@ -199,3 +310,10 @@ select:focus {
   }
 }
 
+/* Enhanced mobile touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.95);
+  }
+}

@@ -32,11 +32,11 @@ export function CharacterSelectionModal() {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-50 flex flex-col items-center justify-center overflow-y-auto safe-area-inset-top safe-area-inset-bottom">
         {/* Selection Screen */}
         {!isAnimating && (
-          <div className="w-full max-w-6xl px-4 py-6 sm:px-8 sm:py-12">
-            <div className="text-center mb-6 sm:mb-12">
+          <div className="w-full max-w-6xl px-4 py-4 sm:py-6 sm:px-8 sm:py-12 min-h-full flex flex-col">
+            <div className="text-center mb-4 sm:mb-6 md:mb-12 flex-shrink-0">
               <h1 
                 className="text-3xl sm:text-5xl md:text-6xl font-black mb-2 sm:mb-4 tracking-widest"
                 style={{
@@ -56,8 +56,8 @@ export function CharacterSelectionModal() {
               </p>
             </div>
 
-            {/* Character Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            {/* Character Grid - Scrollable on mobile */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 flex-1 overflow-y-auto pb-4 sm:pb-0 overscroll-contain">
               {Object.values(CHARACTERS).map((character) => {
                 const textColor = getVisibleTextColor(
                   character.colors.primary,
@@ -74,7 +74,8 @@ export function CharacterSelectionModal() {
                     className={cn(
                       "group relative border-2 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6",
                       "transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden touch-manipulation",
-                      "glass animate-scale-in"
+                      "glass animate-scale-in",
+                      "min-h-[120px] sm:min-h-[140px]"
                     )}
                     style={{
                       borderColor: isSelected

@@ -7,12 +7,15 @@ import { CHARACTER_QUOTES, type CharacterQuote } from "@/lib/data/characterQuote
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { Card } from "./shared/Card"
 import { cn } from "@/lib/utils/cn"
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery"
 
 export function BackgroundQuotes() {
   const { selectedCharacter, hasSelectedCharacter } = useSpotifyStore()
   const [currentQuote, setCurrentQuote] = useState<CharacterQuote | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const timeoutRefs = useRef<NodeJS.Timeout[]>([])
+  const isMobile = useMediaQuery("(max-width: 640px)")
+  const isTablet = useMediaQuery("(max-width: 768px)")
 
   useEffect(() => {
     // Clear all existing timeouts when character changes
@@ -73,8 +76,16 @@ export function BackgroundQuotes() {
   const character = CHARACTERS[selectedCharacter]
   const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
+  // Dynamic positioning: On mobile, position quotes higher to avoid player overlap
+  // On mobile, player is at bottom-3 (12px), so quotes should be at least 200px above
+  // On tablet/desktop, player is at bottom-6 (24px), so quotes can be closer
+  const bottomPosition = isMobile ? "bottom-[220px]" : isTablet ? "bottom-24" : "bottom-20"
+
   return (
-    <div className="fixed bottom-16 sm:bottom-20 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none w-full px-3 sm:px-0">
+    <div className={cn(
+      "fixed left-1/2 transform -translate-x-1/2 z-30 pointer-events-none w-full px-3 sm:px-0 transition-all duration-300",
+      bottomPosition
+    )}>
       <Card
         variant="glass"
         glowColor={character.colors.glow}

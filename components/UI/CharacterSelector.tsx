@@ -27,7 +27,7 @@ export function CharacterSelector() {
         aria-label={`Select character. Current: ${currentChar.name}`}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="group relative px-3 py-2 sm:px-4 sm:py-2.5 bg-black/30 backdrop-blur-xl border-2 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 hover:scale-105 active:scale-95 touch-manipulation"
+        className="group relative px-3 py-2.5 sm:px-4 sm:py-2.5 bg-black/30 backdrop-blur-xl border-2 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 hover:scale-105 active:scale-95 touch-manipulation min-h-[44px]"
         style={{
           borderColor: isOpen ? getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.9) : "rgba(255,255,255,0.15)",
           boxShadow: isOpen 
@@ -72,8 +72,9 @@ export function CharacterSelector() {
         <div 
           className={cn(
             "absolute top-full mt-2 sm:mt-3 right-0 overflow-hidden",
-            "w-[calc(100vw-2rem)] sm:min-w-[320px] sm:max-w-[320px] z-50",
-            "animate-fade-in-up"
+            "w-[calc(100vw-1rem)] sm:min-w-[320px] sm:max-w-[320px] z-50",
+            "animate-fade-in-up",
+            "max-h-[calc(100vh-120px)] sm:max-h-[500px]"
           )}
           style={{
             borderColor: getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.7),

@@ -17,9 +17,9 @@ export function Overlay() {
   )
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-10">
+    <div className="absolute inset-0 pointer-events-none z-10 safe-area-inset-top">
       {/* Top left - Domain info with beat animation */}
-      <div className="absolute top-3 left-3 sm:top-6 sm:left-6 font-mono text-[10px] sm:text-xs space-y-2 sm:space-y-3 pointer-events-none">
+      <div className="absolute top-2 left-2 sm:top-6 sm:left-6 font-mono text-[10px] sm:text-xs space-y-1.5 sm:space-y-3 pointer-events-none">
         <div className="relative">
           {/* Glow effect on beat */}
           {beatIntensity && beatIntensity > 0.5 && (
@@ -101,13 +101,13 @@ export function Overlay() {
       </div>
 
       {/* Top right - Character selector */}
-      <div className="absolute top-3 right-3 sm:top-6 sm:right-6 pointer-events-auto z-20">
+      <div className="absolute top-2 right-2 sm:top-6 sm:right-6 pointer-events-auto z-20">
         <CharacterSelector />
       </div>
 
-      {/* Bottom right - Character branding with beat pulse */}
+      {/* Bottom right - Character branding with beat pulse - Hide on mobile when player is visible */}
       <div 
-        className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 font-mono text-[10px] sm:text-xs space-y-1 sm:space-y-2 pointer-events-none"
+        className="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 font-mono text-[10px] sm:text-xs space-y-1 sm:space-y-2 pointer-events-none hidden sm:block"
         style={{
           transform: beatIntensity && beatIntensity > 0.5 ? `scale(${1 + beatIntensity * 0.05})` : "scale(1)",
           transition: "transform 0.1s ease-out",

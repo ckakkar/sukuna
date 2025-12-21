@@ -26,8 +26,23 @@ export function MusicPlayerPanel() {
     accessToken,
     beatIntensity,
   } = useSpotifyStore()
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false) // Collapsed by default on mobile
   const [pulseScale, setPulseScale] = useState(1)
+  
+  // Auto-expand on desktop, collapse on mobile
+  useEffect(() => {
+    const checkScreenSize = () => {
+      if (window.innerWidth >= 640) {
+        setIsExpanded(true)
+      } else {
+        setIsExpanded(false)
+      }
+    }
+    
+    checkScreenSize()
+    window.addEventListener('resize', checkScreenSize)
+    return () => window.removeEventListener('resize', checkScreenSize)
+  }, [])
   
   const character = useMemo(() => CHARACTERS[selectedCharacter], [selectedCharacter])
   const textColor = useMemo(
@@ -56,7 +71,7 @@ export function MusicPlayerPanel() {
 
   return (
     <div 
-      className="absolute bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-auto pointer-events-auto z-20 transition-transform duration-100 ease-out"
+      className="absolute bottom-0 left-0 right-0 sm:bottom-6 sm:left-6 sm:right-auto pointer-events-auto z-20 transition-transform duration-100 ease-out safe-area-inset-bottom"
       style={{ transform: `scale(${pulseScale})` }}
     >
       <Card
@@ -64,13 +79,14 @@ export function MusicPlayerPanel() {
         glowColor={character.colors.glow}
         borderColor={borderColor}
         className={cn(
-          "rounded-2xl sm:rounded-3xl overflow-hidden w-full sm:w-auto transition-all duration-500",
-          "animate-scale-in"
+          "rounded-t-3xl sm:rounded-2xl sm:rounded-3xl overflow-hidden w-full sm:w-auto transition-all duration-500",
+          "animate-scale-in",
+          "border-b-0 sm:border-b"
         )}
         style={{
           width: isExpanded ? "100%" : "auto",
           maxWidth: isExpanded ? "580px" : "none",
-          boxShadow: `0 25px 80px rgba(0,0,0,0.6), 0 0 60px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 40px ${character.colors.primary}20`,
+          boxShadow: `0 -10px 40px rgba(0,0,0,0.6), 0 0 60px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 40px ${character.colors.primary}20`,
         }}
       >
         {/* Animated glow border on beat */}
@@ -193,6 +209,70 @@ export function MusicPlayerPanel() {
             )}
           </button>
         </div>
+
+        {/* Collapsed state - Show minimal info on mobile */}
+        {!isExpanded && currentTrack && (
+          <div className="px-3 py-3 sm:px-4 flex items-center gap-3">
+            {currentTrack.image && (
+              <div
+                className="rounded-lg overflow-hidden shadow-lg flex-shrink-0 relative w-12 h-12 sm:w-14 sm:h-14"
+                style={{
+                  boxShadow: `0 4px 20px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? '80' : '40'}`,
+                }}
+              >
+                <Image
+                  src={currentTrack.image}
+                  alt={currentTrack.album}
+                  fill
+                  className="object-cover"
+                  sizes="56px"
+                  unoptimized
+                />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div 
+                className="text-xs sm:text-sm font-bold truncate mb-0.5"
+                style={{
+                  color: textColor,
+                  textShadow: `0 0 8px ${character.colors.glow}60`,
+                }}
+              >
+                {currentTrack.name}
+              </div>
+              <div 
+                className="text-[10px] sm:text-xs truncate opacity-80"
+                style={{
+                  color: character.colors.secondary || "rgba(255,255,255,0.7)",
+                }}
+              >
+                {currentTrack.artist}
+              </div>
+            </div>
+            <button
+              onClick={() => setIsExpanded(true)}
+              className="flex-shrink-0 p-2 hover:bg-white/10 rounded-lg transition-all duration-200 active:scale-95 touch-manipulation"
+              style={{
+                color: textColor,
+              }}
+              aria-label="Expand player"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {isExpanded && (
           <>

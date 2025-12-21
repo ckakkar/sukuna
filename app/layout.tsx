@@ -9,6 +9,7 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 5,
     userScalable: true,
+    viewportFit: "cover", // For safe area insets on iOS
   },
 }
 

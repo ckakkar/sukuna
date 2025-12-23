@@ -7,6 +7,7 @@ import { DomainExpansion } from "@/components/UI/DomainExpansion"
 import { CharacterSelectionModal } from "@/components/UI/CharacterSelectionModal"
 import { BackgroundQuotes } from "@/components/UI/BackgroundQuotes"
 import { CharacterSwitchAnimation } from "@/components/UI/CharacterSwitchAnimation"
+import { CursedEnergyParticles } from "@/components/UI/CursedEnergyParticles"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { JJKLoginScreen } from "@/components/UI/JJKLoginScreen"
 import { signInWithSpotify } from "@/app/actions/auth"
@@ -24,9 +25,12 @@ export default async function Home() {
         Skip to main content
       </a>
       <main id="main-content" className="relative w-screen h-screen min-h-screen bg-black overflow-hidden">
+        {/* Cursed Energy Particles Background */}
+        {session && <CursedEnergyParticles />}
+        
         {/* Only show 3D Scene after login */}
         {session && (
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 animate-fade-in">
             <SceneWrapper />
           </div>
         )}

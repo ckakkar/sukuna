@@ -31,7 +31,10 @@ export function JJKLoginScreen({ onLogin }: JJKLoginScreenProps) {
 
   return (
     <div className="fixed inset-0 z-20 overflow-hidden bg-gradient-to-br from-black via-purple-950/30 to-black">
-      {/* Animated background grid */}
+      {/* Animated cursed energy background */}
+      <div className="absolute inset-0 bg-cursed-energy opacity-20" />
+      
+      {/* Animated background grid with domain pattern */}
       <div className="absolute inset-0 opacity-10">
         <div 
           className="absolute inset-0" 
@@ -42,6 +45,18 @@ export function JJKLoginScreen({ onLogin }: JJKLoginScreenProps) {
             `,
             backgroundSize: '50px 50px',
             animation: 'gridMove 20s linear infinite'
+          }}
+        />
+      </div>
+      
+      {/* Hexagonal domain pattern overlay */}
+      <div className="absolute inset-0 opacity-5">
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 30% 30%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 70% 70%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)`,
+            animation: 'domain-barrier 4s ease-in-out infinite',
           }}
         />
       </div>
@@ -88,15 +103,16 @@ export function JJKLoginScreen({ onLogin }: JJKLoginScreenProps) {
               {/* Glowing background */}
               <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 opacity-50 animate-pulse" />
               
-              {/* Main title */}
+              {/* Main title with modern reveal animation */}
               <h1 
-                className="relative text-6xl sm:text-7xl font-black tracking-wider mb-2"
+                className="relative text-6xl sm:text-7xl font-black tracking-wider mb-2 animate-cursed-text-reveal will-animate"
                 style={{
                   background: 'linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #9333ea 100%)',
+                  backgroundSize: '200% 200%',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   textShadow: '0 0 80px rgba(147, 51, 234, 0.5)',
-                  animation: 'titleGlow 3s ease-in-out infinite',
+                  animation: 'titleGlow 3s ease-in-out infinite, cursed-energy-flow 4s ease infinite',
                 }}
               >
                 両面宿儺
@@ -183,23 +199,33 @@ export function JJKLoginScreen({ onLogin }: JJKLoginScreenProps) {
             <button
               onClick={onLogin}
               type="button"
-              className="relative group w-full px-12 py-6 overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 active:scale-95 touch-manipulation"
+              className="relative group w-full px-12 py-6 overflow-hidden rounded-2xl transition-all duration-500 hover:scale-105 active:scale-95 touch-manipulation domain-border will-animate"
               style={{
                 background: 'linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #a855f7 100%)',
+                backgroundSize: '200% 200%',
                 boxShadow: `
                   0 0 60px rgba(147, 51, 234, 0.6),
                   inset 0 0 30px rgba(168, 85, 247, 0.3),
                   0 20px 60px rgba(0, 0, 0, 0.5)
                 `,
+                animation: 'cursed-energy-flow 3s ease infinite',
               }}
               aria-label="Connect with Spotify to summon cursed energy"
             >
-              {/* Animated background shimmer */}
+              {/* Animated background shimmer with energy wave */}
               <div 
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                 style={{
                   background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
                   animation: 'shimmer 2s infinite',
+                }} 
+              />
+              {/* Energy wave effect */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.4), transparent)',
+                  animation: 'energy-wave 2s ease-out infinite',
                 }} 
               />
 

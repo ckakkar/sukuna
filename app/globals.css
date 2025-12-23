@@ -420,10 +420,26 @@ html {
   scroll-behavior: smooth;
 }
 
+/* View Transitions API support for modern page transitions */
+/* Note: This is a modern CSS feature for smooth page transitions */
+@supports (view-transition-name: none) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Better focus indicators for keyboard navigation */
 *:focus-visible {
   outline: 2px solid #9333ea;
   outline-offset: 2px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.2);
 }
 
 /* Loading skeleton animation */
@@ -445,4 +461,247 @@ html {
   );
   background-size: 200px 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* Modern spring-based animations */
+@keyframes spring-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  60% {
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes spring-out {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+}
+
+@keyframes cursed-energy-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes domain-barrier {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes cursed-seal {
+  0% {
+    stroke-dashoffset: 1000;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.3;
+  }
+  33% {
+    transform: translateY(-20px) translateX(10px) scale(1.2);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translateY(-40px) translateX(-10px) scale(0.8);
+    opacity: 0.5;
+  }
+}
+
+@keyframes barrier-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 40px currentColor, 0 0 80px currentColor, 0 0 120px currentColor;
+  }
+}
+
+@keyframes technique-callout {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px) scale(0.8);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px) scale(1.05);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateX(-50%) translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes cursed-text-reveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0% 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes energy-wave {
+  0% {
+    transform: translateX(-100%) scaleY(1);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) scaleY(1.5);
+    opacity: 0;
+  }
+}
+
+/* Modern utility classes */
+.animate-spring-in {
+  animation: spring-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-spring-out {
+  animation: spring-out 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-cursed-energy-flow {
+  background-size: 200% 200%;
+  animation: cursed-energy-flow 3s ease infinite;
+}
+
+.animate-domain-barrier {
+  animation: domain-barrier 2s ease-in-out infinite;
+}
+
+.animate-cursed-seal {
+  stroke-dasharray: 1000;
+  animation: cursed-seal 2s ease-out forwards;
+}
+
+.animate-particle-float {
+  animation: particle-float 4s ease-in-out infinite;
+}
+
+.animate-barrier-pulse {
+  animation: barrier-pulse 2s ease-in-out infinite;
+}
+
+.animate-technique-callout {
+  animation: technique-callout 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-cursed-text-reveal {
+  animation: cursed-text-reveal 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-energy-wave {
+  animation: energy-wave 2s ease-out infinite;
+}
+
+/* Smooth transitions for all elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* GPU acceleration for animated elements */
+.will-animate {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Modern glass morphism with better performance */
+.glass-modern {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(147, 51, 234, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Cursed energy gradient backgrounds */
+.bg-cursed-energy {
+  background: linear-gradient(
+    135deg,
+    rgba(147, 51, 234, 0.1) 0%,
+    rgba(124, 58, 237, 0.2) 50%,
+    rgba(168, 85, 247, 0.1) 100%
+  );
+  background-size: 200% 200%;
+  animation: cursed-energy-flow 4s ease infinite;
+}
+
+/* Domain expansion border effect */
+.domain-border {
+  position: relative;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.domain-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    45deg,
+    rgba(147, 51, 234, 0.8),
+    rgba(168, 85, 247, 0.8),
+    rgba(147, 51, 234, 0.8)
+  );
+  background-size: 200% 200%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: cursed-energy-flow 3s linear infinite;
+  z-index: -1;
 }

@@ -27,12 +27,13 @@ export function CharacterSelector() {
         aria-label={`Select character. Current: ${currentChar.name}`}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="group relative px-3 py-2.5 sm:px-4 sm:py-2.5 bg-black/30 backdrop-blur-xl border-2 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 hover:scale-105 active:scale-95 touch-manipulation min-h-[44px]"
+        className="group relative px-3 py-2.5 sm:px-4 sm:py-2.5 glass-modern border-2 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 hover:scale-105 active:scale-95 touch-manipulation min-h-[44px] will-animate"
         style={{
           borderColor: isOpen ? getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.9) : "rgba(255,255,255,0.15)",
           boxShadow: isOpen 
-            ? `0 0 30px ${currentChar.colors.glow}50, 0 8px 32px rgba(0,0,0,0.4), inset 0 0 20px ${currentChar.colors.glow}10`
+            ? `0 0 30px ${currentChar.colors.glow}50, 0 8px 32px rgba(0,0,0,0.4), inset 0 0 20px ${currentChar.colors.glow}10, 0 0 0 1px ${currentChar.colors.glow}30`
             : "0 4px 16px rgba(0,0,0,0.2)",
+          transform: isOpen ? 'scale(1.02)' : 'scale(1)',
         }}
       >
         <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -73,7 +74,7 @@ export function CharacterSelector() {
           className={cn(
             "absolute top-full mt-2 sm:mt-3 right-0 overflow-hidden",
             "w-[calc(100vw-1rem)] sm:min-w-[320px] sm:max-w-[320px] z-50",
-            "animate-fade-in-up",
+            "animate-spring-in",
             "max-h-[calc(100vh-120px)] sm:max-h-[500px]"
           )}
           style={{
@@ -109,20 +110,23 @@ export function CharacterSelector() {
                   aria-label={`Select ${char.name} (${char.japaneseName})`}
                   aria-selected={isSelected}
                   role="option"
-                  className="w-full px-3 py-2.5 sm:px-4 sm:py-3.5 flex items-center gap-2 sm:gap-3 hover:bg-white/5 active:bg-white/10 transition-all duration-200 border-b last:border-b-0 group relative overflow-hidden touch-manipulation"
+                  className="w-full px-3 py-2.5 sm:px-4 sm:py-3.5 flex items-center gap-2 sm:gap-3 hover:bg-white/5 active:bg-white/10 transition-all duration-300 border-b last:border-b-0 group relative overflow-hidden touch-manipulation will-animate"
                   style={{
                     backgroundColor: isSelected 
                       ? `${char.colors.glow || char.colors.primary}20` 
                       : "transparent",
                     borderColor: getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.1),
+                    transform: isSelected ? 'translateX(4px)' : 'translateX(0)',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = `${char.colors.glow || char.colors.primary}15`
+                    e.currentTarget.style.transform = 'translateX(4px) scale(1.01)'
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = isSelected 
                       ? `${char.colors.glow || char.colors.primary}20` 
                       : "transparent"
+                    e.currentTarget.style.transform = isSelected ? 'translateX(4px)' : 'translateX(0)'
                   }}
                 >
                   {/* Glow effect on hover */}

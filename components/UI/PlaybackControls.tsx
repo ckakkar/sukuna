@@ -264,13 +264,16 @@ export function PlaybackControls() {
         {/* Play/Pause - Main button */}
         <button
           onClick={handlePlayPause}
-          className="p-4 sm:p-5 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-2xl hover:scale-110 active:scale-95 relative overflow-hidden group touch-manipulation"
+          className="p-4 sm:p-5 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-2xl hover:scale-110 active:scale-95 relative overflow-hidden group touch-manipulation will-animate domain-border"
           style={{
             background: isPaused
               ? `linear-gradient(135deg, ${character.colors.primary} 0%, ${character.colors.glow} 50%, ${character.colors.secondary || character.colors.glow} 100%)`
               : `linear-gradient(135deg, ${character.colors.secondary || character.colors.glow} 0%, ${character.colors.glow} 50%, ${character.colors.primary} 100%)`,
+            backgroundSize: '200% 200%',
             boxShadow: `0 10px 40px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '70'}, 0 0 0 2px rgba(255,255,255,0.1), inset 0 2px 0 rgba(255,255,255,0.3)`,
             transform: buttonPulse === "play" || ((beatIntensity ?? 0) > 0.7) ? "scale(1.15)" : "scale(1)",
+            animation: 'cursed-energy-flow 3s ease infinite',
+            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
           aria-label={isPaused ? "Play" : "Pause"}
         >

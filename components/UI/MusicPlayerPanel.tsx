@@ -82,15 +82,18 @@ export function MusicPlayerPanel() {
         glowColor={character.colors.glow}
         borderColor={borderColor}
         className={cn(
-          "rounded-t-3xl sm:rounded-2xl sm:rounded-3xl overflow-hidden w-full sm:w-auto transition-all duration-500",
-          "animate-scale-in",
+          "rounded-t-3xl sm:rounded-2xl sm:rounded-3xl overflow-hidden w-full sm:w-auto transition-all duration-500 will-animate",
+          "animate-spring-in",
           "border-b-0 sm:border-b",
-          "max-h-[85vh] sm:max-h-none"
+          "max-h-[85vh] sm:max-h-none",
+          "glass-modern"
         )}
         style={{
           width: isExpanded ? "100%" : "auto",
           maxWidth: isExpanded ? "580px" : "none",
           boxShadow: `0 -10px 40px rgba(0,0,0,0.6), 0 0 60px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 40px ${character.colors.primary}20`,
+          transform: `scale(${pulseScale})`,
+          transition: 'transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
         {/* Animated glow border on beat */}
@@ -314,11 +317,11 @@ export function MusicPlayerPanel() {
                 <div className="flex gap-5 items-start relative z-10">
                   {currentTrack.image && (
                     <div
-                      className="rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl flex-shrink-0 relative w-20 h-20 sm:w-28 sm:h-28 group"
+                      className="rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl flex-shrink-0 relative w-20 h-20 sm:w-28 sm:h-28 group will-animate domain-border"
                       style={{
                         boxShadow: `0 12px 50px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '50'}, 0 0 0 3px ${character.colors.primary}30, inset 0 0 30px ${character.colors.glow}30`,
-                        transform: (beatIntensity ?? 0) > 0.7 ? `scale(${1 + (beatIntensity ?? 0) * 0.05})` : "scale(1)",
-                        transition: "transform 0.1s ease-out",
+                        transform: (beatIntensity ?? 0) > 0.7 ? `scale(${1 + (beatIntensity ?? 0) * 0.05}) rotate(${(beatIntensity ?? 0) * 2}deg)` : "scale(1) rotate(0deg)",
+                        transition: "transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1)",
                       }}
                     >
                       <Image

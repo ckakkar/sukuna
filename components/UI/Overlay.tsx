@@ -19,26 +19,26 @@ export function Overlay() {
   return (
     <div className="absolute inset-0 pointer-events-none z-10 safe-area-inset-top">
       {/* Top left - Domain info with beat animation */}
-      <div className="absolute top-2 left-2 sm:top-6 sm:left-6 font-mono text-[10px] sm:text-xs space-y-1.5 sm:space-y-3 pointer-events-none">
+      <div className="absolute top-2 left-2 sm:top-6 sm:left-6 font-mono text-[10px] sm:text-xs space-y-1.5 sm:space-y-3 pointer-events-none will-animate">
         <div className="relative">
           {/* Glow effect on beat */}
           {beatIntensity && beatIntensity > 0.5 && (
             <div
-              className="absolute -inset-2 rounded-lg opacity-40 blur-xl"
+              className="absolute -inset-2 rounded-lg opacity-40 blur-xl animate-barrier-pulse"
               style={{
                 background: `radial-gradient(circle, ${character.colors.glow}, transparent)`,
-                animation: "pulse 0.3s ease-out",
+                animation: "pulse 0.3s ease-out, barrier-pulse 2s ease-in-out infinite",
               }}
             />
           )}
           
           <div
-            className="font-bold tracking-wider text-xs sm:text-sm md:text-base animate-glow relative"
+            className="font-bold tracking-wider text-xs sm:text-sm md:text-base animate-glow relative animate-cursed-text-reveal"
             style={{
               color: textColor,
               textShadow: `0 0 ${15 + (beatIntensity ?? 0) * 25}px ${character.colors.glow}, 0 0 ${30 + (beatIntensity ?? 0) * 40}px ${character.colors.glow}50`,
               transform: beatIntensity && beatIntensity > 0.6 ? `scale(${1 + beatIntensity * 0.08})` : "scale(1)",
-              transition: "transform 0.1s ease-out",
+              transition: "transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
           >
             DOMAIN EXPANSION
@@ -107,10 +107,10 @@ export function Overlay() {
 
       {/* Bottom right - Character branding with beat pulse - Hide on mobile when player is visible */}
       <div 
-        className="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 font-mono text-[10px] sm:text-xs space-y-1 sm:space-y-2 pointer-events-none hidden sm:block"
+        className="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 font-mono text-[10px] sm:text-xs space-y-1 sm:space-y-2 pointer-events-none hidden sm:block will-animate"
         style={{
           transform: beatIntensity && beatIntensity > 0.5 ? `scale(${1 + beatIntensity * 0.05})` : "scale(1)",
-          transition: "transform 0.1s ease-out",
+          transition: "transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       >
         <div className="text-right space-y-1">
@@ -154,12 +154,14 @@ export function Overlay() {
           
           {/* Technique badge */}
           <div
-            className="inline-block px-3 py-1.5 rounded-lg border backdrop-blur-sm"
+            className="inline-block px-3 py-1.5 rounded-lg border backdrop-blur-sm glass-modern domain-border animate-spring-in"
             style={{
               color: character.colors.accent || character.colors.glow || textColor,
               borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
               background: `linear-gradient(135deg, ${character.colors.primary}20, ${character.colors.glow}10)`,
+              backgroundSize: '200% 200%',
               boxShadow: `0 0 15px ${character.colors.glow}30, inset 0 0 15px ${character.colors.primary}15`,
+              animation: 'cursed-energy-flow 3s ease infinite',
             }}
           >
             <div className="text-[9px] font-semibold tracking-widest">

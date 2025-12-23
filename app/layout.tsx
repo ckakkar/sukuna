@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" style={{ viewTransitionName: "root" }}>
       <body className="antialiased">{children}</body>
     </html>
   )

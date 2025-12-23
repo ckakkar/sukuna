@@ -94,7 +94,7 @@ export function DomainExpansion() {
 
       {/* Main domain text */}
       <div 
-        className="absolute inset-0 flex flex-col items-center justify-center space-y-8"
+        className="absolute inset-0 flex flex-col items-center justify-center space-y-8 will-animate"
         style={{
           opacity: phase === "main" ? 1 : 0,
           transform: phase === "main" ? "scale(1)" : "scale(0.8)",
@@ -103,11 +103,11 @@ export function DomainExpansion() {
       >
         {/* Domain Expansion text */}
         <div
-          className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-black tracking-widest relative"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-black tracking-widest relative animate-cursed-text-reveal"
           style={{
             color: textColor,
             textShadow: `0 0 40px ${character.colors.glow}, 0 0 80px ${character.colors.glow}, 0 0 120px ${character.colors.glow}80`,
-            animation: "textGlow 1s ease-in-out infinite alternate",
+            animation: "textGlow 1s ease-in-out infinite alternate, barrier-pulse 2s ease-in-out infinite",
           }}
         >
           領域展開

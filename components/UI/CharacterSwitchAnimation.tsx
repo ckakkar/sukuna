@@ -46,19 +46,33 @@ export function CharacterSwitchAnimation() {
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
-      {/* Background flash */}
+      {/* Background flash with energy wave */}
       <div
-        className="absolute inset-0 animate-flash"
+        className="absolute inset-0 animate-flash will-animate"
         style={{
           background: `radial-gradient(circle at center, ${character.colors.glow}60, transparent 70%)`,
+          animation: 'flash 0.8s ease-out, barrier-pulse 1s ease-in-out',
         }}
       />
+      
+      {/* Energy waves */}
+      {[...Array(3)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute inset-0 opacity-30"
+          style={{
+            background: `radial-gradient(circle at center, ${character.colors.glow}40, transparent 60%)`,
+            animation: `expandPulse ${1.5 + i * 0.3}s ease-out ${i * 0.2}s forwards`,
+            transform: 'scale(0)',
+          }}
+        />
+      ))}
 
       {/* Character reveal */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         {/* Character image */}
         {character.imagePath && (
-          <div className="relative w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 mb-4 sm:mb-6 rounded-xl sm:rounded-2xl overflow-hidden animate-characterReveal">
+          <div className="relative w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 mb-4 sm:mb-6 rounded-xl sm:rounded-2xl overflow-hidden animate-characterReveal will-animate domain-border">
             <Image
               src={character.imagePath}
               alt={character.name}
@@ -70,9 +84,18 @@ export function CharacterSwitchAnimation() {
               }}
             />
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 animate-barrier-pulse"
               style={{
                 background: `linear-gradient(to top, ${character.colors.glow}80, transparent)`,
+                animation: 'barrier-pulse 2s ease-in-out infinite',
+              }}
+            />
+            {/* Glowing border effect */}
+            <div
+              className="absolute inset-0 rounded-xl sm:rounded-2xl"
+              style={{
+                boxShadow: `inset 0 0 30px ${character.colors.glow}60, 0 0 60px ${character.colors.glow}40`,
+                animation: 'glow-pulse 2s ease-in-out infinite',
               }}
             />
           </div>
@@ -148,11 +171,24 @@ export function CharacterSwitchAnimation() {
             transform: translateY(0);
           }
         }
+        @keyframes expandPulse {
+          0% {
+            opacity: 0.3;
+            transform: scale(0);
+          }
+          50% {
+            opacity: 0.6;
+          }
+          100% {
+            opacity: 0;
+            transform: scale(2);
+          }
+        }
         .animate-flash {
           animation: flash 0.8s ease-out;
         }
         .animate-characterReveal {
-          animation: characterReveal 1s ease-out;
+          animation: characterReveal 1s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .animate-fadeInUp {
           animation: fadeInUp 0.8s ease-out forwards;

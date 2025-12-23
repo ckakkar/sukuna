@@ -92,10 +92,13 @@ export function BackgroundQuotes() {
         borderColor={getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6)}
         className={cn(
           "rounded-xl sm:rounded-2xl px-4 py-4 sm:px-8 sm:py-6 max-w-2xl mx-auto",
-          "animate-fade-in-up"
+          "animate-spring-in will-animate glass-modern domain-border"
         )}
         style={{
           boxShadow: `0 10px 40px rgba(0,0,0,0.5), 0 0 30px ${character.colors.glow}40, inset 0 0 20px ${character.colors.glow}10`,
+          background: `linear-gradient(135deg, ${character.colors.primary}15 0%, ${character.colors.glow}08 50%, transparent 100%)`,
+          backgroundSize: '200% 200%',
+          animation: 'cursed-energy-flow 4s ease infinite',
         }}
       >
         {currentQuote.japanese && (

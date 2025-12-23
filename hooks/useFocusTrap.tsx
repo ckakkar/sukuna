@@ -5,7 +5,7 @@ import { useEffect, useRef, RefObject } from "react"
 /**
  * Traps focus within a container element (useful for modals)
  */
-export function useFocusTrap(isActive: boolean): RefObject<HTMLDivElement> {
+export function useFocusTrap(isActive: boolean): RefObject<HTMLDivElement | null> {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

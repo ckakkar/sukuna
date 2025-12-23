@@ -20,7 +20,7 @@ interface Particle {
 export function CursedEnergyParticles() {
   const { selectedCharacter, beatIntensity, intensity } = useSpotifyStore()
   const [particles, setParticles] = useState<Particle[]>([])
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | undefined>(undefined)
   const containerRef = useRef<HTMLDivElement>(null)
   const character = useMemo(() => CHARACTERS[selectedCharacter], [selectedCharacter])
 

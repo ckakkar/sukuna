@@ -1,16 +1,17 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Sukuna - Cursed Energy Visualizer",
   description: "High-performance 3D audio-reactive visualization",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-    viewportFit: "cover", // For safe area insets on iOS
-  },
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: "cover", // For safe area insets on iOS
 }
 
 export default function RootLayout({

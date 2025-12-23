@@ -16,22 +16,26 @@ function BeatReactiveLights() {
   const light2Ref = useRef<PointLight>(null)
   const light3Ref = useRef<PointLight>(null)
   
+  // Detect device capability
+  const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  
   useFrame(() => {
     const { beatIntensity, selectedCharacter } = useSpotifyStore.getState()
     const character = CHARACTERS[selectedCharacter]
     const beat = beatIntensity ?? 0
+    const multiplier = isMobile ? 0.6 : 1 // Reduced intensity on mobile
 
     if (light1Ref.current) {
-      light1Ref.current.intensity = 1.2 + beat * 3
-      light1Ref.current.distance = 20 + beat * 10
+      light1Ref.current.intensity = 1.2 + beat * 2 * multiplier
+      light1Ref.current.distance = 18 + beat * 6 * multiplier
     }
     
     if (light2Ref.current) {
-      light2Ref.current.intensity = 0.6 + beat * 2
+      light2Ref.current.intensity = 0.6 + beat * 1.2 * multiplier
     }
     
     if (light3Ref.current) {
-      light3Ref.current.intensity = 0.8 + beat * 2.5
+      light3Ref.current.intensity = 0.8 + beat * 1.5 * multiplier
     }
   })
 
@@ -46,9 +50,9 @@ function BeatReactiveLights() {
         position={[10, 10, 10]}
         intensity={1.2}
         color={primaryLightColor}
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        castShadow={!isMobile}
+        shadow-mapSize-width={isMobile ? 512 : 1024}
+        shadow-mapSize-height={isMobile ? 512 : 1024}
       />
       <pointLight
         ref={light2Ref}
@@ -66,7 +70,7 @@ function BeatReactiveLights() {
         position={[5, 5, 5]}
         intensity={0.9}
         color={primaryLightColor}
-        castShadow
+        castShadow={!isMobile}
       />
     </>
   )
@@ -74,19 +78,26 @@ function BeatReactiveLights() {
 
 function CursedEnergyField() {
   const meshRef = useRef<THREE.Mesh>(null)
+  const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  const lastUpdateRef = useRef(0)
   
   useFrame((state) => {
     if (!meshRef.current) return
+    
+    // Throttle updates on mobile for better performance
+    if (isMobile && state.clock.elapsedTime - lastUpdateRef.current < 0.05) return
+    lastUpdateRef.current = state.clock.elapsedTime
+    
     const { beatIntensity, intensity } = useSpotifyStore.getState()
     
-    meshRef.current.rotation.y = state.clock.elapsedTime * 0.1
-    meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.2
+    meshRef.current.rotation.y = state.clock.elapsedTime * 0.08
+    meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.4) * 0.15
     
-    const scale = 8 + (intensity ?? 0) * 2 + (beatIntensity ?? 0) * 1
+    const scale = 7 + (intensity ?? 0) * 1.5 + (beatIntensity ?? 0) * 0.8
     meshRef.current.scale.setScalar(scale)
     
     const material = meshRef.current.material as THREE.MeshBasicMaterial
-    material.opacity = 0.05 + (beatIntensity ?? 0) * 0.1
+    material.opacity = 0.04 + (beatIntensity ?? 0) * 0.08
   })
 
   const selectedCharacter = useSpotifyStore((state) => state.selectedCharacter)
@@ -108,17 +119,25 @@ function CursedEnergyField() {
 export function Scene() {
   const selectedCharacter = useSpotifyStore((state) => state.selectedCharacter)
   const character = CHARACTERS[selectedCharacter]
+  
+  // Detect device for performance optimization
+  const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  const isTablet = typeof window !== 'undefined' && /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768
+  const devicePixelRatio = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2) : 1
 
   return (
     <Canvas
-      shadows
-      dpr={[1, 2]}
+      shadows={!isMobile}
+      dpr={[1, devicePixelRatio]}
       gl={{ 
-        antialias: true,
+        antialias: !isMobile,
         alpha: true,
-        powerPreference: "high-performance"
+        powerPreference: "high-performance",
+        stencil: false,
+        depth: true,
       }}
       camera={{ position: [0, 0, 5], fov: 50 }}
+      performance={{ min: 0.8 }}
     >
       <color attach="background" args={["#0a0a0f"]} />
       <fog attach="fog" args={["#0a0a0f", 5, 50]} />
@@ -127,15 +146,15 @@ export function Scene() {
       <ambientLight intensity={0.2} />
       <BeatReactiveLights />
 
-      {/* Environment */}
+      {/* Environment - Reduced stars on mobile */}
       <Stars
         radius={100}
         depth={50}
-        count={5000}
-        factor={4}
+        count={isMobile ? 1500 : isTablet ? 2500 : 4000}
+        factor={isMobile ? 3 : 4}
         saturation={0}
         fade
-        speed={0.5}
+        speed={0.4}
       />
 
       {/* Camera controls */}

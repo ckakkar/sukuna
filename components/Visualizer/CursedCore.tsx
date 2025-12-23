@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef, useMemo } from "react"
-import { useFrame } from "@react-three/fiber"
+import { useRef, useMemo, useEffect, useState } from "react"
+import { useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 import type { Mesh, Points } from "three"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
@@ -10,6 +10,33 @@ import { CHARACTERS } from "@/lib/types/character"
 const damp = (current: number, target: number, smoothing: number, delta: number) => {
   const t = 1 - Math.exp(-smoothing * delta)
   return current + (target - current) * t
+}
+
+// Detect device capability for performance scaling
+function useDeviceQuality() {
+  const { gl } = useThree()
+  const [quality, setQuality] = useState<'high' | 'medium' | 'low'>('medium')
+  
+  useEffect(() => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768
+    const pixelRatio = window.devicePixelRatio || 1
+    
+    // Check GPU capability via WebGL
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info')
+    const renderer = debugInfo?.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || ''
+    const isLowEndGPU = /mali|adreno|powervr|imgtec/i.test(renderer) && !/pro|xt|plus/i.test(renderer)
+    
+    if (isMobile && (isLowEndGPU || pixelRatio > 2)) {
+      setQuality('low')
+    } else if (isMobile || isTablet) {
+      setQuality('medium')
+    } else {
+      setQuality('high')
+    }
+  }, [gl])
+  
+  return quality
 }
 
 export function CursedCore() {
@@ -21,10 +48,11 @@ export function CursedCore() {
   
   const { trackData, selectedCharacter, intensity, currentTechnique, beatIntensity } = useSpotifyStore()
   const character = CHARACTERS[selectedCharacter]
+  const quality = useDeviceQuality()
 
-  // Create cursed energy particles
+  // Optimized particle count based on device quality
   const particles = useMemo(() => {
-    const count = 2000
+    const count = quality === 'high' ? 600 : quality === 'medium' ? 300 : 150
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
     
@@ -44,7 +72,7 @@ export function CursedCore() {
     }
     
     return { positions, colors, count }
-  }, [character])
+  }, [character, quality])
 
   // Create slash lines for cleave technique
   const slashLines = useMemo(() => {
@@ -82,54 +110,70 @@ export function CursedCore() {
     const bpm = trackData?.bpm ?? 120
     const beat = beatIntensity ?? 0
 
-    // Main core animation with beat reaction
-    const scaleTarget = 1 + energy * 1.5 + beat * 0.8
+    // Optimized main core animation with beat reaction
+    const scaleTarget = 1 + energy * 0.8 + beat * 0.4
     const currentScale = meshRef.current.scale.x
-    const nextScale = damp(currentScale, scaleTarget, 20, delta)
+    const nextScale = damp(currentScale, scaleTarget, 12, delta)
     meshRef.current.scale.setScalar(nextScale)
 
-    // Inner core counter-rotation
-    innerMeshRef.current.rotation.y -= delta * (bpm / 100)
-    innerMeshRef.current.rotation.x += delta * (bpm / 200)
+    // Simplified inner core rotation - reduced calculations
+    const innerRotationSpeed = quality === 'high' ? (bpm / 100) : (bpm / 150)
+    innerMeshRef.current.rotation.y -= delta * innerRotationSpeed
+    innerMeshRef.current.rotation.x += delta * innerRotationSpeed * 0.5
     innerMeshRef.current.scale.setScalar(nextScale * 0.7)
 
-    // Character-specific geometry
+    // Optimized character-specific geometry - only update when needed
+    const characterRotationMultiplier = quality === 'high' ? 1 : 0.7
     if (selectedCharacter === "sukuna") {
-      meshRef.current.rotation.y += delta * (bpm / 120) * 1.5
-      meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.5) * 0.3
+      meshRef.current.rotation.y += delta * (bpm / 140) * characterRotationMultiplier
+      meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.2
     } else if (selectedCharacter === "gojo") {
-      meshRef.current.rotation.y += delta * 0.3
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.2
+      meshRef.current.rotation.y += delta * 0.25 * characterRotationMultiplier
+      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.15
     } else if (selectedCharacter === "yuji") {
-      meshRef.current.rotation.x += delta * (bpm / 180)
-      meshRef.current.rotation.z += delta * (bpm / 240)
+      meshRef.current.rotation.x += delta * (bpm / 200) * characterRotationMultiplier
+      meshRef.current.rotation.z += delta * (bpm / 280) * characterRotationMultiplier
     }
 
-    // Particles animation
+    // Optimized particles animation - only update every other frame on lower quality
     const particlePositions = particlesRef.current.geometry.attributes.position.array as Float32Array
-    for (let i = 0; i < particles.count; i++) {
-      const i3 = i * 3
-      const time = state.clock.elapsedTime + i * 0.1
-      
-      // Spiral outward on beat
-      const radius = 3 + Math.sin(time * 0.5) * 1 + beat * 2
-      const theta = time * 0.3 + i * 0.1
-      const phi = Math.sin(time * 0.2) * Math.PI
-      
-      particlePositions[i3] = radius * Math.sin(phi) * Math.cos(theta)
-      particlePositions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta) + Math.sin(time) * 0.5
-      particlePositions[i3 + 2] = radius * Math.cos(phi)
+    const updateStep = quality === 'low' ? 2 : 1
+    const shouldUpdate = quality !== 'low' || Math.floor(state.clock.elapsedTime * 30) % 2 === 0
+    
+    if (shouldUpdate) {
+      for (let i = 0; i < particles.count; i += updateStep) {
+        const i3 = i * 3
+        const time = state.clock.elapsedTime + i * 0.05
+        
+        // Simplified spiral motion - more efficient calculation
+        const baseRadius = 3.5
+        const radius = baseRadius + Math.sin(time * 0.3) * 0.8 + beat * 1.5
+        const theta = time * 0.2 + i * 0.08
+        const phi = Math.sin(time * 0.15) * Math.PI * 0.8
+        
+        particlePositions[i3] = radius * Math.sin(phi) * Math.cos(theta)
+        particlePositions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta) + Math.sin(time * 0.5) * 0.3
+        particlePositions[i3 + 2] = radius * Math.cos(phi)
+        
+        // Interpolate skipped particles for smoother appearance
+        if (updateStep > 1 && i + updateStep < particles.count) {
+          const nextI3 = (i + updateStep) * 3
+          particlePositions[nextI3] = particlePositions[i3]
+          particlePositions[nextI3 + 1] = particlePositions[i3 + 1]
+          particlePositions[nextI3 + 2] = particlePositions[i3 + 2]
+        }
+      }
+      particlesRef.current.geometry.attributes.position.needsUpdate = true
     }
-    particlesRef.current.geometry.attributes.position.needsUpdate = true
 
-    // Ring pulse on beat
+    // Optimized ring pulse - reduced intensity for performance
     if (ringRef.current) {
-      const ringScale = 1 + energy * 0.5 + beat * 1.5
-      ringRef.current.scale.setScalar(damp(ringRef.current.scale.x, ringScale, 15, delta))
-      ringRef.current.rotation.z += delta * 0.5
+      const ringScale = 1 + energy * 0.3 + beat * 0.8
+      ringRef.current.scale.setScalar(damp(ringRef.current.scale.x, ringScale, 10, delta))
+      ringRef.current.rotation.z += delta * 0.3
       
       const ringMaterial = ringRef.current.material as THREE.MeshStandardMaterial
-      ringMaterial.emissiveIntensity = 0.5 + beat * 2
+      ringMaterial.emissiveIntensity = 0.4 + beat * 1.2
     }
 
     // Cleave technique slash animation
@@ -145,60 +189,70 @@ export function CursedCore() {
       })
     }
 
-    // Dynamic material colors
-    const colorTarget = energy > 0.5
-      ? {
-          r: character.energy.mid.r + (character.energy.high.r - character.energy.mid.r) * ((energy - 0.5) * 2),
-          g: character.energy.mid.g + (character.energy.high.g - character.energy.mid.g) * ((energy - 0.5) * 2),
-          b: character.energy.mid.b + (character.energy.high.b - character.energy.mid.b) * ((energy - 0.5) * 2),
-        }
-      : {
-          r: character.energy.low.r + (character.energy.mid.r - character.energy.low.r) * (energy * 2),
-          g: character.energy.low.g + (character.energy.mid.g - character.energy.low.g) * (energy * 2),
-          b: character.energy.low.b + (character.energy.mid.b - character.energy.low.b) * (energy * 2),
-        }
-
+    // Optimized dynamic material colors - only update when change is significant
     const material = meshRef.current.material as THREE.MeshPhysicalMaterial
-    const currentColor = material.color
-    material.color.setRGB(
-      damp(currentColor.r, colorTarget.r, 15, delta),
-      damp(currentColor.g, colorTarget.g, 15, delta),
-      damp(currentColor.b, colorTarget.b, 15, delta)
-    )
+    const colorIntensity = Math.max(energy, beat * 0.7)
     
-    material.emissive.setRGB(
-      Math.min(colorTarget.r * 1.5, 1),
-      Math.min(colorTarget.g * 1.5, 1),
-      Math.min(colorTarget.b * 1.5, 1)
-    )
-    material.emissiveIntensity = 0.7 + energy * 0.5 + beat * 1.5
+    if (colorIntensity > 0.1 || quality === 'high') {
+      const colorTarget = energy > 0.5
+        ? {
+            r: character.energy.mid.r + (character.energy.high.r - character.energy.mid.r) * ((energy - 0.5) * 2),
+            g: character.energy.mid.g + (character.energy.high.g - character.energy.mid.g) * ((energy - 0.5) * 2),
+            b: character.energy.mid.b + (character.energy.high.b - character.energy.mid.b) * ((energy - 0.5) * 2),
+          }
+        : {
+            r: character.energy.low.r + (character.energy.mid.r - character.energy.low.r) * (energy * 2),
+            g: character.energy.low.g + (character.energy.mid.g - character.energy.low.g) * (energy * 2),
+            b: character.energy.low.b + (character.energy.mid.b - character.energy.low.b) * (energy * 2),
+          }
+
+      const currentColor = material.color
+      const dampingFactor = quality === 'high' ? 12 : 8
+      material.color.setRGB(
+        damp(currentColor.r, colorTarget.r, dampingFactor, delta),
+        damp(currentColor.g, colorTarget.g, dampingFactor, delta),
+        damp(currentColor.b, colorTarget.b, dampingFactor, delta)
+      )
+      
+      material.emissive.setRGB(
+        Math.min(colorTarget.r * 1.3, 1),
+        Math.min(colorTarget.g * 1.3, 1),
+        Math.min(colorTarget.b * 1.3, 1)
+      )
+    }
+    
+    material.emissiveIntensity = 0.6 + energy * 0.3 + beat * 0.8
   })
+
+  // Optimized geometry based on quality
+  const torusKnotSegments = quality === 'high' ? [128, 16] : quality === 'medium' ? [64, 12] : [48, 8]
+  const octahedronDetail = quality === 'high' ? 2 : quality === 'medium' ? 1 : 0
 
   return (
     <group>
-      {/* Main cursed energy core */}
-      <mesh ref={meshRef} castShadow receiveShadow>
-        <torusKnotGeometry args={[1, 0.3, 256, 32, 2, 3]} />
+      {/* Main cursed energy core - simplified geometry for performance */}
+      <mesh ref={meshRef} castShadow={quality !== 'low'} receiveShadow={quality !== 'low'}>
+        <torusKnotGeometry args={[1, 0.3, ...torusKnotSegments, 2, 3]} />
         <meshPhysicalMaterial
-          metalness={0.9}
-          roughness={0.05}
+          metalness={0.85}
+          roughness={0.1}
           emissive={character.colors.glow}
-          emissiveIntensity={0.7}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
-          transmission={0.1}
+          emissiveIntensity={0.6}
+          clearcoat={quality === 'high' ? 1 : 0.8}
+          clearcoatRoughness={0.15}
+          transmission={quality === 'high' ? 0.1 : 0}
         />
       </mesh>
 
-      {/* Inner rotating core */}
-      <mesh ref={innerMeshRef} castShadow>
-        <octahedronGeometry args={[0.8, 2]} />
+      {/* Inner rotating core - simplified detail */}
+      <mesh ref={innerMeshRef} castShadow={quality !== 'low'}>
+        <octahedronGeometry args={[0.8, octahedronDetail]} />
         <meshPhysicalMaterial
           color={character.colors.accent}
-          metalness={0.8}
-          roughness={0.2}
+          metalness={0.75}
+          roughness={0.25}
           emissive={character.colors.secondary}
-          emissiveIntensity={1.2}
+          emissiveIntensity={1.0}
           transparent
           opacity={0.7}
         />
@@ -226,17 +280,19 @@ export function CursedCore() {
         />
       </points>
 
-      {/* Energy ring */}
-      <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[2, 0.05, 16, 100]} />
-        <meshStandardMaterial
-          color={character.colors.glow}
-          emissive={character.colors.glow}
-          emissiveIntensity={0.5}
-          transparent
-          opacity={0.6}
-        />
-      </mesh>
+      {/* Energy ring - simplified geometry */}
+      {quality !== 'low' && (
+        <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[2, 0.05, 12, quality === 'high' ? 64 : 32]} />
+          <meshStandardMaterial
+            color={character.colors.glow}
+            emissive={character.colors.glow}
+            emissiveIntensity={0.4}
+            transparent
+            opacity={0.5}
+          />
+        </mesh>
+      )}
 
       {/* Cleave slash lines */}
       {slashLines && (

@@ -188,30 +188,32 @@ export function PlaybackControls() {
                   boxShadow: `0 0 ${20 + (beatIntensity ?? 0) * 20}px ${character.colors.glow}90, inset 0 1px 0 rgba(255,255,255,0.3), 0 0 0 1px ${character.colors.glow}30`,
                   animation: 'cursed-energy-flow 2s ease infinite',
                 }}
-              >
-                {/* Progress head indicator */}
+              />
+              
+              {/* Progress head indicator - positioned absolutely to align with end of fill */}
+              <div
+                className="absolute top-1/2 w-5 h-5 rounded-full -translate-y-1/2 -translate-x-1/2 will-animate pointer-events-none"
+                style={{
+                  left: `${progress}%`,
+                  background: `radial-gradient(circle, ${character.colors.glow}, ${character.colors.primary})`,
+                  boxShadow: `0 0 ${15 + (beatIntensity ?? 0) * 15}px ${character.colors.glow}, 0 0 ${30 + (beatIntensity ?? 0) * 20}px ${character.colors.glow}70, 0 0 ${45 + (beatIntensity ?? 0) * 25}px ${character.colors.glow}50`,
+                  border: `2px solid ${character.colors.primary}`,
+                  transform: `translate(-50%, -50%) scale(${1 + (beatIntensity ?? 0) * 0.2})`,
+                  transition: 'transform 0.1s ease-out, left 0.1s ease-out',
+                }}
+              />
+              
+              {/* Beat pulse on progress bar */}
+              {(beatIntensity ?? 0) > 0.5 && (
                 <div
-                  className="absolute right-0 top-1/2 w-5 h-5 rounded-full -translate-y-1/2 translate-x-1/2 will-animate"
+                  className="absolute top-1/2 w-8 h-8 rounded-full -translate-y-1/2 -translate-x-1/2 animate-ping pointer-events-none"
                   style={{
-                    background: `radial-gradient(circle, ${character.colors.glow}, ${character.colors.primary})`,
-                    boxShadow: `0 0 ${15 + (beatIntensity ?? 0) * 15}px ${character.colors.glow}, 0 0 ${30 + (beatIntensity ?? 0) * 20}px ${character.colors.glow}70, 0 0 ${45 + (beatIntensity ?? 0) * 25}px ${character.colors.glow}50`,
-                    border: `2px solid ${character.colors.primary}`,
-                    transform: `translate(-50%, -50%) scale(${1 + (beatIntensity ?? 0) * 0.2})`,
-                    transition: 'transform 0.1s ease-out',
+                    left: `${progress}%`,
+                    background: character.colors.glow,
+                    opacity: beatIntensity * 0.6,
                   }}
                 />
-                
-                {/* Beat pulse on progress bar */}
-                {(beatIntensity ?? 0) > 0.5 && (
-                  <div
-                    className="absolute right-0 top-1/2 w-8 h-8 rounded-full -translate-y-1/2 translate-x-1/2 animate-ping"
-                    style={{
-                      background: character.colors.glow,
-                      opacity: beatIntensity * 0.6,
-                    }}
-                  />
-                )}
-              </div>
+              )}
             </div>
             
             {/* Seek input */}
@@ -276,7 +278,7 @@ export function PlaybackControls() {
             color: buttonPulse === "prev" ? textColor : "rgba(255,255,255,0.9)",
           }}
         >
-          {/* Previous track icon - two left chevrons (clearly different from play) */}
+          {/* Previous track icon - single left chevron with vertical line */}
           <svg 
             className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 group-hover:scale-110" 
             fill="currentColor" 
@@ -285,8 +287,8 @@ export function PlaybackControls() {
               filter: buttonPulse === "prev" ? `drop-shadow(0 0 8px ${character.colors.glow})` : "none",
             }}
           >
-            {/* First left chevron */}
-            <path d="M11 18l-6-6 6-6v12zm6 0l-6-6 6-6v12z" />
+            {/* Previous track: vertical line + left chevron */}
+            <path d="M6 6h2v12H6zm7 6l-6-6v12l6-6z" />
           </svg>
           {/* Pulse effect on click */}
           {buttonPulse === "prev" && (

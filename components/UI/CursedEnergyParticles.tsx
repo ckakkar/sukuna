@@ -25,28 +25,42 @@ export function CursedEnergyParticles() {
   const character = useMemo(() => CHARACTERS[selectedCharacter], [selectedCharacter])
 
   useEffect(() => {
-    // Initialize particles
-    const initialParticles: Particle[] = Array.from({ length: 30 }, (_, i) => {
-      const angle = (i / 30) * Math.PI * 2
-      const distance = Math.random() * 100
+    // Optimized particle count based on device capability
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    const particleCount = isMobile ? 12 : 20
+    
+    const initialParticles: Particle[] = Array.from({ length: particleCount }, (_, i) => {
+      const angle = (i / particleCount) * Math.PI * 2
+      const distance = Math.random() * 80 + 20
       return {
         id: i,
         x: 50 + Math.cos(angle) * distance,
         y: 50 + Math.sin(angle) * distance,
-        size: Math.random() * 3 + 1,
-        speedX: (Math.random() - 0.5) * 0.5,
-        speedY: (Math.random() - 0.5) * 0.5,
-        opacity: Math.random() * 0.5 + 0.3,
+        size: Math.random() * 2.5 + 1,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        opacity: Math.random() * 0.4 + 0.2,
         color: character.colors.glow,
         life: Math.random() * 100,
-        maxLife: 100 + Math.random() * 200,
+        maxLife: 150 + Math.random() * 150,
       }
     })
     setParticles(initialParticles)
   }, [selectedCharacter, character.colors.glow])
 
   useEffect(() => {
-    const animate = () => {
+    let lastTime = 0
+    const targetFPS = 30 // Limit to 30fps for better performance
+    const frameInterval = 1000 / targetFPS
+    
+    const animate = (currentTime: number) => {
+      // Throttle animation frame rate
+      if (currentTime - lastTime < frameInterval) {
+        animationFrameRef.current = requestAnimationFrame(animate)
+        return
+      }
+      lastTime = currentTime
+      
       setParticles((prev) =>
         prev.map((particle) => {
           let newX = particle.x + particle.speedX
@@ -66,21 +80,21 @@ export function CursedEnergyParticles() {
             newY = 50 + (Math.random() - 0.5) * 20
           }
 
-          // Beat intensity affects speed and size
-          const beatMultiplier = beatIntensity ? 1 + beatIntensity * 0.5 : 1
-          const intensityMultiplier = intensity ? 1 + intensity * 0.3 : 1
+          // Optimized beat intensity effects - reduced multipliers
+          const beatMultiplier = beatIntensity ? 1 + beatIntensity * 0.25 : 1
+          const intensityMultiplier = intensity ? 1 + intensity * 0.2 : 1
 
           return {
             ...particle,
             x: newX,
             y: newY,
             life: newLife,
-            speedX: particle.speedX * (1 + (beatIntensity ?? 0) * 0.1),
-            speedY: particle.speedY * (1 + (beatIntensity ?? 0) * 0.1),
+            speedX: particle.speedX * (1 + (beatIntensity ?? 0) * 0.05),
+            speedY: particle.speedY * (1 + (beatIntensity ?? 0) * 0.05),
             size: particle.size * beatMultiplier,
             opacity: Math.min(
-              1,
-              particle.opacity * intensityMultiplier * (1 + (beatIntensity ?? 0) * 0.3)
+              0.8,
+              particle.opacity * intensityMultiplier * (1 + (beatIntensity ?? 0) * 0.2)
             ),
           }
         })

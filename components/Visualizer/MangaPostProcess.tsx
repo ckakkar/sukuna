@@ -1,6 +1,6 @@
 "use client"
 
-import { forwardRef, useEffect, useMemo, useRef } from "react"
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import { ChromaticAberration, DotScreen, Noise, Vignette } from "@react-three/postprocessing"
 import { BlendFunction, Effect } from "postprocessing"
@@ -144,6 +144,7 @@ export function MangaPostProcess() {
     selectedCharacter 
   } = useSpotifyStore()
 
+  const [isMobile, setIsMobile] = useState(false)
   const offsetRef = useRef(new Vector2(0, 0))
   const impactTimerRef = useRef(0)
   const flashTimerRef = useRef(0)
@@ -152,6 +153,10 @@ export function MangaPostProcess() {
   const lastBeatTimeRef = useRef(0)
   const impactEffectRef = useRef<ImpactFrameEffectImpl | null>(null)
   const slashEffectRef = useRef<SlashEffectImpl | null>(null)
+
+  useEffect(() => {
+    setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
+  }, [])
 
   // Trigger impact frame on new impact events
   useEffect(() => {
@@ -178,10 +183,11 @@ export function MangaPostProcess() {
     const beat = beatIntensity ?? 0
     const energy = intensity ?? 0
 
-    // Dynamic chromatic aberration based on energy and beats
+    // Optimized chromatic aberration - reduced on mobile
+    const multiplier = isMobile ? 0.5 : 1
     const baseAberration = 0.001
-    const energyAberration = energy * 0.02
-    const beatAberration = beat * 0.04
+    const energyAberration = energy * 0.015 * multiplier
+    const beatAberration = beat * 0.025 * multiplier
     offsetRef.current.set(
       baseAberration + energyAberration + beatAberration,
       baseAberration + energyAberration + beatAberration
@@ -227,31 +233,33 @@ export function MangaPostProcess() {
 
   return (
     <>
-      {/* Manga-style halftone shading */}
-      <DotScreen
-        blendFunction={BlendFunction.MULTIPLY}
-        angle={Math.PI / 4}
-        scale={1.2}
-        opacity={0.4}
-      />
+      {/* Manga-style halftone shading - reduced on mobile */}
+      {!isMobile && (
+        <DotScreen
+          blendFunction={BlendFunction.MULTIPLY}
+          angle={Math.PI / 4}
+          scale={1.2}
+          opacity={0.35}
+        />
+      )}
 
       {/* Dynamic chromatic aberration */}
       <ChromaticAberration
         offset={offsetRef.current}
-        radialModulation
-        modulationOffset={0.15}
+        radialModulation={!isMobile}
+        modulationOffset={isMobile ? 0.1 : 0.15}
       />
 
-      {/* Film grain */}
+      {/* Film grain - reduced on mobile */}
       <Noise 
         premultiply 
-        opacity={0.05 + (intensity ?? 0) * 0.03} 
+        opacity={isMobile ? 0.03 + (intensity ?? 0) * 0.02 : 0.05 + (intensity ?? 0) * 0.03} 
       />
 
-      {/* Vignette effect for focus */}
+      {/* Vignette effect for focus - lighter on mobile */}
       <Vignette
         offset={0.3}
-        darkness={0.5 + (intensity ?? 0) * 0.3}
+        darkness={isMobile ? 0.4 + (intensity ?? 0) * 0.2 : 0.5 + (intensity ?? 0) * 0.3}
         eskil={false}
       />
 

@@ -26,7 +26,12 @@ export function Search() {
 
     setIsSearching(true)
     try {
-      const response = await searchTracks(debouncedQuery, accessToken, 20)
+      // Handle token update if refresh happens
+      const handleTokenUpdate = (newToken: string) => {
+        useSpotifyStore.getState().setToken(newToken)
+      }
+      
+      const response = await searchTracks(debouncedQuery, accessToken, 20, handleTokenUpdate)
       if (response) {
         setResults(response.tracks)
       } else {
@@ -141,7 +146,7 @@ export function Search() {
 
       {isOpen && results.length > 0 && (
         <div 
-          className="absolute top-full left-0 right-0 mt-2 bg-black/95 backdrop-blur-sm border-2 rounded-lg shadow-2xl z-50 max-h-[400px] flex flex-col overflow-hidden"
+          className="absolute top-full left-0 right-0 mt-2 glass-modern domain-border rounded-lg shadow-2xl z-50 max-h-[400px] flex flex-col overflow-hidden animate-spring-in will-animate"
           style={{
             borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
             boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${character.colors.glow}30`,
@@ -167,19 +172,25 @@ export function Search() {
 
           <div className="overflow-y-auto flex-1">
             <div className="p-2">
-              {results.map((track) => (
+              {results.map((track, index) => (
                 <button
                   key={track.id}
                     onClick={() => handleTrackSelect(track)}
-                    className="w-full p-3 hover:bg-white/5 rounded-lg transition-all duration-200 text-left group"
+                    className="w-full p-3 hover:bg-white/5 rounded-lg transition-all duration-300 text-left group will-animate animate-spring-in glass-modern"
                     style={{
                       border: `1px solid transparent`,
+                      animationDelay: `${index * 0.03}s`,
+                      transform: "translateX(0)",
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4)
+                      e.currentTarget.style.transform = "translateX(4px)"
+                      e.currentTarget.style.boxShadow = `0 4px 12px ${character.colors.glow}20`
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = "transparent"
+                      e.currentTarget.style.transform = "translateX(0)"
+                      e.currentTarget.style.boxShadow = "none"
                     }}
                   >
                     <div className="flex items-center gap-3">

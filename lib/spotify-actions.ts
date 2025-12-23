@@ -90,10 +90,11 @@ export interface SearchResponse {
 export async function searchTracks(
   query: string,
   accessToken: string,
-  limit: number = 20
+  limit: number = 20,
+  onTokenUpdate?: (newToken: string) => void
 ): Promise<SearchResponse | null> {
   try {
-    const response = await fetch(
+    let response = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=${limit}`,
       {
         headers: {
@@ -102,8 +103,29 @@ export async function searchTracks(
       }
     )
 
+    // Handle 401 by refreshing token
+    if (response.status === 401 && onTokenUpdate) {
+      console.log("Token expired during search, refreshing...")
+      const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" })
+      if (sessionResponse.ok) {
+        const session = await sessionResponse.json()
+        if (session?.accessToken) {
+          onTokenUpdate(session.accessToken)
+          // Retry with new token
+          response = await fetch(
+            `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=${limit}`,
+            {
+              headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+              },
+            }
+          )
+        }
+      }
+    }
+
     if (!response.ok) {
-      console.error("Failed to search tracks")
+      console.error("Failed to search tracks:", response.status)
       return null
     }
 
@@ -196,24 +218,44 @@ export interface Playlist {
 
 export async function getUserPlaylists(
   accessToken: string,
-  limit: number = 50
+  limit: number = 50,
+  onTokenUpdate?: (newToken: string) => void
 ): Promise<Playlist[]> {
   try {
     const playlists: Playlist[] = []
     let url = `https://api.spotify.com/v1/me/playlists?limit=${limit}&offset=0`
     
     while (url) {
-      const response = await fetch(url, {
+      let response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
       })
 
+      // Handle 401 by refreshing token
+      if (response.status === 401 && onTokenUpdate) {
+        console.log("Token expired, refreshing...")
+        const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" })
+        if (sessionResponse.ok) {
+          const session = await sessionResponse.json()
+          if (session?.accessToken) {
+            onTokenUpdate(session.accessToken)
+            // Retry with new token
+            response = await fetch(url, {
+              headers: {
+                Authorization: `Bearer ${session.accessToken}`,
+                "Content-Type": "application/json",
+              },
+            })
+          }
+        }
+      }
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         console.error("Failed to fetch playlists:", response.status, response.statusText, errorData)
-        throw new Error(`Failed to fetch playlists: ${response.status} ${response.statusText}`)
+        throw new Error(`Failed to fetch playlists: ${response.status} ${response.statusText || errorData.error?.message || ""}`)
       }
 
       const data = await response.json()

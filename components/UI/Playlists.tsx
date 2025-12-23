@@ -34,7 +34,13 @@ export function Playlists() {
     setError(null)
     try {
       console.log("Loading playlists with token:", accessToken.substring(0, 20) + "...")
-      const data = await getUserPlaylists(accessToken, 50)
+      
+      // Handle token update if refresh happens
+      const handleTokenUpdate = (newToken: string) => {
+        useSpotifyStore.getState().setToken(newToken)
+      }
+      
+      const data = await getUserPlaylists(accessToken, 50, handleTokenUpdate)
       console.log("Playlists loaded:", data.length, "playlists found")
       
       if (data.length === 0) {
@@ -46,7 +52,15 @@ export function Playlists() {
     } catch (error) {
       console.error("Error loading playlists:", error)
       const errorMessage = error instanceof Error ? error.message : "Failed to load playlists"
-      setError(`${errorMessage}. Please check your Spotify connection and permissions.`)
+      
+      // Better error messages
+      if (errorMessage.includes("401")) {
+        setError("Authentication expired. Please refresh the page or reconnect to Spotify.")
+      } else if (errorMessage.includes("403")) {
+        setError("Permission denied. Please grant playlist access in your Spotify account settings.")
+      } else {
+        setError(`${errorMessage}. Please check your Spotify connection and try again.`)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -205,31 +219,47 @@ export function Playlists() {
               </div>
               <div className="overflow-y-auto flex-1 p-2">
                 {isLoading ? (
-                  <div className="p-8 text-center">
-                    <div
-                      className="w-6 h-6 border-2 rounded-full animate-spin mx-auto"
-                      style={{
-                        borderColor: `${character.colors.primary}40`,
-                        borderTopColor: character.colors.primary,
-                      }}
-                    />
+                  <div className="p-8 text-center space-y-4 animate-spring-in">
+                    <div className="flex flex-col items-center gap-3">
+                      <div
+                        className="w-8 h-8 border-2 rounded-full animate-spin"
+                        style={{
+                          borderColor: `${character.colors.primary}30`,
+                          borderTopColor: character.colors.glow,
+                          borderRightColor: character.colors.primary,
+                        }}
+                      />
+                      <div 
+                        className="text-xs font-mono tracking-wider"
+                        style={{ color: character.colors.glow }}
+                      >
+                        LOADING TRACKS...
+                      </div>
+                    </div>
                   </div>
                 ) : (
-                  tracks.map((track) => (
-                    <button
-                      key={track.id}
-                      onClick={() => handleTrackSelect(track)}
-                      className="w-full p-3 hover:bg-white/5 rounded-lg transition-all duration-200 text-left group mb-1"
-                      style={{
-                        border: `1px solid transparent`,
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4)
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "transparent"
-                      }}
-                    >
+                  <div className="space-y-1.5">
+                    {tracks.map((track, index) => (
+                      <button
+                        key={track.id}
+                        onClick={() => handleTrackSelect(track)}
+                        className="w-full p-3 hover:bg-white/5 rounded-lg transition-all duration-300 text-left group mb-1 will-animate animate-spring-in glass-modern"
+                        style={{
+                          border: `1px solid transparent`,
+                          animationDelay: `${index * 0.03}s`,
+                          transform: "translateX(0)",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4)
+                          e.currentTarget.style.transform = "translateX(4px)"
+                          e.currentTarget.style.boxShadow = `0 4px 12px ${character.colors.glow}20`
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = "transparent"
+                          e.currentTarget.style.transform = "translateX(0)"
+                          e.currentTarget.style.boxShadow = "none"
+                        }}
+                      >
                       <div className="flex items-center gap-3">
                         {track.image && (
                           <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
@@ -260,8 +290,9 @@ export function Playlists() {
                           {formatDuration(track.duration)}
                         </div>
                       </div>
-                    </button>
-                  ))
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             </>
@@ -303,52 +334,134 @@ export function Playlists() {
               </div>
               <div className="overflow-y-auto flex-1 p-2">
                 {isLoading ? (
-                  <div className="p-8 text-center">
-                    <div
-                      className="w-6 h-6 border-2 rounded-full animate-spin mx-auto"
-                      style={{
-                        borderColor: `${character.colors.primary}40`,
-                        borderTopColor: character.colors.primary,
-                      }}
-                    />
+                  <div className="p-8 text-center space-y-4 animate-spring-in">
+                    <div className="flex flex-col items-center gap-3">
+                      <div
+                        className="w-8 h-8 border-2 rounded-full animate-spin"
+                        style={{
+                          borderColor: `${character.colors.primary}30`,
+                          borderTopColor: character.colors.glow,
+                          borderRightColor: character.colors.primary,
+                        }}
+                      />
+                      <div 
+                        className="text-xs font-mono tracking-wider"
+                        style={{ color: character.colors.glow }}
+                      >
+                        LOADING PLAYLISTS...
+                      </div>
+                    </div>
+                    {/* Skeleton loaders */}
+                    <div className="space-y-2 mt-4">
+                      {[...Array(3)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="h-16 rounded-lg skeleton animate-shimmer-slow"
+                          style={{
+                            background: `linear-gradient(90deg, ${character.colors.primary}10 0%, ${character.colors.glow}20 50%, ${character.colors.primary}10 100%)`,
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
                 ) : error ? (
-                  <div className="p-8 text-center space-y-3">
-                    <div className="text-red-400 text-sm font-mono">
-                      {error}
+                  <div className="p-8 text-center space-y-4 animate-spring-in">
+                    <div className="flex flex-col items-center gap-3">
+                      {/* Error icon */}
+                      <div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center"
+                        style={{
+                          backgroundColor: `${character.colors.glow}20`,
+                          border: `2px solid ${character.colors.glow}40`,
+                        }}
+                      >
+                        <svg
+                          className="w-6 h-6"
+                          style={{ color: character.colors.glow }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div 
+                          className="text-sm font-mono font-semibold"
+                          style={{ color: character.colors.glow }}
+                        >
+                          {error.split('.')[0]}
+                        </div>
+                        {error.includes('.') && (
+                          <div className="text-xs text-gray-400 font-mono max-w-xs">
+                            {error.split('.').slice(1).join('.').trim()}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <button
+                        onClick={loadPlaylists}
+                        className="px-6 py-2.5 glass-modern domain-border rounded-lg hover:scale-105 active:scale-95 transition-all duration-300 text-sm font-mono font-semibold will-animate"
+                        style={{
+                          borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
+                          color: textColor,
+                          background: `linear-gradient(135deg, ${character.colors.primary}20, ${character.colors.glow}10)`,
+                          boxShadow: `0 0 20px ${character.colors.glow}30`,
+                        }}
+                      >
+                        <span className="flex items-center gap-2">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                          </svg>
+                          Retry
+                        </span>
+                      </button>
                     </div>
-                    <button
-                      onClick={loadPlaylists}
-                      className="px-4 py-2 bg-black/40 border border-white/20 rounded-lg hover:bg-white/10 transition-colors text-sm font-mono"
-                      style={{
-                        borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
-                        color: textColor,
-                      }}
-                    >
-                      Retry
-                    </button>
                   </div>
                 ) : playlists.length > 0 ? (
-                  playlists.map((playlist) => (
-                    <div
-                      key={playlist.id}
-                      className="group mb-1"
-                    >
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => loadPlaylistTracks(playlist)}
-                          className="flex-1 p-3 hover:bg-white/5 rounded-lg transition-all duration-200 text-left touch-manipulation"
-                          style={{
-                            border: `1px solid transparent`,
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = `${character.colors.primary}40`
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = "transparent"
-                          }}
-                          aria-label={`View tracks in ${playlist.name}`}
-                        >
+                  <div className="space-y-1.5">
+                    {playlists.map((playlist, index) => (
+                      <div
+                        key={playlist.id}
+                        className="group animate-spring-in will-animate"
+                        style={{ animationDelay: `${index * 0.05}s` }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => loadPlaylistTracks(playlist)}
+                            className="flex-1 p-3 hover:bg-white/5 rounded-lg transition-all duration-300 text-left touch-manipulation glass-modern"
+                            style={{
+                              border: `1px solid transparent`,
+                              transform: "translateX(0)",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = `${character.colors.primary}40`
+                              e.currentTarget.style.transform = "translateX(4px)"
+                              e.currentTarget.style.boxShadow = `0 4px 12px ${character.colors.glow}20`
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = "transparent"
+                              e.currentTarget.style.transform = "translateX(0)"
+                              e.currentTarget.style.boxShadow = "none"
+                            }}
+                            aria-label={`View tracks in ${playlist.name}`}
+                          >
                           <div className="flex items-center gap-3">
                             {playlist.image && (
                               <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
@@ -375,27 +488,30 @@ export function Playlists() {
                             </div>
                           </div>
                         </button>
-                        <button
-                          onClick={() => handlePlayPlaylist(playlist)}
-                          className="p-2 rounded-lg bg-black/30 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all duration-200 opacity-0 group-hover:opacity-100 touch-manipulation active:scale-95"
-                          style={{
-                            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
-                          }}
-                          aria-label={`Play playlist ${playlist.name}`}
-                          title={`Play ${playlist.name}`}
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            style={{ color: textColor }}
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
+                          <button
+                            onClick={() => handlePlayPlaylist(playlist)}
+                            className="p-2.5 rounded-lg glass-modern hover:scale-110 active:scale-95 transition-all duration-300 opacity-0 group-hover:opacity-100 touch-manipulation will-animate"
+                            style={{
+                              borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
+                              background: `linear-gradient(135deg, ${character.colors.primary}20, ${character.colors.glow}10)`,
+                              boxShadow: `0 0 15px ${character.colors.glow}30`,
+                            }}
+                            aria-label={`Play playlist ${playlist.name}`}
+                            title={`Play ${playlist.name}`}
                           >
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
-                        </button>
+                            <svg
+                              className="w-4 h-4"
+                              style={{ color: textColor }}
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 ) : (
                   <div className="p-8 text-center space-y-3">
                     <div className="text-gray-400 text-sm font-mono">

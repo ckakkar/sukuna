@@ -71,6 +71,7 @@ export function MusicPlayerPanel() {
 
   return (
     <div 
+      data-music-player
       className="absolute bottom-0 left-0 right-0 sm:bottom-6 sm:left-6 sm:right-auto pointer-events-auto z-20 transition-transform duration-100 ease-out safe-area-inset-bottom"
       style={{ 
         transform: `scale(${pulseScale})`,

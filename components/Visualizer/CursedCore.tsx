@@ -14,18 +14,33 @@ const damp = (current: number, target: number, smoothing: number, delta: number)
 
 // Detect device capability for performance scaling
 function useDeviceQuality() {
-  const { gl } = useThree()
   const [quality, setQuality] = useState<'high' | 'medium' | 'low'>('medium')
   
   useEffect(() => {
+    if (typeof window === 'undefined') return
+    
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
     const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768
     const pixelRatio = window.devicePixelRatio || 1
     
-    // Check GPU capability via WebGL
-    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info')
-    const renderer = debugInfo?.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || ''
-    const isLowEndGPU = /mali|adreno|powervr|imgtec/i.test(renderer) && !/pro|xt|plus/i.test(renderer)
+    // Check GPU capability via WebGL context
+    const canvas = document.createElement('canvas')
+    const glContext = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+    let isLowEndGPU = false
+    
+    if (glContext && 'getExtension' in glContext) {
+      try {
+        const webglContext = glContext as WebGLRenderingContext
+        const debugInfo = webglContext.getExtension('WEBGL_debug_renderer_info')
+        if (debugInfo) {
+          const renderer = webglContext.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || ''
+          isLowEndGPU = /mali|adreno|powervr|imgtec/i.test(renderer) && !/pro|xt|plus/i.test(renderer)
+        }
+      } catch (e) {
+        // Fallback if extension is not available
+        isLowEndGPU = false
+      }
+    }
     
     if (isMobile && (isLowEndGPU || pixelRatio > 2)) {
       setQuality('low')
@@ -34,7 +49,7 @@ function useDeviceQuality() {
     } else {
       setQuality('high')
     }
-  }, [gl])
+  }, [])
   
   return quality
 }
@@ -225,14 +240,15 @@ export function CursedCore() {
   })
 
   // Optimized geometry based on quality
-  const torusKnotSegments = quality === 'high' ? [128, 16] : quality === 'medium' ? [64, 12] : [48, 8]
+  const torusKnotTubularSegments = quality === 'high' ? 128 : quality === 'medium' ? 64 : 48
+  const torusKnotRadialSegments = quality === 'high' ? 16 : quality === 'medium' ? 12 : 8
   const octahedronDetail = quality === 'high' ? 2 : quality === 'medium' ? 1 : 0
 
   return (
     <group>
       {/* Main cursed energy core - simplified geometry for performance */}
       <mesh ref={meshRef} castShadow={quality !== 'low'} receiveShadow={quality !== 'low'}>
-        <torusKnotGeometry args={[1, 0.3, ...torusKnotSegments, 2, 3]} />
+        <torusKnotGeometry args={[1, 0.3, torusKnotTubularSegments, torusKnotRadialSegments, 2, 3]} />
         <meshPhysicalMaterial
           metalness={0.85}
           roughness={0.1}

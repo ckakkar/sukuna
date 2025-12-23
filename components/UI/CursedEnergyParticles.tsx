@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useMemo } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 
@@ -22,7 +22,7 @@ export function CursedEnergyParticles() {
   const [particles, setParticles] = useState<Particle[]>([])
   const animationFrameRef = useRef<number>()
   const containerRef = useRef<HTMLDivElement>(null)
-  const character = CHARACTERS[selectedCharacter]
+  const character = useMemo(() => CHARACTERS[selectedCharacter], [selectedCharacter])
 
   useEffect(() => {
     // Initialize particles

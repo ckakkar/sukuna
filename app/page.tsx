@@ -21,6 +21,9 @@ import { signInWithSpotify } from "@/app/actions/auth"
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts"
 import { AppEnhancements } from "@/components/AppEnhancements"
 import { HandSigns } from "@/components/UI/HandSigns"
+import { Onboarding } from "@/components/UI/Onboarding"
+import { UIEnhancements } from "@/components/UI/UIEnhancements"
+import { ScrollAnimations } from "@/components/UI/ScrollAnimations"
 
 export default async function Home() {
   const session = await auth()
@@ -36,6 +39,16 @@ export default async function Home() {
       <main id="main-content" className="relative w-screen h-screen min-h-screen bg-black overflow-hidden">
         {/* Phase 5 Enhancements */}
         {session && <AppEnhancements />}
+        
+        {/* UI Enhancements - Torii gates, scanlines, fog */}
+        {session && <UIEnhancements />}
+        
+        {/* Scroll Animations (GSAP ScrollTrigger) */}
+        {session && <ScrollAnimations />}
+        
+        {/* Onboarding Experience */}
+        {session && <Onboarding />}
+        
         {/* Kanji Rain Background */}
         {session && <KanjiRain />}
         

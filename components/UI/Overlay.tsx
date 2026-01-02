@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, memo } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
@@ -8,7 +8,97 @@ import { MusicPlayerPanel } from "./MusicPlayerPanel"
 import { CharacterSelector } from "./CharacterSelector"
 import { cn } from "@/lib/utils/cn"
 
-export function Overlay() {
+function HighEnergyIndicator({ character }: { character: typeof CHARACTERS[keyof typeof CHARACTERS] }) {
+  const { currentTrack, trackData, isLoadingAnalysis, beatIntensity } = useSpotifyStore()
+  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
+
+  if (!currentTrack || !trackData || trackData.energy <= 0.75 || isLoadingAnalysis) {
+    return null
+  }
+
+  return (
+    <div 
+      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-mono text-center pointer-events-none"
+      style={{
+        transform: `translate(-50%, -50%) scale(${1 + (beatIntensity ?? 0) * 0.15})`,
+        transition: "transform 0.1s ease-out",
+      }}
+    >
+      {/* Outer glow ring */}
+      <div
+        className="absolute -inset-16 rounded-full opacity-30 blur-3xl animate-pulse"
+        style={{
+          background: `radial-gradient(circle, ${character.colors.glow}, transparent 70%)`,
+        }}
+      />
+      
+      {/* Main text */}
+      <div
+        className="text-6xl font-black animate-glow tracking-widest relative z-10"
+        style={{
+          color: textColor,
+          textShadow: `0 0 ${25 + (beatIntensity ?? 0) * 40}px ${character.colors.glow}, 0 0 ${50 + (beatIntensity ?? 0) * 70}px ${character.colors.glow}80, 0 0 ${100 + (beatIntensity ?? 0) * 100}px ${character.colors.glow}50`,
+        }}
+      >
+        展開
+      </div>
+      
+      {/* Subtitle */}
+      <div 
+        className="text-sm text-gray-400 mt-3 tracking-widest font-semibold"
+        style={{
+          textShadow: `0 0 10px ${character.colors.glow}50`,
+        }}
+      >
+        MAXIMUM CURSED ENERGY
+      </div>
+
+      {/* Energy percentage */}
+      <div 
+        className="text-xs mt-2 font-bold tracking-wider"
+        style={{ 
+          color: character.colors.accent || character.colors.glow,
+          textShadow: `0 0 15px ${character.colors.glow}`,
+        }}
+      >
+        {(trackData.energy * 100).toFixed(0)}%
+      </div>
+
+      {/* Rotating accent rings */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="absolute w-32 h-32 rounded-full border-2"
+          style={{
+            borderColor: `${character.colors.glow}60`,
+            animation: "spin 4s linear infinite",
+            boxShadow: `0 0 20px ${character.colors.glow}40`,
+          }}
+        />
+        <div
+          className="absolute w-40 h-40 rounded-full border-2"
+          style={{
+            borderColor: `${character.colors.secondary || character.colors.glow}40`,
+            animation: "spin 6s linear infinite reverse",
+            boxShadow: `0 0 15px ${character.colors.glow}30`,
+          }}
+        />
+      </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+export const Overlay = memo(function Overlay() {
   const { selectedCharacter, beatIntensity, intensity } = useSpotifyStore()
   const character = useMemo(() => CHARACTERS[selectedCharacter], [selectedCharacter])
   const textColor = useMemo(
@@ -188,94 +278,4 @@ export function Overlay() {
       <HighEnergyIndicator character={character} />
     </div>
   )
-}
-
-function HighEnergyIndicator({ character }: { character: typeof CHARACTERS[keyof typeof CHARACTERS] }) {
-  const { currentTrack, trackData, isLoadingAnalysis, beatIntensity } = useSpotifyStore()
-  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
-
-  if (!currentTrack || !trackData || trackData.energy <= 0.75 || isLoadingAnalysis) {
-    return null
-  }
-
-  return (
-    <div 
-      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-mono text-center pointer-events-none"
-      style={{
-        transform: `translate(-50%, -50%) scale(${1 + (beatIntensity ?? 0) * 0.15})`,
-        transition: "transform 0.1s ease-out",
-      }}
-    >
-      {/* Outer glow ring */}
-      <div
-        className="absolute -inset-16 rounded-full opacity-30 blur-3xl animate-pulse"
-        style={{
-          background: `radial-gradient(circle, ${character.colors.glow}, transparent 70%)`,
-        }}
-      />
-      
-      {/* Main text */}
-      <div
-        className="text-6xl font-black animate-glow tracking-widest relative z-10"
-        style={{
-          color: textColor,
-          textShadow: `0 0 ${25 + (beatIntensity ?? 0) * 40}px ${character.colors.glow}, 0 0 ${50 + (beatIntensity ?? 0) * 70}px ${character.colors.glow}80, 0 0 ${100 + (beatIntensity ?? 0) * 100}px ${character.colors.glow}50`,
-        }}
-      >
-        展開
-      </div>
-      
-      {/* Subtitle */}
-      <div 
-        className="text-sm text-gray-400 mt-3 tracking-widest font-semibold"
-        style={{
-          textShadow: `0 0 10px ${character.colors.glow}50`,
-        }}
-      >
-        MAXIMUM CURSED ENERGY
-      </div>
-
-      {/* Energy percentage */}
-      <div 
-        className="text-xs mt-2 font-bold tracking-wider"
-        style={{ 
-          color: character.colors.accent || character.colors.glow,
-          textShadow: `0 0 15px ${character.colors.glow}`,
-        }}
-      >
-        {(trackData.energy * 100).toFixed(0)}%
-      </div>
-
-      {/* Rotating accent rings */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div
-          className="absolute w-32 h-32 rounded-full border-2"
-          style={{
-            borderColor: `${character.colors.glow}60`,
-            animation: "spin 4s linear infinite",
-            boxShadow: `0 0 20px ${character.colors.glow}40`,
-          }}
-        />
-        <div
-          className="absolute w-40 h-40 rounded-full border-2"
-          style={{
-            borderColor: `${character.colors.secondary || character.colors.glow}40`,
-            animation: "spin 6s linear infinite reverse",
-            boxShadow: `0 0 15px ${character.colors.glow}30`,
-          }}
-        />
-      </div>
-
-      <style jsx>{`
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
-    </div>
-  )
-}
+})

@@ -19,6 +19,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { JJKLoginScreen } from "@/components/UI/JJKLoginScreen"
 import { signInWithSpotify } from "@/app/actions/auth"
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts"
+import { AppEnhancements } from "@/components/AppEnhancements"
 
 export default async function Home() {
   const session = await auth()
@@ -32,6 +33,8 @@ export default async function Home() {
         Skip to main content
       </a>
       <main id="main-content" className="relative w-screen h-screen min-h-screen bg-black overflow-hidden">
+        {/* Phase 5 Enhancements */}
+        {session && <AppEnhancements />}
         {/* Kanji Rain Background */}
         {session && <KanjiRain />}
         

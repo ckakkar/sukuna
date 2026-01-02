@@ -20,6 +20,7 @@ import { JJKLoginScreen } from "@/components/UI/JJKLoginScreen"
 import { signInWithSpotify } from "@/app/actions/auth"
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts"
 import { AppEnhancements } from "@/components/AppEnhancements"
+import { HandSigns } from "@/components/UI/HandSigns"
 
 export default async function Home() {
   const session = await auth()
@@ -56,6 +57,9 @@ export default async function Home() {
 
         {/* Spotify Web Player */}
         {session?.accessToken && <SpotifyWebPlayer />}
+
+        {/* Hand Signs - Character gestures before domain expansion */}
+        {session && <HandSigns />}
 
         {/* Domain Expansion Animation */}
         {session && <DomainExpansion />}

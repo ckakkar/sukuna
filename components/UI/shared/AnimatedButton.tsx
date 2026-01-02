@@ -1,12 +1,15 @@
 "use client"
 
-import { HTMLAttributes, ReactNode, useState, useRef, useEffect } from "react"
+import { ButtonHTMLAttributes, ReactNode, useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils/cn"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 
-interface AnimatedButtonProps extends HTMLAttributes<HTMLButtonElement> {
+interface AnimatedButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 
+  'onDrag' | 'onDragStart' | 'onDragEnd' | 
+  'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration' |
+  'onTransitionEnd'> {
   children: ReactNode
   variant?: "default" | "primary" | "danger" | "ghost"
   size?: "sm" | "md" | "lg"

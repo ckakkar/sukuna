@@ -32,24 +32,37 @@ export function useBeatDetector() {
       )
 
       if (segment) {
-        // Calculate beat timing
+        // Enhanced beat detection using multiple factors
         const segmentTime = currentTime - segment.start
         const beatPhase = (segmentTime % beatInterval) / beatInterval
 
-        // Detect beat at the start of each interval
-        if (beatPhase < 0.1 && Date.now() - lastBeatTimeRef.current > beatInterval * 800) {
+        // Calculate beat strength from multiple factors
+        const loudness = Math.abs(segment.loudness_max) / 60 // Normalize to 0-1
+        const confidence = segment.confidence
+        const timbreEnergy = segment.timbre.reduce((sum, val) => sum + Math.abs(val), 0) / segment.timbre.length
+        const normalizedTimbre = Math.min(timbreEnergy / 10, 1) // Normalize timbre energy
+
+        // Enhanced intensity calculation
+        const baseIntensity = loudness * confidence
+        const timbreBoost = normalizedTimbre * 0.3
+        const phaseBoost = beatPhase < 0.15 ? (1 - beatPhase / 0.15) * 0.2 : 0
+        
+        const intensity = Math.min((baseIntensity + timbreBoost + phaseBoost) * 1.5, 1)
+
+        // Detect beat with improved timing
+        const timeSinceLastBeat = Date.now() - lastBeatTimeRef.current
+        const minBeatInterval = beatInterval * 700 // Slightly more lenient
+
+        if (beatPhase < 0.15 && timeSinceLastBeat > minBeatInterval && intensity > 0.3) {
           // Strong beat detected
-          const loudness = Math.abs(segment.loudness_max) / 60 // Normalize
-          const confidence = segment.confidence
-          const intensity = Math.min(loudness * confidence * 2, 1)
-          
           beatIntensityRef.current = intensity
           setBeatIntensity(intensity)
           registerBeat()
           lastBeatTimeRef.current = Date.now()
         } else {
-          // Decay beat intensity
-          beatIntensityRef.current *= 0.92
+          // Smooth decay with momentum
+          const decayRate = intensity > 0.5 ? 0.88 : 0.92 // Faster decay for high intensity
+          beatIntensityRef.current *= decayRate
           setBeatIntensity(Math.max(beatIntensityRef.current, 0))
         }
       } else {

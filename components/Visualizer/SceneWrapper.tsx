@@ -4,6 +4,9 @@ import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
 import { useCursedSpeech } from "@/hooks/useCursedSpeech"
 import { useBeatDetector } from "@/hooks/useBeatDetector"
+import { useFrequencySpectrum } from "@/hooks/useFrequencySpectrum"
+import { useMoodDetection } from "@/hooks/useMoodDetection"
+import { useTempoSync } from "@/hooks/useTempoSync"
 
 const Scene = dynamic(
   () => import("./Scene").then((mod) => ({ default: mod.Scene })),
@@ -96,6 +99,15 @@ export function SceneWrapper() {
   
   // Mount beat detection system
   useBeatDetector()
+  
+  // Mount frequency spectrum analysis
+  useFrequencySpectrum()
+  
+  // Mount mood detection
+  useMoodDetection()
+  
+  // Mount tempo sync
+  useTempoSync()
 
   useEffect(() => {
     // Add a slight delay to ensure smooth transition

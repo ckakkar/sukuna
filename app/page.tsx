@@ -14,6 +14,7 @@ import { BlackFlash } from "@/components/UI/BlackFlash"
 import { TechniqueActivation } from "@/components/UI/TechniqueActivation"
 import { DomainBarrier } from "@/components/UI/DomainBarrier"
 import { RealityCrack } from "@/components/UI/RealityCrack"
+import { MoodBasedVisuals } from "@/components/UI/MoodBasedVisuals"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { JJKLoginScreen } from "@/components/UI/JJKLoginScreen"
 import { signInWithSpotify } from "@/app/actions/auth"
@@ -76,6 +77,9 @@ export default async function Home() {
 
         {/* Background Quotes */}
         {session && <BackgroundQuotes />}
+
+        {/* Mood-based visual adjustments */}
+        {session && <MoodBasedVisuals />}
 
         {/* UI Overlay */}
         {session && <Overlay />}

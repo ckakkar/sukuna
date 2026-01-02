@@ -11,6 +11,8 @@ import { Playlists } from "./Playlists"
 import { Favorites } from "./Favorites"
 import { RecentlyPlayed } from "./RecentlyPlayed"
 import { Queue } from "./Queue"
+import { WaveformVisualization } from "./WaveformVisualization"
+import { FrequencySpectrumBars } from "./FrequencySpectrumBars"
 import { signOutAction } from "@/app/actions/auth"
 import { Card } from "./shared/Card"
 import { Button } from "./shared/Button"
@@ -309,6 +311,19 @@ export function MusicPlayerPanel() {
                 <Queue />
               </div>
             </div>
+
+            {/* Waveform and Frequency Spectrum */}
+            {currentTrack && (
+              <div 
+                className="px-3 py-3 sm:px-6 sm:py-4 border-b space-y-3 flex-shrink-0"
+                style={{ 
+                  borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.2),
+                }}
+              >
+                <WaveformVisualization />
+                <FrequencySpectrumBars />
+              </div>
+            )}
 
             {/* Now Playing - Scrollable on mobile */}
             {currentTrack ? (

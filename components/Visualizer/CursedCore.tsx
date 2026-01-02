@@ -125,29 +125,34 @@ export function CursedCore() {
     const bpm = trackData?.bpm ?? 120
     const beat = beatIntensity ?? 0
 
+    // Calculate tempo multiplier once for all tempo-synced animations
+    const tempoMultiplier = bpm / 120 // Normalize to 120 BPM
+
     // Optimized main core animation with beat reaction
     const scaleTarget = 1 + energy * 0.8 + beat * 0.4
     const currentScale = meshRef.current.scale.x
     const nextScale = damp(currentScale, scaleTarget, 12, delta)
     meshRef.current.scale.setScalar(nextScale)
 
-    // Simplified inner core rotation - reduced calculations
-    const innerRotationSpeed = quality === 'high' ? (bpm / 100) : (bpm / 150)
+    // Tempo-synced inner core rotation
+    const innerRotationSpeed = quality === 'high' 
+      ? (bpm / 100) * tempoMultiplier 
+      : (bpm / 150) * tempoMultiplier
     innerMeshRef.current.rotation.y -= delta * innerRotationSpeed
     innerMeshRef.current.rotation.x += delta * innerRotationSpeed * 0.5
     innerMeshRef.current.scale.setScalar(nextScale * 0.7)
 
-    // Optimized character-specific geometry - only update when needed
+    // Tempo-synced character-specific geometry
     const characterRotationMultiplier = quality === 'high' ? 1 : 0.7
     if (selectedCharacter === "sukuna") {
-      meshRef.current.rotation.y += delta * (bpm / 140) * characterRotationMultiplier
-      meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.2
+      meshRef.current.rotation.y += delta * (bpm / 140) * characterRotationMultiplier * tempoMultiplier
+      meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.4 * tempoMultiplier) * 0.2
     } else if (selectedCharacter === "gojo") {
-      meshRef.current.rotation.y += delta * 0.25 * characterRotationMultiplier
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.15
+      meshRef.current.rotation.y += delta * 0.25 * characterRotationMultiplier * tempoMultiplier
+      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8 * tempoMultiplier) * 0.15
     } else if (selectedCharacter === "yuji") {
-      meshRef.current.rotation.x += delta * (bpm / 200) * characterRotationMultiplier
-      meshRef.current.rotation.z += delta * (bpm / 280) * characterRotationMultiplier
+      meshRef.current.rotation.x += delta * (bpm / 200) * characterRotationMultiplier * tempoMultiplier
+      meshRef.current.rotation.z += delta * (bpm / 280) * characterRotationMultiplier * tempoMultiplier
     }
 
     // Optimized particles animation - only update every other frame on lower quality
@@ -160,11 +165,11 @@ export function CursedCore() {
         const i3 = i * 3
         const time = state.clock.elapsedTime + i * 0.05
         
-        // Simplified spiral motion - more efficient calculation
+        // Tempo-synced spiral motion (using tempoMultiplier from outer scope)
         const baseRadius = 3.5
-        const radius = baseRadius + Math.sin(time * 0.3) * 0.8 + beat * 1.5
-        const theta = time * 0.2 + i * 0.08
-        const phi = Math.sin(time * 0.15) * Math.PI * 0.8
+        const radius = baseRadius + Math.sin(time * 0.3 * tempoMultiplier) * 0.8 + beat * 1.5
+        const theta = time * 0.2 * tempoMultiplier + i * 0.08
+        const phi = Math.sin(time * 0.15 * tempoMultiplier) * Math.PI * 0.8
         
         particlePositions[i3] = radius * Math.sin(phi) * Math.cos(theta)
         particlePositions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta) + Math.sin(time * 0.5) * 0.3

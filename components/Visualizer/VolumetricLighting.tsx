@@ -12,10 +12,9 @@ export function VolumetricLighting() {
   const character = CHARACTERS[selectedCharacter]
   const isMobile = typeof window !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
-  // Only render on desktop for performance
-  if (isMobile) return null
-
   useFrame((state) => {
+    // Early return if mobile - but hook is still called
+    if (isMobile) return
     if (!meshRef.current) return
 
     const beat = beatIntensity ?? 0
@@ -33,6 +32,9 @@ export function VolumetricLighting() {
     const material = meshRef.current.material as THREE.MeshBasicMaterial
     material.opacity = 0.15 + beat * 0.1 + energy * 0.05
   })
+
+  // Don't render on mobile for performance
+  if (isMobile) return null
 
   return (
     <mesh ref={meshRef} position={[0, 0, -2]}>

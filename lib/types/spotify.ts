@@ -13,7 +13,20 @@ export interface TrackData {
   bpm: number
   energy: number // 0-1
   valence: number // 0-1
+  danceability?: number // 0-1
+  loudness?: number // dB
   segments: Segment[]
+}
+
+export interface FrequencySpectrum {
+  bass: number // 0-1
+  mid: number // 0-1
+  treble: number // 0-1
+}
+
+export interface AudioMood {
+  mood: "happy" | "sad" | "energetic" | "calm" | "neutral"
+  confidence: number // 0-1
 }
 
 export interface CurrentTrack {

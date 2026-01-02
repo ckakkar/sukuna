@@ -64,6 +64,8 @@ export async function getTrackAnalysis(
       bpm: features.tempo,
       energy: features.energy,
       valence: features.valence,
+      danceability: features.danceability,
+      loudness: features.loudness,
       segments,
     }
   } catch (error) {

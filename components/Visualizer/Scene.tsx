@@ -11,6 +11,7 @@ import { VolumetricLighting } from "./VolumetricLighting"
 import { DomainEnvironments } from "./DomainEnvironments"
 import { CameraController } from "./CameraController"
 import { ShaderMaterials } from "./ShaderMaterials"
+import { AudioReactiveParticles } from "./AudioReactiveParticles"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { getVisibleTextColor } from "@/lib/utils/colorUtils"
@@ -189,6 +190,9 @@ export function Scene() {
       {/* Main visualizations */}
       <CursedCore />
       <CursedEnergyField />
+      
+      {/* Audio-reactive particles */}
+      <AudioReactiveParticles />
 
       {/* Volumetric Lighting (God Rays) - Desktop only */}
       {performanceMode === 'high' && <VolumetricLighting />}

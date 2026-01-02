@@ -675,11 +675,34 @@ html {
   animation: energy-wave 2s ease-out infinite;
 }
 
+/* Tempo-synced animation variables */
+:root {
+  --tempo-multiplier: 1;
+  --beat-interval: 0.5s;
+  --animation-speed: 1;
+  --mood-saturation: 1;
+  --mood-brightness: 1;
+  --mood-contrast: 1;
+}
+
 /* Smooth transitions for all elements */
 * {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
+  transition-duration: calc(200ms * var(--animation-speed, 1));
+}
+
+/* Tempo-synced animations */
+.animate-tempo-sync {
+  animation-duration: calc(var(--beat-interval, 0.5s) * var(--tempo-multiplier, 1));
+}
+
+/* Mood-based visual filters */
+.mood-filter {
+  filter: 
+    saturate(var(--mood-saturation, 1))
+    brightness(var(--mood-brightness, 1))
+    contrast(var(--mood-contrast, 1));
 }
 
 /* Optimized GPU acceleration - only when needed */

@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS, type CharacterType } from "@/lib/types/character"
+import { hexToRgb } from "@/lib/utils/colorUtils"
 
 export function DomainEnvironments() {
   const { selectedCharacter, domainState, beatIntensity } = useSpotifyStore()
@@ -145,15 +146,21 @@ function UnlimitedVoid({ character }: { character: typeof CHARACTERS[CharacterTy
     const count = 500
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
+    
+    // Convert hex color to RGB
+    const rgb = hexToRgb(character.colors.glow) || { r: 255, g: 255, b: 255 }
+    const r = rgb.r / 255
+    const g = rgb.g / 255
+    const b = rgb.b / 255
 
     for (let i = 0; i < count; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 30
       positions[i * 3 + 1] = (Math.random() - 0.5) * 30
       positions[i * 3 + 2] = (Math.random() - 0.5) * 30
 
-      colors[i * 3] = character.colors.glow.r
-      colors[i * 3 + 1] = character.colors.glow.g
-      colors[i * 3 + 2] = character.colors.glow.b
+      colors[i * 3] = r
+      colors[i * 3 + 1] = g
+      colors[i * 3 + 2] = b
     }
 
     return { positions, colors }

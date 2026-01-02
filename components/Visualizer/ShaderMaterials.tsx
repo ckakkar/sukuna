@@ -17,10 +17,7 @@ export function ShaderMaterials() {
   const isActive = domainState === "active" || domainState === "expanding"
   const isMobile = typeof window !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
   
-  // Disable complex shaders on mobile for performance
-  if (isMobile) return null
-
-  // Create shader materials
+  // Create shader materials (hooks must be called unconditionally)
   const energyFlowMaterial = useMemo(
     () =>
       new THREE.ShaderMaterial({
@@ -78,6 +75,8 @@ export function ShaderMaterials() {
   )
 
   useFrame((state) => {
+    // Early return if mobile - but hook is still called
+    if (isMobile) return
     const beat = beatIntensity ?? 0
     const energy = intensity ?? 0
 
@@ -102,6 +101,9 @@ export function ShaderMaterials() {
       slashMaterial.uniforms.angle.value = state.clock.elapsedTime * 2
     }
   })
+
+  // Don't render on mobile for performance
+  if (isMobile) return null
 
   return (
     <group>

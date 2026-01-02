@@ -45,6 +45,10 @@ interface SpotifyState {
   beatIntensity: number
   lastBeatTime: number
   bpm: number
+  // Audio analysis
+  frequencySpectrum: { bass: number; mid: number; treble: number } | null
+  audioMood: { mood: "happy" | "sad" | "energetic" | "calm" | "neutral"; confidence: number } | null
+  tempoChanges: Array<{ time: number; tempo: number; confidence: number }>
   // Transient event counters
   impactFrameId: number
   skipEventId: number
@@ -71,6 +75,9 @@ interface SpotifyState {
   notifyTrackSkipped: () => void
   setPlayerInstance: (instance: any | null) => void
   registerBeat: () => void
+  setFrequencySpectrum: (spectrum: { bass: number; mid: number; treble: number } | null) => void
+  setAudioMood: (mood: { mood: "happy" | "sad" | "energetic" | "calm" | "neutral"; confidence: number } | null) => void
+  setTempoChanges: (changes: Array<{ time: number; tempo: number; confidence: number }>) => void
 }
 
 export const useSpotifyStore = create<SpotifyState>((set, get) => ({
@@ -93,6 +100,9 @@ export const useSpotifyStore = create<SpotifyState>((set, get) => ({
   beatIntensity: 0,
   lastBeatTime: 0,
   bpm: 120,
+  frequencySpectrum: null,
+  audioMood: null,
+  tempoChanges: [],
   impactFrameId: 0,
   skipEventId: 0,
   playerInstance: null,
@@ -152,4 +162,7 @@ export const useSpotifyStore = create<SpotifyState>((set, get) => ({
       return state
     })
   },
+  setFrequencySpectrum: (spectrum) => set({ frequencySpectrum: spectrum }),
+  setAudioMood: (mood) => set({ audioMood: mood }),
+  setTempoChanges: (changes) => set({ tempoChanges: changes }),
 }))

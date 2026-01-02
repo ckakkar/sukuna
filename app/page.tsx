@@ -10,6 +10,10 @@ import { CharacterSwitchAnimation } from "@/components/UI/CharacterSwitchAnimati
 import { CursedEnergyParticles } from "@/components/UI/CursedEnergyParticles"
 import { CursedEnergyTrail } from "@/components/UI/CursedEnergyTrail"
 import { KanjiRain } from "@/components/UI/KanjiRain"
+import { BlackFlash } from "@/components/UI/BlackFlash"
+import { TechniqueActivation } from "@/components/UI/TechniqueActivation"
+import { DomainBarrier } from "@/components/UI/DomainBarrier"
+import { RealityCrack } from "@/components/UI/RealityCrack"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { JJKLoginScreen } from "@/components/UI/JJKLoginScreen"
 import { signInWithSpotify } from "@/app/actions/auth"
@@ -51,12 +55,24 @@ export default async function Home() {
 
         {/* Domain Expansion Animation */}
         {session && <DomainExpansion />}
+        
+        {/* Domain Barrier (Hexagonal Pattern) */}
+        {session && <DomainBarrier />}
+        
+        {/* Reality Crack Effect */}
+        {session && <RealityCrack />}
 
         {/* Character Selection Modal */}
         {session && <CharacterSelectionModal />}
 
         {/* Character Switch Animation */}
         {session && <CharacterSwitchAnimation />}
+
+        {/* Black Flash Effect */}
+        {session && <BlackFlash />}
+
+        {/* Technique Activation */}
+        {session && <TechniqueActivation />}
 
         {/* Background Quotes */}
         {session && <BackgroundQuotes />}

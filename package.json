@@ -18,7 +18,8 @@
     "@react-three/drei": "^10.0.0",
     "@react-three/postprocessing": "^3.0.0",
     "three": "^0.165.0",
-    "maath": "^0.10.5"
+    "maath": "^0.10.5",
+    "framer-motion": "^11.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

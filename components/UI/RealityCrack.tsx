@@ -5,7 +5,7 @@ import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 
 export function RealityCrack() {
-  const { isDomainExpanding, selectedCharacter, domainState } = useSpotifyStore()
+  const { selectedCharacter, domainState } = useSpotifyStore()
   const [cracks, setCracks] = useState<Array<{ id: number; path: string; delay: number }>>([])
   const character = CHARACTERS[selectedCharacter]
 
@@ -83,25 +83,32 @@ export function RealityCrack() {
       </svg>
 
       {/* Shatter particles */}
-      {cracks.map((crack, i) => (
-        <div
-          key={`particle-${crack.id}`}
-          className="absolute"
-          style={{
-            left: "50%",
-            top: "50%",
-            width: "4px",
-            height: "4px",
-            background: character.colors.glow,
-            borderRadius: "50%",
-            boxShadow: `0 0 8px ${character.colors.glow}`,
-            animation: `shatter-particle 1s ease-out ${crack.delay + 0.5}s forwards`,
-            transform: `translate(-50%, -50%)`,
-            "--angle": `${(i / cracks.length) * 360}deg`,
-            "--distance": `${30 + Math.random() * 20}px`,
-          } as React.CSSProperties}
-        />
-      ))}
+      {cracks.map((crack, i) => {
+        const angle = (i / cracks.length) * Math.PI * 2
+        const distance = 30 + Math.random() * 20
+        const endX = Math.cos(angle) * distance
+        const endY = Math.sin(angle) * distance
+        
+        return (
+          <div
+            key={`particle-${crack.id}`}
+            className="absolute"
+            style={{
+              left: "50%",
+              top: "50%",
+              width: "4px",
+              height: "4px",
+              background: character.colors.glow,
+              borderRadius: "50%",
+              boxShadow: `0 0 8px ${character.colors.glow}`,
+              animation: `shatter-particle 1s ease-out ${crack.delay + 0.5}s forwards`,
+              transform: `translate(-50%, -50%)`,
+              "--end-x": `${endX}px`,
+              "--end-y": `${endY}px`,
+            } as React.CSSProperties}
+          />
+        )
+      })}
 
       <style jsx>{`
         @keyframes crack-appear {
@@ -126,8 +133,8 @@ export function RealityCrack() {
           100% {
             opacity: 0;
             transform: translate(
-              calc(-50% + var(--distance) * cos(var(--angle))),
-              calc(-50% + var(--distance) * sin(var(--angle)))
+              calc(-50% + var(--end-x)),
+              calc(-50% + var(--end-y))
             ) scale(1.5) rotate(360deg);
           }
         }

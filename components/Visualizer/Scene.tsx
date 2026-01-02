@@ -7,6 +7,10 @@ import type { PointLight } from "three"
 import * as THREE from "three"
 import { Effects } from "./Effects"
 import { CursedCore } from "./CursedCore"
+import { VolumetricLighting } from "./VolumetricLighting"
+import { DomainEnvironments } from "./DomainEnvironments"
+import { CameraController } from "./CameraController"
+import { ShaderMaterials } from "./ShaderMaterials"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { getVisibleTextColor } from "@/lib/utils/colorUtils"
@@ -124,6 +128,9 @@ export function Scene() {
   const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
   const isTablet = typeof window !== 'undefined' && /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768
   const devicePixelRatio = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2) : 1
+  
+  // Performance mode based on device
+  const performanceMode = isMobile ? 'low' : isTablet ? 'medium' : 'high'
 
   return (
     <Canvas
@@ -176,9 +183,21 @@ export function Scene() {
         }}
       />
 
+      {/* Camera Controller */}
+      <CameraController />
+
       {/* Main visualizations */}
       <CursedCore />
       <CursedEnergyField />
+
+      {/* Volumetric Lighting (God Rays) - Desktop only */}
+      {performanceMode === 'high' && <VolumetricLighting />}
+
+      {/* Domain-specific 3D Environments */}
+      {performanceMode !== 'low' && <DomainEnvironments />}
+
+      {/* Shader Materials - Reduced on mobile */}
+      {performanceMode !== 'low' && <ShaderMaterials />}
 
       {/* Post-processing */}
       <Effects />

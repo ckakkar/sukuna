@@ -616,6 +616,15 @@ html {
   }
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Modern utility classes */
 .animate-spring-in {
   animation: spring-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -697,7 +706,7 @@ html {
   }
 }
 
-/* Modern glass morphism with better performance */
+/* Enhanced glass morphism with dynamic blur and inner glow */
 .glass-modern {
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(24px) saturate(180%);
@@ -706,7 +715,63 @@ html {
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.5),
     inset 0 0 20px rgba(147, 51, 234, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+/* Frosted glass texture overlay */
+.glass-modern::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 2px,
+      rgba(255, 255, 255, 0.03) 4px
+    );
+  pointer-events: none;
+  opacity: 0.5;
+  border-radius: inherit;
+}
+
+/* Animated border gradient */
+.glass-modern::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    45deg,
+    rgba(147, 51, 234, 0.8),
+    rgba(168, 85, 247, 0.8),
+    rgba(192, 38, 211, 0.8),
+    rgba(147, 51, 234, 0.8)
+  );
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: glass-border-flow 4s linear infinite;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+@keyframes glass-border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Cursed energy gradient backgrounds */

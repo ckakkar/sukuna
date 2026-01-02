@@ -108,7 +108,7 @@ export function MusicPlayerPanel() {
           />
         )}
 
-        {/* Header with character info */}
+        {/* Header with character info - Enhanced with decorative corner brackets */}
         <div
           className="px-3 py-3 sm:px-6 sm:py-4 border-b flex items-center justify-between relative overflow-hidden"
           style={{ 
@@ -116,6 +116,15 @@ export function MusicPlayerPanel() {
             background: `linear-gradient(135deg, ${character.colors.primary}15 0%, ${character.colors.glow}08 50%, transparent 100%)`,
           }}
         >
+          {/* Decorative corner brackets - Japanese architectural elements */}
+          <div 
+            className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 rounded-tl-lg opacity-40"
+            style={{ borderColor: character.colors.glow }}
+          />
+          <div 
+            className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 rounded-tr-lg opacity-40"
+            style={{ borderColor: character.colors.glow }}
+          />
           {/* Animated background on beat */}
           {(beatIntensity ?? 0) > 0.4 && (
             <div
@@ -316,7 +325,7 @@ export function MusicPlayerPanel() {
                 )}
                 
                 <div className="flex gap-5 items-start relative z-10">
-                  {currentTrack.image && (
+                    {currentTrack.image && (
                     <div
                       className="rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl flex-shrink-0 relative w-20 h-20 sm:w-28 sm:h-28 group will-animate domain-border"
                       style={{
@@ -325,6 +334,15 @@ export function MusicPlayerPanel() {
                         transition: "transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1)",
                       }}
                     >
+                      {/* Pulsing energy border effect */}
+                      <div
+                        className="absolute inset-0 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        style={{
+                          background: `conic-gradient(from 0deg, ${character.colors.glow}40, transparent, ${character.colors.primary}40, transparent)`,
+                          animation: 'spin 3s linear infinite',
+                          mixBlendMode: 'overlay',
+                        }}
+                      />
                       <Image
                         src={currentTrack.image}
                         alt={currentTrack.album}

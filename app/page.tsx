@@ -8,6 +8,8 @@ import { CharacterSelectionModal } from "@/components/UI/CharacterSelectionModal
 import { BackgroundQuotes } from "@/components/UI/BackgroundQuotes"
 import { CharacterSwitchAnimation } from "@/components/UI/CharacterSwitchAnimation"
 import { CursedEnergyParticles } from "@/components/UI/CursedEnergyParticles"
+import { CursedEnergyTrail } from "@/components/UI/CursedEnergyTrail"
+import { KanjiRain } from "@/components/UI/KanjiRain"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 import { JJKLoginScreen } from "@/components/UI/JJKLoginScreen"
 import { signInWithSpotify } from "@/app/actions/auth"
@@ -25,8 +27,14 @@ export default async function Home() {
         Skip to main content
       </a>
       <main id="main-content" className="relative w-screen h-screen min-h-screen bg-black overflow-hidden">
+        {/* Kanji Rain Background */}
+        {session && <KanjiRain />}
+        
         {/* Cursed Energy Particles Background */}
         {session && <CursedEnergyParticles />}
+        
+        {/* Cursed Energy Cursor Trail */}
+        {session && <CursedEnergyTrail />}
         
         {/* Only show 3D Scene after login */}
         {session && (

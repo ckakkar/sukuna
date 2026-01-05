@@ -633,3 +633,73 @@ export async function playPlaylist(
   }
 }
 
+export async function checkSavedTrack(
+  trackId: string,
+  accessToken: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/tracks/contains?ids=${trackId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      return false
+    }
+
+    const data: boolean[] = await response.json()
+    return data[0] || false
+  } catch (error) {
+    console.error("Error checking saved track:", error)
+    return false
+  }
+}
+
+export async function saveTrack(
+  trackId: string,
+  accessToken: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/tracks?ids=${trackId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    return response.ok
+  } catch (error) {
+    console.error("Error saving track:", error)
+    return false
+  }
+}
+
+export async function removeSavedTrack(
+  trackId: string,
+  accessToken: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/tracks?ids=${trackId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    return response.ok
+  } catch (error) {
+    console.error("Error removing saved track:", error)
+    return false
+  }
+}
+

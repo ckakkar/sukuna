@@ -30,6 +30,8 @@ interface SpotifyState {
   playbackDuration: number
   repeatMode: "off" | "track" | "context"
   shuffleMode: boolean
+  volume: number
+  isLiked: boolean
   // Analysis
   trackData: TrackData | null
   isLoadingAnalysis: boolean
@@ -62,6 +64,8 @@ interface SpotifyState {
   setPlaybackPosition: (position: number, duration: number) => void
   setRepeatMode: (mode: "off" | "track" | "context") => void
   setShuffleMode: (enabled: boolean) => void
+  setVolume: (volume: number) => void
+  setIsLiked: (liked: boolean) => void
   setTrackData: (data: TrackData | null) => void
   setIsLoadingAnalysis: (loading: boolean) => void
   setSelectedCharacter: (character: CharacterType) => void
@@ -89,6 +93,8 @@ export const useSpotifyStore = create<SpotifyState>((set, get) => ({
   playbackDuration: 0,
   repeatMode: "off",
   shuffleMode: false,
+  volume: 50,
+  isLiked: false,
   trackData: null,
   isLoadingAnalysis: false,
   selectedCharacter: "sukuna",
@@ -113,6 +119,8 @@ export const useSpotifyStore = create<SpotifyState>((set, get) => ({
   setPlaybackPosition: (position, duration) => set({ playbackPosition: position, playbackDuration: duration }),
   setRepeatMode: (mode) => set({ repeatMode: mode }),
   setShuffleMode: (enabled) => set({ shuffleMode: enabled }),
+  setVolume: (volume) => set({ volume }),
+  setIsLiked: (liked) => set({ isLiked: liked }),
   setTrackData: (data) =>
     set({
       trackData: data,

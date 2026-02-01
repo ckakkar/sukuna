@@ -6,16 +6,22 @@ import { CHARACTERS } from "@/lib/types/character"
 
 /**
  * MoodBasedVisuals
- * 
- * Applies visual changes based on detected mood
- * - Happy: Brighter colors, faster animations
- * - Sad: Desaturated colors, slower animations
- * - Energetic: High contrast, intense effects
- * - Calm: Soft colors, gentle animations
+ *
+ * Applies visual changes based on detected mood (audio) and lyric-derived color (LLM).
+ * When lyricMoodColor is set, it drives --lyric-mood-color for the rest of the UI.
  */
 export function MoodBasedVisuals() {
-  const { audioMood, selectedCharacter, setIntensity } = useSpotifyStore()
+  const { audioMood, lyricMoodColor, selectedCharacter, setIntensity } = useSpotifyStore()
   const character = CHARACTERS[selectedCharacter]
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (lyricMoodColor) {
+      root.style.setProperty("--lyric-mood-color", lyricMoodColor)
+    } else {
+      root.style.removeProperty("--lyric-mood-color")
+    }
+  }, [lyricMoodColor])
 
   useEffect(() => {
     if (!audioMood) return

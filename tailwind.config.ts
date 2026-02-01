@@ -22,10 +22,20 @@ const config: Config = {
           domain: '#7c3aed',
           shrine: '#a78bfa',
           dark: '#1a0a1f',
+          ink: '#0a0a0a',
+          paper: '#f0f0f0',
         },
       },
       fontFamily: {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        manga: ['Impact', 'Arial Black', 'sans-serif'], // Fallback for manga sound effects
+        jp: ['Noto Serif JP', 'serif'], // Traditional Japanese look
+      },
+      backgroundImage: {
+        'halftone': 'radial-gradient(circle, #0a0a0a 2px, transparent 2.5px)',
+      },
+      spacing: {
+        '128': '32rem',
       },
       animation: {
         'pulse-cursed': 'pulse-cursed 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',

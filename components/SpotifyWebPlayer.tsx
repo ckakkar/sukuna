@@ -70,6 +70,8 @@ export function SpotifyWebPlayer() {
     setDomainState,
     notifyTrackSkipped,
     setPlayerInstance,
+    setLyricMood,
+    setIsLoadingLyricMood,
   } = useSpotifyStore()
   const lastTrackIdRef = useRef<string | null>(null)
   const initializingRef = useRef(false)
@@ -124,6 +126,7 @@ export function SpotifyWebPlayer() {
         player.addListener("player_state_changed", async (state: SpotifyState | null) => {
           if (!state) {
             setPlaybackState(true, null)
+            setLyricMood(null, null)
             return
           }
 
@@ -139,7 +142,7 @@ export function SpotifyWebPlayer() {
           }
 
           setPlaybackState(state.paused, currentTrack)
-          
+
           // Update playback position
           if (state.position !== undefined && track.duration_ms) {
             setPlaybackPosition(state.position, track.duration_ms)
@@ -160,7 +163,7 @@ export function SpotifyWebPlayer() {
               notifyTrackSkipped()
             }
             lastTrackIdRef.current = track.id
-            
+
             // Trigger domain expansion animation
             setDomainState("expanding")
             setIsDomainExpanding(true)
@@ -188,6 +191,31 @@ export function SpotifyWebPlayer() {
             } finally {
               setIsLoadingAnalysis(false)
             }
+
+            // Lyric-to-color: fetch lyrics + LLM vibe (hex color + domain expansion name)
+            setIsLoadingLyricMood(true)
+            setLyricMood(null, null)
+            fetch("/api/lyrics-mood", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                trackName: track.name,
+                artistName: track.artists.map((a: { name: string }) => a.name).join(", "),
+                albumName: track.album?.name,
+                durationMs: track.duration_ms,
+              }),
+            })
+              .then((res) => {
+                if (!res.ok) return null
+                return res.json()
+              })
+              .then((data: { hexColor?: string; domainExpansionName?: string } | null) => {
+                if (data?.hexColor) {
+                  setLyricMood(data.hexColor, data.domainExpansionName ?? null)
+                }
+              })
+              .catch(() => { })
+              .finally(() => setIsLoadingLyricMood(false))
           }
         })
 
@@ -217,7 +245,7 @@ export function SpotifyWebPlayer() {
             }
           }
         }, 1000)
-        
+
         // Store interval for cleanup
         if (typeof window !== 'undefined') {
           if (!(window as any).__spotifyIntervals) {
@@ -305,6 +333,8 @@ export function SpotifyWebPlayer() {
     setPlaybackPosition,
     setRepeatMode,
     setShuffleMode,
+    setIsLoadingLyricMood,
+    setLyricMood,
   ])
 
   return null

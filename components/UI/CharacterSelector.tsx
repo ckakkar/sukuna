@@ -1,300 +1,173 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import Image from "next/image"
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS, type CharacterType } from "@/lib/types/character"
-import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { cn } from "@/lib/utils/cn"
-import { Card } from "./shared/Card"
+import { useCharacterImage } from "@/hooks/useCharacterImage"
+import Image from "next/image"
 
 export function CharacterSelector() {
   const [isOpen, setIsOpen] = useState(false)
-  const { selectedCharacter, setSelectedCharacter, beatIntensity } = useSpotifyStore()
+  const { selectedCharacter, setSelectedCharacter } = useSpotifyStore()
   const currentChar = CHARACTERS[selectedCharacter]
-  const textColor = getVisibleTextColor(currentChar.colors.primary, currentChar.colors.glow, currentChar.colors.secondary)
-  const wheelRef = useRef<HTMLDivElement>(null)
+  const { imageUrl } = useCharacterImage(selectedCharacter)
 
-  const handleCharacterChange = (charId: CharacterType) => {
-    setSelectedCharacter(charId)
+  const handleSelect = (id: CharacterType) => {
+    setSelectedCharacter(id)
     setIsOpen(false)
   }
 
-  // Calculate positions for circular wheel layout
-  const characterArray = Object.values(CHARACTERS)
-  const centerX = 50 // percentage
-  const centerY = 50 // percentage
-  const radius = 35 // percentage from center
+  // Pre-calculate roster layout
+  const roster = Object.values(CHARACTERS)
 
   return (
-    <div className="relative pointer-events-auto">
-      {/* Current Character Button */}
-      <button
+    <div className="relative z-50 pointer-events-auto">
+      {/* Trigger Button - Character Portrait */}
+      <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={`Select character. Current: ${currentChar.name}`}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        className="group relative px-3 py-2.5 sm:px-4 sm:py-2.5 glass-modern border-2 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 hover:scale-105 active:scale-95 touch-manipulation min-h-[44px] will-animate"
-        style={{
-          borderColor: isOpen ? getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.9) : "rgba(255,255,255,0.15)",
-          boxShadow: isOpen 
-            ? `0 0 30px ${currentChar.colors.glow}50, 0 8px 32px rgba(0,0,0,0.4), inset 0 0 20px ${currentChar.colors.glow}10, 0 0 0 1px ${currentChar.colors.glow}30`
-            : "0 4px 16px rgba(0,0,0,0.2)",
-          transform: isOpen ? 'scale(1.02)' : 'scale(1)',
-        }}
+        className="group relative w-12 h-12 sm:w-16 sm:h-16"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div 
-            className="w-2 h-2 rounded-full flex-shrink-0 animate-pulse"
+        <div
+          className="absolute inset-0 bg-white border-2 border-black transform rotate-3 transition-transform group-hover:rotate-6"
+          style={{ backgroundColor: currentChar.colors.primary }}
+        >
+          {/* Manga hatching pattern */}
+          <div
+            className="absolute inset-0 opacity-20"
             style={{
-              backgroundColor: currentChar.colors.glow || currentChar.colors.primary,
-              boxShadow: `0 0 8px ${currentChar.colors.glow}`,
+              backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)',
+              backgroundSize: '10px 10px'
             }}
           />
-          <div className="flex flex-col items-start min-w-0 flex-1">
-            <div className="text-[8px] sm:text-[9px] text-gray-400 font-mono uppercase tracking-widest opacity-70">SORCERER</div>
-            <div
-              className="text-xs sm:text-sm font-bold font-mono tracking-wider truncate max-w-[100px] sm:max-w-[140px]"
-              style={{ 
-                color: textColor,
-                textShadow: `0 0 8px ${currentChar.colors.glow}40`,
-              }}
-            >
-              {currentChar.japaneseName}
-            </div>
-          </div>
         </div>
-        <div 
-          className="text-gray-400 text-xs flex-shrink-0 transition-transform duration-300"
-          style={{
-            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-            color: textColor,
-          }}
-        >
-          ▼
-        </div>
-      </button>
 
-      {/* Technique Wheel - Circular Character Selection */}
-      {isOpen && (
-        <div 
-          className={cn(
-            "absolute top-full mt-2 sm:mt-3 right-0 overflow-visible",
-            "w-[90vw] sm:w-[500px] sm:max-w-[500px] h-[90vw] sm:h-[500px] z-50",
-            "animate-spring-in"
+        <div className="absolute inset-0 flex items-center justify-center border-2 border-black bg-white overflow-hidden">
+          {imageUrl ? (
+            <div className="relative w-full h-full">
+              <Image
+                src={imageUrl}
+                alt={currentChar.name}
+                fill
+                className="object-cover"
+                unoptimized // External URL
+              />
+              {/* Values overlay */}
+              <div className="absolute inset-0 bg-black/10 mix-blend-multiply" />
+            </div>
+          ) : (
+            <span className="font-bold font-jp text-lg sm:text-xl text-black">
+              {currentChar.japaneseName.charAt(0)}
+            </span>
           )}
-          style={{
-            borderColor: getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.7),
-          }}
-        >
-          <Card
-            variant="glass"
-            className="rounded-full relative w-full h-full overflow-visible"
-            borderColor={getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.7)}
-            glowColor={currentChar.colors.glow}
+        </div>
+
+        {/* Floating Tooltip */}
+        <div className="absolute top-full right-0 mt-2 px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest transform -skew-x-12 hidden sm:block">
+          ROSTER
+        </div>
+      </motion.button>
+
+      {/* Roster Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="absolute top-0 right-16 sm:right-20 w-[280px] sm:w-[320px] bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4"
           >
-            {/* Center circle with current character */}
-            <div 
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-              style={{
-                width: '30%',
-                height: '30%',
-              }}
-            >
-              <div
-                className="w-full h-full rounded-full border-2 flex items-center justify-center relative overflow-hidden"
-                style={{
-                  borderColor: getVisibleBorderColor(currentChar.colors.primary, currentChar.colors.glow, 0.9),
-                  background: `radial-gradient(circle, ${currentChar.colors.primary}30, ${currentChar.colors.glow}20)`,
-                  boxShadow: `0 0 ${20 + (beatIntensity ?? 0) * 30}px ${currentChar.colors.glow}60, inset 0 0 20px ${currentChar.colors.glow}20`,
-                }}
-              >
-                {currentChar.imagePath && (
-                  <Image
-                    src={currentChar.imagePath}
-                    alt={currentChar.name}
-                    fill
-                    className="object-cover rounded-full"
-                    unoptimized
-                  />
-                )}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div
-                    className="text-xs sm:text-sm font-bold font-mono text-center"
-                    style={{
-                      color: textColor,
-                      textShadow: `0 0 10px ${currentChar.colors.glow}`,
-                    }}
-                  >
-                    {currentChar.japaneseName}
-                  </div>
-                </div>
-              </div>
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4 border-b-2 border-black pb-2">
+              <h3 className="font-black text-xl italic tracking-tighter">SELECT SORCERER</h3>
+              <span className="bg-black text-white px-2 py-0.5 text-xs font-bold">1 / {roster.length}</span>
             </div>
 
-            {/* Character slots arranged in circle */}
-            <div 
-              ref={wheelRef}
-              className="absolute inset-0"
-              role="listbox"
-              aria-label="Character technique wheel"
-            >
-              {characterArray.map((char, index) => {
-                const angle = (index * 360) / characterArray.length - 90 // Start from top
-                const radian = (angle * Math.PI) / 180
-                const x = centerX + radius * Math.cos(radian)
-                const y = centerY + radius * Math.sin(radian)
-                const charTextColor = getVisibleTextColor(char.colors.primary, char.colors.glow, char.colors.secondary)
-                const isSelected = selectedCharacter === char.id
-
-                return (
-                  <button
-                    key={char.id}
-                    onClick={() => handleCharacterChange(char.id)}
-                    aria-label={`Select ${char.name} (${char.japaneseName})`}
-                    aria-selected={isSelected}
-                    role="option"
-                    className="absolute group transition-all duration-300 touch-manipulation will-animate"
-                    style={{
-                      left: `${x}%`,
-                      top: `${y}%`,
-                      transform: `translate(-50%, -50%) ${isSelected ? 'scale(1.15)' : 'scale(1)'}`,
-                      zIndex: isSelected ? 15 : 10,
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) {
-                        e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)'
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = isSelected 
-                        ? 'translate(-50%, -50%) scale(1.15)' 
-                        : 'translate(-50%, -50%) scale(1)'
-                    }}
-                  >
-                    {/* Cursed energy aura */}
-                    <div
-                      className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"
-                      style={{
-                        background: `radial-gradient(circle, ${char.colors.glow}60, transparent 70%)`,
-                        transform: 'translate(-50%, -50%)',
-                        width: '150%',
-                        height: '150%',
-                      }}
-                    />
-                    
-                    {/* Character slot */}
-                    <div
-                      className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 overflow-hidden transition-all duration-300"
-                      style={{
-                        borderColor: isSelected 
-                          ? getVisibleBorderColor(char.colors.primary, char.colors.glow, 1)
-                          : getVisibleBorderColor(char.colors.primary, char.colors.glow, 0.4),
-                        backgroundColor: isSelected 
-                          ? `${char.colors.glow}30` 
-                          : `${char.colors.primary}20`,
-                        boxShadow: isSelected
-                          ? `0 0 ${15 + (beatIntensity ?? 0) * 20}px ${char.colors.glow}80, inset 0 0 15px ${char.colors.glow}20`
-                          : `0 0 8px ${char.colors.glow}40`,
-                      }}
-                    >
-                      {char.imagePath ? (
-                        <Image
-                          src={char.imagePath}
-                          alt={char.name}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none"
-                          }}
-                        />
-                      ) : (
-                        <div
-                          className="w-full h-full flex items-center justify-center text-lg font-bold"
-                          style={{
-                            color: char.colors.glow,
-                          }}
-                        >
-                          {char.japaneseName.charAt(0)}
-                        </div>
-                      )}
-                      
-                      {/* Overlay gradient */}
-                      <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        style={{
-                          background: `linear-gradient(to top, ${char.colors.glow}60, transparent)`,
-                        }}
-                      />
-                    </div>
-
-                    {/* Domain name on hover */}
-                    <div
-                      className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 rounded glass-modern opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap"
-                      style={{
-                        borderColor: getVisibleBorderColor(char.colors.primary, char.colors.glow, 0.6),
-                        boxShadow: `0 4px 12px rgba(0,0,0,0.5), 0 0 8px ${char.colors.glow}50`,
-                      }}
-                    >
-                      <div
-                        className="text-[10px] font-mono font-semibold"
-                        style={{
-                          color: charTextColor,
-                          textShadow: `0 0 6px ${char.colors.glow}`,
-                        }}
-                      >
-                        {char.domainJapanese}
-                      </div>
-                    </div>
-                  </button>
-                )
-              })}
+            {/* Grid */}
+            <div className="grid grid-cols-1 gap-2">
+              {roster.map((char) => (
+                <CharacterOption
+                  key={char.id}
+                  char={char}
+                  isSelected={selectedCharacter === char.id}
+                  onSelect={() => handleSelect(char.id)}
+                />
+              ))}
             </div>
 
-            {/* Connecting lines (optional decorative element) */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
-              {characterArray.map((char, index) => {
-                const angle = (index * 360) / characterArray.length - 90
-                const radian = (angle * Math.PI) / 180
-                const x1 = centerX + radius * 0.3 * Math.cos(radian)
-                const y1 = centerY + radius * 0.3 * Math.sin(radian)
-                const x2 = centerX + radius * 0.9 * Math.cos(radian)
-                const y2 = centerY + radius * 0.9 * Math.sin(radian)
+            {/* Footer decoration */}
+            <div className="mt-4 flex gap-1 justify-end">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="w-2 h-2 bg-black rounded-full" />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
 
-                return (
-                  <line
-                    key={`line-${char.id}`}
-                    x1={`${x1}%`}
-                    y1={`${y1}%`}
-                    x2={`${x2}%`}
-                    y2={`${y2}%`}
-                    stroke={char.colors.glow}
-                    strokeWidth="1"
-                    opacity="0.2"
-                  />
-                )
-              })}
-            </svg>
-          </Card>
+function CharacterOption({ char, isSelected, onSelect }: { char: typeof CHARACTERS[keyof typeof CHARACTERS], isSelected: boolean, onSelect: () => void }) {
+  const { imageUrl } = useCharacterImage(char.id)
+
+  return (
+    <motion.button
+      onClick={onSelect}
+      className={cn(
+        "relative w-full h-16 border-2 border-black overflow-hidden group transition-all duration-200",
+        isSelected ? "bg-black" : "bg-white hover:bg-gray-100"
+      )}
+      whileHover={{ x: -4 }}
+    >
+      {/* Background Image Parallax/Slice */}
+      {imageUrl && (
+        <div className="absolute inset-0 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-300">
+          <Image src={imageUrl} alt={char.name} fill className="object-cover" unoptimized />
+          <div className="absolute inset-0 bg-white/50 mix-blend-overlay" />
         </div>
       )}
 
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.2);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3);
-        }
-      `}</style>
-    </div>
+      {/* Helper color slice if no image or overlay */}
+      <div
+        className="absolute inset-0 transform -skew-x-12 scale-150 origin-left opacity-20 group-hover:opacity-40 transition-opacity mix-blend-multiply"
+        style={{ backgroundColor: char.colors.primary }}
+      />
+
+      <div className="relative h-full flex items-center px-4 justify-between">
+        <div className="flex flex-col items-start z-10">
+          <span className={cn(
+            "font-black text-lg italic uppercase leading-none drop-shadow-md",
+            isSelected ? "text-white" : "text-black"
+          )}>
+            {char.name}
+          </span>
+          <span className={cn(
+            "text-xs font-jp font-bold",
+            isSelected ? "text-gray-300" : "text-gray-600"
+          )}>
+            {char.technique}
+          </span>
+        </div>
+
+        {/* Kanji Vertical */}
+        <span
+          className={cn(
+            "font-jp font-black text-2xl opacity-20 pointer-events-none absolute right-2 writing-vertical",
+            isSelected ? "text-white" : "text-black"
+          )}
+        >
+          {char.japaneseName}
+        </span>
+      </div>
+
+      {/* Selection Indicator */}
+      {isSelected && (
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-white animate-pulse" />
+      )}
+    </motion.button>
   )
 }

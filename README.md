@@ -55,6 +55,13 @@ A high-performance, **Jujutsu Kaisen**-themed 3D audio-reactive web application 
   - Frequency analysis for reactive visuals
   - Track metadata display (artist, album, duration)
 
+- **Lyric-to-Color (Psychic Vibe)**
+  - Fetches lyrics via [LRCLIB](https://lrclib.net) (no API key)
+  - Sends lyrics to an LLM (OpenAI or DeepSeek) to analyze emotional atmosphere
+  - Returns a single hex color and a 3-word "Domain Expansion" name per song
+  - Visualizer and domain overlay shift to the song’s vibe (e.g. sad → gloomy blue, rage → red)
+  - Optional: set `OPENAI_API_KEY` or `DEEPSEEK_API_KEY` in `.env.local` to enable
+
 ### 🎨 3D Visualization Features
 
 - **Audio-Reactive 3D Core**
@@ -492,6 +499,8 @@ sukuna/
 | `SPOTIFY_CLIENT_SECRET` | Spotify app client secret | Yes |
 | `NEXTAUTH_SECRET` | Secret for NextAuth session encryption | Yes |
 | `NEXTAUTH_URL` | Base URL of your application | Yes |
+| `OPENAI_API_KEY` | OpenAI API key for lyric-to-color (uses `gpt-4o-mini`) | No (lyric vibe disabled if unset) |
+| `DEEPSEEK_API_KEY` | DeepSeek API key for lyric-to-color (OpenAI-compatible) | No (used if set and `OPENAI_API_KEY` is not) |
 
 ### Production Deployment
 

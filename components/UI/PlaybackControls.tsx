@@ -10,26 +10,26 @@ import { cn } from "@/lib/utils/cn"
 import { formatTime } from "@/lib/utils/format"
 
 export function PlaybackControls() {
-  const { 
-    accessToken, 
-    isPaused, 
-    deviceId, 
-    playerInstance, 
-    playbackPosition, 
-    playbackDuration, 
-    selectedCharacter, 
-    repeatMode, 
+  const {
+    accessToken,
+    isPaused,
+    deviceId,
+    playerInstance,
+    playbackPosition,
+    playbackDuration,
+    selectedCharacter,
+    repeatMode,
     shuffleMode,
     volume,
     isLiked,
     currentTrack,
     beatIntensity,
-    setRepeatMode: setStoreRepeatMode, 
+    setRepeatMode: setStoreRepeatMode,
     setShuffleMode: setStoreShuffleMode,
     setVolume: setStoreVolume,
     setIsLiked: setStoreIsLiked,
   } = useSpotifyStore()
-  
+
   const [canControl, setCanControl] = useState(false)
   const [isSeeking, setIsSeeking] = useState(false)
   const [seekPosition, setSeekPosition] = useState(0)
@@ -38,7 +38,7 @@ export function PlaybackControls() {
   const [isVolumeHovered, setIsVolumeHovered] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
   const volumeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  
+
   const character = CHARACTERS[selectedCharacter]
   const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
@@ -70,22 +70,7 @@ export function PlaybackControls() {
     }
   }, [currentTrack?.id, accessToken, setStoreIsLiked])
 
-  // Sync volume from player on mount
-  useEffect(() => {
-    if (playerInstance && accessToken) {
-      playerInstance.getVolume().then((vol: number) => {
-        setStoreVolume(Math.round(vol * 100))
-      }).catch(() => {
-        // Fallback to stored volume
-        const savedVolume = localStorage.getItem('spotify-volume')
-        if (savedVolume) {
-          const vol = parseInt(savedVolume, 10)
-          setStoreVolume(vol)
-          handleVolumeChange(vol, false)
-        }
-      })
-    }
-  }, [playerInstance, accessToken, setStoreVolume])
+
 
   // Beat pulse animation
   useEffect(() => {
@@ -145,7 +130,7 @@ export function PlaybackControls() {
   const handleVolumeChange = useCallback(async (newVolume: number, saveToStorage = true) => {
     if (!accessToken || !deviceId) return
     setStoreVolume(newVolume)
-    
+
     if (saveToStorage) {
       localStorage.setItem('spotify-volume', newVolume.toString())
     }
@@ -167,6 +152,23 @@ export function PlaybackControls() {
       setIsVolumeHovered(false)
     }, 2000)
   }, [accessToken, deviceId, playerInstance, setStoreVolume])
+
+  // Sync volume from player on mount
+  useEffect(() => {
+    if (playerInstance && accessToken) {
+      playerInstance.getVolume().then((vol: number) => {
+        setStoreVolume(Math.round(vol * 100))
+      }).catch(() => {
+        // Fallback to stored volume
+        const savedVolume = localStorage.getItem('spotify-volume')
+        if (savedVolume) {
+          const vol = parseInt(savedVolume, 10)
+          setStoreVolume(vol)
+          handleVolumeChange(vol, false)
+        }
+      })
+    }
+  }, [playerInstance, accessToken, setStoreVolume, handleVolumeChange])
 
   // Handle volume wheel
   useEffect(() => {
@@ -209,7 +211,7 @@ export function PlaybackControls() {
 
   const handleLikeToggle = async () => {
     if (!currentTrack?.id || !accessToken || isLoadingLike) return
-    
+
     setIsLoadingLike(true)
     try {
       if (isLiked) {
@@ -240,18 +242,18 @@ export function PlaybackControls() {
       {playbackDuration > 0 && (
         <div className="mb-4 sm:mb-6">
           <div className="flex items-center justify-between text-[10px] sm:text-xs mb-2.5 sm:mb-3 font-mono">
-            <span 
+            <span
               className="font-semibold tracking-wider will-animate"
-              style={{ 
+              style={{
                 color: textColor,
                 textShadow: `0 0 10px ${character.colors.glow}50, 0 0 20px ${character.colors.glow}30`,
               }}
             >
               {formatTime(seekPosition)}
             </span>
-            <span 
+            <span
               className="font-semibold tracking-wider will-animate"
-              style={{ 
+              style={{
                 color: textColor,
                 textShadow: `0 0 10px ${character.colors.glow}50, 0 0 20px ${character.colors.glow}30`,
               }}
@@ -259,10 +261,10 @@ export function PlaybackControls() {
               {formatTime(playbackDuration)}
             </span>
           </div>
-          
+
           <div className="relative will-animate group">
             {/* Track background */}
-            <div 
+            <div
               className="h-2.5 bg-black/60 rounded-full overflow-visible backdrop-blur-sm border glass-modern"
               style={{
                 borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
@@ -280,7 +282,7 @@ export function PlaybackControls() {
                   animation: 'cursed-energy-flow 2s ease infinite',
                 }}
               />
-              
+
               {/* Progress head indicator */}
               <div
                 className="absolute top-1/2 w-5 h-5 rounded-full -translate-y-1/2 -translate-x-1/2 will-animate pointer-events-none transition-all duration-100 opacity-0 group-hover:opacity-100"
@@ -291,7 +293,7 @@ export function PlaybackControls() {
                   border: `2px solid ${character.colors.primary}`,
                 }}
               />
-              
+
               {/* Always visible progress indicator */}
               <div
                 className="absolute top-1/2 w-3.5 h-3.5 rounded-full -translate-y-1/2 -translate-x-1/2 will-animate pointer-events-none"
@@ -304,7 +306,7 @@ export function PlaybackControls() {
                   transition: 'transform 0.1s ease-out, left 0.1s ease-out',
                 }}
               />
-              
+
               {/* Beat pulse on progress bar */}
               {(beatIntensity ?? 0) > 0.5 && (
                 <div
@@ -317,7 +319,7 @@ export function PlaybackControls() {
                 />
               )}
             </div>
-            
+
             {/* Seek input */}
             <input
               type="range"
@@ -326,7 +328,7 @@ export function PlaybackControls() {
               value={seekPosition}
               onChange={(e) => handleSeek(Number(e.target.value))}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 touch-manipulation"
-              style={{ 
+              style={{
                 touchAction: "none",
                 WebkitAppearance: "none",
               }}
@@ -350,15 +352,15 @@ export function PlaybackControls() {
               isLoadingLike && "opacity-50 cursor-not-allowed"
             )}
             style={{
-              borderColor: isLiked 
-                ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1) 
+              borderColor: isLiked
+                ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1)
                 : "rgba(255,255,255,0.1)",
               color: isLiked ? character.colors.glow : "rgba(255,255,255,0.7)",
-              background: isLiked 
+              background: isLiked
                 ? `linear-gradient(135deg, ${character.colors.primary}30, ${character.colors.glow}20)`
                 : "rgba(0,0,0,0.4)",
-              boxShadow: isLiked 
-                ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20` 
+              boxShadow: isLiked
+                ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20`
                 : "none",
             }}
           >
@@ -386,11 +388,11 @@ export function PlaybackControls() {
           style={{
             borderColor: shuffleMode ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1) : "rgba(255,255,255,0.1)",
             color: shuffleMode ? textColor : "rgba(255,255,255,0.7)",
-            background: shuffleMode 
+            background: shuffleMode
               ? `linear-gradient(135deg, ${character.colors.primary}30, ${character.colors.glow}20)`
               : "rgba(0,0,0,0.4)",
-            boxShadow: shuffleMode 
-              ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20, 0 0 0 1px ${character.colors.glow}30` 
+            boxShadow: shuffleMode
+              ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20, 0 0 0 1px ${character.colors.glow}30`
               : "none",
           }}
         >
@@ -405,22 +407,22 @@ export function PlaybackControls() {
           aria-label="Previous track"
           className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl glass-modern border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-110 active:scale-95 group relative touch-manipulation will-animate"
           style={{
-            borderColor: buttonPulse === "prev" 
-              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.9) 
+            borderColor: buttonPulse === "prev"
+              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.9)
               : "rgba(255,255,255,0.15)",
             background: buttonPulse === "prev"
               ? `linear-gradient(135deg, ${character.colors.primary}25, ${character.colors.glow}15)`
               : "rgba(0,0,0,0.4)",
-            boxShadow: buttonPulse === "prev" 
-              ? `0 0 25px ${character.colors.glow}70, inset 0 0 10px ${character.colors.glow}20` 
+            boxShadow: buttonPulse === "prev"
+              ? `0 0 25px ${character.colors.glow}70, inset 0 0 10px ${character.colors.glow}20`
               : "0 2px 8px rgba(0,0,0,0.3)",
             transform: buttonPulse === "prev" ? "scale(1.15)" : "scale(1)",
             color: buttonPulse === "prev" ? textColor : "rgba(255,255,255,0.9)",
           }}
         >
-          <svg 
-            className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 group-hover:scale-110" 
-            fill="currentColor" 
+          <svg
+            className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 group-hover:scale-110"
+            fill="currentColor"
             viewBox="0 0 24 24"
             style={{
               filter: buttonPulse === "prev" ? `drop-shadow(0 0 8px ${character.colors.glow})` : "none",
@@ -461,7 +463,7 @@ export function PlaybackControls() {
               }}
             />
           )}
-          
+
           {isPaused ? (
             <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-lg relative z-10 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
@@ -479,22 +481,22 @@ export function PlaybackControls() {
           aria-label="Next track"
           className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl glass-modern border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-110 active:scale-95 group relative touch-manipulation will-animate"
           style={{
-            borderColor: buttonPulse === "next" 
-              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.9) 
+            borderColor: buttonPulse === "next"
+              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.9)
               : "rgba(255,255,255,0.15)",
             background: buttonPulse === "next"
               ? `linear-gradient(135deg, ${character.colors.primary}25, ${character.colors.glow}15)`
               : "rgba(0,0,0,0.4)",
-            boxShadow: buttonPulse === "next" 
-              ? `0 0 25px ${character.colors.glow}70, inset 0 0 10px ${character.colors.glow}20` 
+            boxShadow: buttonPulse === "next"
+              ? `0 0 25px ${character.colors.glow}70, inset 0 0 10px ${character.colors.glow}20`
               : "0 2px 8px rgba(0,0,0,0.3)",
             transform: buttonPulse === "next" ? "scale(1.15)" : "scale(1)",
             color: buttonPulse === "next" ? textColor : "rgba(255,255,255,0.9)",
           }}
         >
-          <svg 
-            className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 group-hover:scale-110" 
-            fill="currentColor" 
+          <svg
+            className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 group-hover:scale-110"
+            fill="currentColor"
             viewBox="0 0 24 24"
             style={{
               filter: buttonPulse === "next" ? `drop-shadow(0 0 8px ${character.colors.glow})` : "none",
@@ -519,15 +521,15 @@ export function PlaybackControls() {
             repeatMode !== "off" ? "border-2" : "border border-white/10"
           )}
           style={{
-            borderColor: repeatMode !== "off" 
-              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1) 
+            borderColor: repeatMode !== "off"
+              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1)
               : "rgba(255,255,255,0.1)",
             background: repeatMode !== "off"
               ? `linear-gradient(135deg, ${character.colors.primary}30, ${character.colors.glow}20)`
               : "rgba(0,0,0,0.4)",
             color: repeatMode !== "off" ? textColor : "rgba(255,255,255,0.7)",
-            boxShadow: repeatMode !== "off" 
-              ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20, 0 0 0 1px ${character.colors.glow}30` 
+            boxShadow: repeatMode !== "off"
+              ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20, 0 0 0 1px ${character.colors.glow}30`
               : "none",
           }}
         >
@@ -542,9 +544,9 @@ export function PlaybackControls() {
             </svg>
           )}
           {repeatMode === "track" && (
-            <span 
-              className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full animate-pulse" 
-              style={{ 
+            <span
+              className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full animate-pulse"
+              style={{
                 backgroundColor: character.colors.glow,
                 boxShadow: `0 0 10px ${character.colors.glow}, 0 0 20px ${character.colors.glow}60`,
               }}
@@ -553,7 +555,7 @@ export function PlaybackControls() {
         </button>
 
         {/* Volume - Inline horizontal slider */}
-        <div 
+        <div
           className="relative flex items-center gap-2 group"
           onMouseEnter={() => {
             setIsVolumeHovered(true)
@@ -572,9 +574,9 @@ export function PlaybackControls() {
             }}
             aria-label={volume === 0 ? "Unmute" : "Mute"}
           >
-            <svg 
-              className="w-4 h-4 sm:w-5 sm:h-5 transition-colors" 
-              fill="currentColor" 
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 transition-colors"
+              fill="currentColor"
               viewBox="0 0 24 24"
             >
               {volume === 0 ? (
@@ -586,7 +588,7 @@ export function PlaybackControls() {
               )}
             </svg>
           </button>
-          
+
           {/* Volume slider - visible on hover or always on desktop */}
           <div className={cn(
             "flex items-center gap-2 transition-all duration-300 overflow-hidden",
@@ -604,9 +606,9 @@ export function PlaybackControls() {
               }}
               aria-label="Volume"
             />
-            <span 
+            <span
               className="text-xs w-8 font-mono font-semibold flex-shrink-0"
-              style={{ 
+              style={{
                 color: textColor,
                 textShadow: `0 0 8px ${character.colors.glow}40`,
               }}

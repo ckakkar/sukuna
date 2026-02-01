@@ -51,6 +51,10 @@ interface SpotifyState {
   frequencySpectrum: { bass: number; mid: number; treble: number } | null
   audioMood: { mood: "happy" | "sad" | "energetic" | "calm" | "neutral"; confidence: number } | null
   tempoChanges: Array<{ time: number; tempo: number; confidence: number }>
+  // Lyric-to-color (LLM psychic vibe)
+  lyricMoodColor: string | null
+  songDomainExpansionName: string | null
+  isLoadingLyricMood: boolean
   // Transient event counters
   impactFrameId: number
   skipEventId: number
@@ -82,6 +86,8 @@ interface SpotifyState {
   setFrequencySpectrum: (spectrum: { bass: number; mid: number; treble: number } | null) => void
   setAudioMood: (mood: { mood: "happy" | "sad" | "energetic" | "calm" | "neutral"; confidence: number } | null) => void
   setTempoChanges: (changes: Array<{ time: number; tempo: number; confidence: number }>) => void
+  setLyricMood: (hexColor: string | null, domainExpansionName: string | null) => void
+  setIsLoadingLyricMood: (loading: boolean) => void
 }
 
 export const useSpotifyStore = create<SpotifyState>((set, get) => ({
@@ -109,6 +115,9 @@ export const useSpotifyStore = create<SpotifyState>((set, get) => ({
   frequencySpectrum: null,
   audioMood: null,
   tempoChanges: [],
+  lyricMoodColor: null,
+  songDomainExpansionName: null,
+  isLoadingLyricMood: false,
   impactFrameId: 0,
   skipEventId: 0,
   playerInstance: null,
@@ -173,4 +182,7 @@ export const useSpotifyStore = create<SpotifyState>((set, get) => ({
   setFrequencySpectrum: (spectrum) => set({ frequencySpectrum: spectrum }),
   setAudioMood: (mood) => set({ audioMood: mood }),
   setTempoChanges: (changes) => set({ tempoChanges: changes }),
+  setLyricMood: (hexColor, domainExpansionName) =>
+    set({ lyricMoodColor: hexColor, songDomainExpansionName: domainExpansionName }),
+  setIsLoadingLyricMood: (loading) => set({ isLoadingLyricMood: loading }),
 }))

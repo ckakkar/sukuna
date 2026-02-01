@@ -1,19 +1,47 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
+
+// Singleton to hold Wasm module reference
+let wasmModule: any = null
+let audioAnalyzer: any = null
 
 /**
  * useBeatDetector
  * 
  * Detects beats in real-time using Spotify's audio analysis segments
- * and updates the store with beat intensity for visualizations
+ * and updates the store with beat intensity for visualizations.
+ * Uses Rust WebAssembly for intensity calculations.
  */
 export function useBeatDetector() {
   const { trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat } = useSpotifyStore()
   const lastBeatTimeRef = useRef(0)
   const beatIntensityRef = useRef(0)
   const animationFrameRef = useRef<number | undefined>(undefined)
+  const [isWasmReady, setIsWasmReady] = useState(false)
+
+  // Initialize Wasm module
+  useEffect(() => {
+    const initWasm = async () => {
+      if (!wasmModule) {
+        try {
+          // Dynamic import to avoid SSR issues
+          // @ts-ignore
+          const wasm = await import("@/lib/wasm/rust_audio.js")
+          await wasm.default() // Initialize Wasm
+          wasmModule = wasm
+          audioAnalyzer = new wasm.AudioAnalyzer(1024)
+          console.log("Rust Audio Analyzer initialized")
+        } catch (e) {
+          console.error("Failed to load Wasm module:", e)
+        }
+      }
+      setIsWasmReady(true)
+    }
+
+    initWasm()
+  }, [])
 
   useEffect(() => {
     if (!trackData || isPaused) {
@@ -32,41 +60,47 @@ export function useBeatDetector() {
       )
 
       if (segment) {
-        // Enhanced beat detection using multiple factors
         const segmentTime = currentTime - segment.start
         const beatPhase = (segmentTime % beatInterval) / beatInterval
 
-        // Calculate beat strength from multiple factors
-        const loudness = Math.abs(segment.loudness_max) / 60 // Normalize to 0-1
+        const loudness = Math.abs(segment.loudness_max) / 60
         const confidence = segment.confidence
         const timbreEnergy = segment.timbre.reduce((sum, val) => sum + Math.abs(val), 0) / segment.timbre.length
-        const normalizedTimbre = Math.min(timbreEnergy / 10, 1) // Normalize timbre energy
 
-        // Enhanced intensity calculation
-        const baseIntensity = loudness * confidence
-        const timbreBoost = normalizedTimbre * 0.3
-        const phaseBoost = beatPhase < 0.15 ? (1 - beatPhase / 0.15) * 0.2 : 0
-        
-        const intensity = Math.min((baseIntensity + timbreBoost + phaseBoost) * 1.5, 1)
+        let intensity = 0
+
+        if (isWasmReady && audioAnalyzer) {
+          // Rust computation
+          intensity = audioAnalyzer.calculate_intensity(
+            loudness,
+            confidence,
+            timbreEnergy,
+            beatPhase
+          )
+        } else {
+          // Fallback JS computation
+          const normalizedTimbre = Math.min(timbreEnergy / 10, 1)
+          const baseIntensity = loudness * confidence
+          const timbreBoost = normalizedTimbre * 0.3
+          const phaseBoost = beatPhase < 0.15 ? (1 - beatPhase / 0.15) * 0.2 : 0
+          intensity = Math.min((baseIntensity + timbreBoost + phaseBoost) * 1.5, 1)
+        }
 
         // Detect beat with improved timing
         const timeSinceLastBeat = Date.now() - lastBeatTimeRef.current
-        const minBeatInterval = beatInterval * 700 // Slightly more lenient
+        const minBeatInterval = beatInterval * 700
 
         if (beatPhase < 0.15 && timeSinceLastBeat > minBeatInterval && intensity > 0.3) {
-          // Strong beat detected
           beatIntensityRef.current = intensity
           setBeatIntensity(intensity)
           registerBeat()
           lastBeatTimeRef.current = Date.now()
         } else {
-          // Smooth decay with momentum
-          const decayRate = intensity > 0.5 ? 0.88 : 0.92 // Faster decay for high intensity
+          const decayRate = intensity > 0.5 ? 0.88 : 0.92
           beatIntensityRef.current *= decayRate
           setBeatIntensity(Math.max(beatIntensityRef.current, 0))
         }
       } else {
-        // No segment, gentle decay
         beatIntensityRef.current *= 0.95
         setBeatIntensity(Math.max(beatIntensityRef.current, 0))
       }
@@ -81,5 +115,5 @@ export function useBeatDetector() {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat])
+  }, [trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat, isWasmReady])
 }

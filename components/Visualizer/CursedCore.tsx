@@ -15,19 +15,19 @@ const damp = (current: number, target: number, smoothing: number, delta: number)
 // Detect device capability for performance scaling
 function useDeviceQuality() {
   const [quality, setQuality] = useState<'high' | 'medium' | 'low'>('medium')
-  
+
   useEffect(() => {
     if (typeof window === 'undefined') return
-    
+
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
     const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768
     const pixelRatio = window.devicePixelRatio || 1
-    
+
     // Check GPU capability via WebGL context
     const canvas = document.createElement('canvas')
     const glContext = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
     let isLowEndGPU = false
-    
+
     if (glContext && 'getExtension' in glContext) {
       try {
         const webglContext = glContext as WebGLRenderingContext
@@ -41,7 +41,7 @@ function useDeviceQuality() {
         isLowEndGPU = false
       }
     }
-    
+
     if (isMobile && (isLowEndGPU || pixelRatio > 2)) {
       setQuality('low')
     } else if (isMobile || isTablet) {
@@ -50,7 +50,7 @@ function useDeviceQuality() {
       setQuality('high')
     }
   }, [])
-  
+
   return quality
 }
 
@@ -60,39 +60,40 @@ export function CursedCore() {
   const particlesRef = useRef<Points>(null)
   const ringRef = useRef<Mesh>(null)
   const slashLinesRef = useRef<THREE.Group>(null)
-  
-  const { trackData, selectedCharacter, intensity, currentTechnique, beatIntensity } = useSpotifyStore()
+
+  const { trackData, selectedCharacter, intensity, currentTechnique, beatIntensity, lyricMoodColor } = useSpotifyStore()
   const character = CHARACTERS[selectedCharacter]
   const quality = useDeviceQuality()
+  const glowColor = lyricMoodColor ?? character.colors.glow
 
   // Optimized particle count based on device quality
   const particles = useMemo(() => {
     const count = quality === 'high' ? 600 : quality === 'medium' ? 300 : 150
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
-    
+
     for (let i = 0; i < count; i++) {
       const i3 = i * 3
       const radius = 3 + Math.random() * 4
       const theta = Math.random() * Math.PI * 2
       const phi = Math.random() * Math.PI
-      
+
       positions[i3] = radius * Math.sin(phi) * Math.cos(theta)
       positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
       positions[i3 + 2] = radius * Math.cos(phi)
-      
+
       colors[i3] = character.energy.high.r
       colors[i3 + 1] = character.energy.high.g
       colors[i3 + 2] = character.energy.high.b
     }
-    
+
     return { positions, colors, count }
   }, [character, quality])
 
   // Create slash lines for cleave technique
   const slashLines = useMemo(() => {
     if (currentTechnique !== "cleave") return null
-    
+
     const lines: THREE.Line[] = []
     for (let i = 0; i < 8; i++) {
       const points = []
@@ -104,10 +105,10 @@ export function CursedCore() {
         Math.sin(angle) * length,
         (Math.random() - 0.5) * 2
       ))
-      
+
       const geometry = new THREE.BufferGeometry().setFromPoints(points)
       const material = new THREE.LineBasicMaterial({
-        color: new THREE.Color(character.colors.glow),
+        color: new THREE.Color(glowColor),
         transparent: true,
         opacity: 0,
         linewidth: 2
@@ -116,7 +117,7 @@ export function CursedCore() {
       lines.push(line)
     }
     return lines
-  }, [currentTechnique, character])
+  }, [currentTechnique, glowColor])
 
   useFrame((state, delta) => {
     if (!meshRef.current || !innerMeshRef.current || !particlesRef.current) return
@@ -135,8 +136,8 @@ export function CursedCore() {
     meshRef.current.scale.setScalar(nextScale)
 
     // Tempo-synced inner core rotation
-    const innerRotationSpeed = quality === 'high' 
-      ? (bpm / 100) * tempoMultiplier 
+    const innerRotationSpeed = quality === 'high'
+      ? (bpm / 100) * tempoMultiplier
       : (bpm / 150) * tempoMultiplier
     innerMeshRef.current.rotation.y -= delta * innerRotationSpeed
     innerMeshRef.current.rotation.x += delta * innerRotationSpeed * 0.5
@@ -159,22 +160,22 @@ export function CursedCore() {
     const particlePositions = particlesRef.current.geometry.attributes.position.array as Float32Array
     const updateStep = quality === 'low' ? 2 : 1
     const shouldUpdate = quality !== 'low' || Math.floor(state.clock.elapsedTime * 30) % 2 === 0
-    
+
     if (shouldUpdate) {
       for (let i = 0; i < particles.count; i += updateStep) {
         const i3 = i * 3
         const time = state.clock.elapsedTime + i * 0.05
-        
+
         // Tempo-synced spiral motion (using tempoMultiplier from outer scope)
         const baseRadius = 3.5
         const radius = baseRadius + Math.sin(time * 0.3 * tempoMultiplier) * 0.8 + beat * 1.5
         const theta = time * 0.2 * tempoMultiplier + i * 0.08
         const phi = Math.sin(time * 0.15 * tempoMultiplier) * Math.PI * 0.8
-        
+
         particlePositions[i3] = radius * Math.sin(phi) * Math.cos(theta)
         particlePositions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta) + Math.sin(time * 0.5) * 0.3
         particlePositions[i3 + 2] = radius * Math.cos(phi)
-        
+
         // Interpolate skipped particles for smoother appearance
         if (updateStep > 1 && i + updateStep < particles.count) {
           const nextI3 = (i + updateStep) * 3
@@ -191,7 +192,7 @@ export function CursedCore() {
       const ringScale = 1 + energy * 0.3 + beat * 0.8
       ringRef.current.scale.setScalar(damp(ringRef.current.scale.x, ringScale, 10, delta))
       ringRef.current.rotation.z += delta * 0.3
-      
+
       const ringMaterial = ringRef.current.material as THREE.MeshStandardMaterial
       ringMaterial.emissiveIntensity = 0.4 + beat * 1.2
     }
@@ -201,7 +202,7 @@ export function CursedCore() {
       slashLinesRef.current.children.forEach((line, i) => {
         const material = (line as THREE.Line).material as THREE.LineBasicMaterial
         material.opacity = Math.max(0, material.opacity - delta * 2)
-        
+
         if (beat > 0.7 && Math.random() > 0.7) {
           material.opacity = 1
           line.rotation.z = Math.random() * Math.PI * 2
@@ -212,19 +213,19 @@ export function CursedCore() {
     // Optimized dynamic material colors - only update when change is significant
     const material = meshRef.current.material as THREE.MeshPhysicalMaterial
     const colorIntensity = Math.max(energy, beat * 0.7)
-    
+
     if (colorIntensity > 0.1 || quality === 'high') {
       const colorTarget = energy > 0.5
         ? {
-            r: character.energy.mid.r + (character.energy.high.r - character.energy.mid.r) * ((energy - 0.5) * 2),
-            g: character.energy.mid.g + (character.energy.high.g - character.energy.mid.g) * ((energy - 0.5) * 2),
-            b: character.energy.mid.b + (character.energy.high.b - character.energy.mid.b) * ((energy - 0.5) * 2),
-          }
+          r: character.energy.mid.r + (character.energy.high.r - character.energy.mid.r) * ((energy - 0.5) * 2),
+          g: character.energy.mid.g + (character.energy.high.g - character.energy.mid.g) * ((energy - 0.5) * 2),
+          b: character.energy.mid.b + (character.energy.high.b - character.energy.mid.b) * ((energy - 0.5) * 2),
+        }
         : {
-            r: character.energy.low.r + (character.energy.mid.r - character.energy.low.r) * (energy * 2),
-            g: character.energy.low.g + (character.energy.mid.g - character.energy.low.g) * (energy * 2),
-            b: character.energy.low.b + (character.energy.mid.b - character.energy.low.b) * (energy * 2),
-          }
+          r: character.energy.low.r + (character.energy.mid.r - character.energy.low.r) * (energy * 2),
+          g: character.energy.low.g + (character.energy.mid.g - character.energy.low.g) * (energy * 2),
+          b: character.energy.low.b + (character.energy.mid.b - character.energy.low.b) * (energy * 2),
+        }
 
       const currentColor = material.color
       const dampingFactor = quality === 'high' ? 12 : 8
@@ -233,14 +234,14 @@ export function CursedCore() {
         damp(currentColor.g, colorTarget.g, dampingFactor, delta),
         damp(currentColor.b, colorTarget.b, dampingFactor, delta)
       )
-      
+
       material.emissive.setRGB(
         Math.min(colorTarget.r * 1.3, 1),
         Math.min(colorTarget.g * 1.3, 1),
         Math.min(colorTarget.b * 1.3, 1)
       )
     }
-    
+
     material.emissiveIntensity = 0.6 + energy * 0.3 + beat * 0.8
   })
 
@@ -257,7 +258,7 @@ export function CursedCore() {
         <meshPhysicalMaterial
           metalness={0.85}
           roughness={0.1}
-          emissive={character.colors.glow}
+          emissive={glowColor}
           emissiveIntensity={0.6}
           clearcoat={quality === 'high' ? 1 : 0.8}
           clearcoatRoughness={0.15}
@@ -269,10 +270,10 @@ export function CursedCore() {
       <mesh ref={innerMeshRef} castShadow={quality !== 'low'}>
         <octahedronGeometry args={[0.8, octahedronDetail]} />
         <meshPhysicalMaterial
-          color={character.colors.accent}
+          color={lyricMoodColor ?? character.colors.accent}
           metalness={0.75}
           roughness={0.25}
-          emissive={character.colors.secondary}
+          emissive={lyricMoodColor ?? character.colors.secondary}
           emissiveIntensity={1.0}
           transparent
           opacity={0.7}
@@ -306,8 +307,8 @@ export function CursedCore() {
         <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[2, 0.05, 12, quality === 'high' ? 64 : 32]} />
           <meshStandardMaterial
-            color={character.colors.glow}
-            emissive={character.colors.glow}
+            color={glowColor}
+            emissive={glowColor}
             emissiveIntensity={0.4}
             transparent
             opacity={0.5}

@@ -7,11 +7,12 @@ import { getVisibleTextColor } from "@/lib/utils/colorUtils"
 import { cn } from "@/lib/utils/cn"
 
 export function DomainExpansion() {
-  const { isDomainExpanding, selectedCharacter } = useSpotifyStore()
+  const { isDomainExpanding, selectedCharacter, songDomainExpansionName, lyricMoodColor } = useSpotifyStore()
   const [show, setShow] = useState(false)
   const [phase, setPhase] = useState<"pre" | "main" | "post">("pre")
   const character = CHARACTERS[selectedCharacter]
   const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
+  const songColor = lyricMoodColor ?? character.colors.glow
 
   useEffect(() => {
     if (isDomainExpanding) {
@@ -170,16 +171,16 @@ export function DomainExpansion() {
           />
         </div>
 
-        {/* Domain name - English */}
+        {/* Domain name - English (character or song's LLM-generated name) */}
         <div
           className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono tracking-widest uppercase"
-          style={{ 
+          style={{
             color: character.colors.secondary || character.colors.glow || textColor,
-            textShadow: `0 0 20px ${character.colors.glow}80`,
+            textShadow: `0 0 20px ${songColor}80`,
             animation: "slideUp 0.8s ease-out 0.6s both",
           }}
         >
-          {character.domain}
+          {songDomainExpansionName || character.domain}
         </div>
 
         {/* Technique name */}

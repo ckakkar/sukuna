@@ -45,8 +45,10 @@ function BeatReactiveLights() {
   })
 
   const selectedCharacter = useSpotifyStore((state) => state.selectedCharacter)
+  const lyricMoodColor = useSpotifyStore((state) => state.lyricMoodColor)
   const character = CHARACTERS[selectedCharacter]
-  const primaryLightColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
+  const basePrimary = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
+  const primaryLightColor = lyricMoodColor ?? basePrimary
 
   return (
     <>
@@ -63,13 +65,13 @@ function BeatReactiveLights() {
         ref={light2Ref}
         position={[-10, -10, -10]}
         intensity={0.6}
-        color={character.colors.secondary || character.colors.glow}
+        color={lyricMoodColor ?? character.colors.secondary ?? character.colors.glow}
       />
       <pointLight
         ref={light3Ref}
         position={[0, 10, 0]}
         intensity={0.8}
-        color={character.colors.accent || character.colors.glow}
+        color={lyricMoodColor ?? character.colors.accent ?? character.colors.glow}
       />
       <directionalLight
         position={[5, 5, 5]}
@@ -106,13 +108,15 @@ function CursedEnergyField() {
   })
 
   const selectedCharacter = useSpotifyStore((state) => state.selectedCharacter)
+  const lyricMoodColor = useSpotifyStore((state) => state.lyricMoodColor)
   const character = CHARACTERS[selectedCharacter]
+  const energyColor = lyricMoodColor ?? character.colors.glow
 
   return (
     <mesh ref={meshRef}>
       <sphereGeometry args={[1, 32, 32]} />
       <meshBasicMaterial
-        color={character.colors.glow}
+        color={energyColor}
         transparent
         opacity={0.05}
         wireframe

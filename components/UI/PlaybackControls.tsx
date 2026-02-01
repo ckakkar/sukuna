@@ -238,86 +238,32 @@ export function PlaybackControls() {
 
   return (
     <div className="w-full pointer-events-auto max-w-2xl px-2 sm:px-0">
-      {/* Progress Bar */}
+      {/* Progress Bar - Flat Ink Style */}
       {playbackDuration > 0 && (
         <div className="mb-4 sm:mb-6">
-          <div className="flex items-center justify-between text-[10px] sm:text-xs mb-2.5 sm:mb-3 font-mono">
-            <span
-              className="font-semibold tracking-wider will-animate"
-              style={{
-                color: textColor,
-                textShadow: `0 0 10px ${character.colors.glow}50, 0 0 20px ${character.colors.glow}30`,
-              }}
-            >
-              {formatTime(seekPosition)}
-            </span>
-            <span
-              className="font-semibold tracking-wider will-animate"
-              style={{
-                color: textColor,
-                textShadow: `0 0 10px ${character.colors.glow}50, 0 0 20px ${character.colors.glow}30`,
-              }}
-            >
-              {formatTime(playbackDuration)}
-            </span>
+          <div className="flex items-center justify-between text-xs font-mono font-bold tracking-widest uppercase mb-1">
+            <span className="text-black bg-white px-1 border border-black">{formatTime(seekPosition)}</span>
+            <span className="text-black bg-white px-1 border border-black">{formatTime(playbackDuration)}</span>
           </div>
 
-          <div className="relative will-animate group">
+          <div className="relative group h-4">
             {/* Track background */}
             <div
-              className="h-2.5 bg-black/60 rounded-full overflow-visible backdrop-blur-sm border glass-modern"
-              style={{
-                borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4),
-                boxShadow: `inset 0 0 12px ${character.colors.primary}25, 0 2px 8px rgba(0,0,0,0.4)`,
-              }}
+              className="absolute inset-0 bg-white border-2 border-black"
             >
-              {/* Progress fill with glow */}
-              <div
-                className="h-full rounded-full transition-all duration-100 relative overflow-visible domain-border"
-                style={{
-                  width: `${progress}%`,
-                  background: `linear-gradient(90deg, ${character.colors.primary}, ${character.colors.glow}, ${character.colors.secondary || character.colors.glow})`,
-                  backgroundSize: '200% 100%',
-                  boxShadow: `0 0 ${20 + (beatIntensity ?? 0) * 20}px ${character.colors.glow}90, inset 0 1px 0 rgba(255,255,255,0.3), 0 0 0 1px ${character.colors.glow}30`,
-                  animation: 'cursed-energy-flow 2s ease infinite',
-                }}
-              />
+              {/* Pattern texture overlay */}
+              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
 
-              {/* Progress head indicator */}
+              {/* Progress fill - Solid Black */}
               <div
-                className="absolute top-1/2 w-5 h-5 rounded-full -translate-y-1/2 -translate-x-1/2 will-animate pointer-events-none transition-all duration-100 opacity-0 group-hover:opacity-100"
-                style={{
-                  left: `${progress}%`,
-                  background: `radial-gradient(circle, ${character.colors.glow}, ${character.colors.primary})`,
-                  boxShadow: `0 0 ${15 + (beatIntensity ?? 0) * 15}px ${character.colors.glow}, 0 0 ${30 + (beatIntensity ?? 0) * 20}px ${character.colors.glow}70`,
-                  border: `2px solid ${character.colors.primary}`,
-                }}
-              />
-
-              {/* Always visible progress indicator */}
-              <div
-                className="absolute top-1/2 w-3.5 h-3.5 rounded-full -translate-y-1/2 -translate-x-1/2 will-animate pointer-events-none"
-                style={{
-                  left: `${progress}%`,
-                  background: `radial-gradient(circle, ${character.colors.glow}, ${character.colors.primary})`,
-                  boxShadow: `0 0 ${10 + (beatIntensity ?? 0) * 10}px ${character.colors.glow}, 0 0 ${20 + (beatIntensity ?? 0) * 15}px ${character.colors.glow}70`,
-                  border: `2px solid ${character.colors.primary}`,
-                  transform: `translate(-50%, -50%) scale(${1 + (beatIntensity ?? 0) * 0.2})`,
-                  transition: 'transform 0.1s ease-out, left 0.1s ease-out',
-                }}
-              />
-
-              {/* Beat pulse on progress bar */}
-              {(beatIntensity ?? 0) > 0.5 && (
-                <div
-                  className="absolute top-1/2 w-8 h-8 rounded-full -translate-y-1/2 -translate-x-1/2 animate-ping pointer-events-none"
-                  style={{
-                    left: `${progress}%`,
-                    background: character.colors.glow,
-                    opacity: beatIntensity * 0.6,
-                  }}
+                className="h-full bg-black transition-all duration-100 ease-linear relative"
+                style={{ width: `${progress}%` }}
+              >
+                {/* Diagonal stripe pattern for active bar */}
+                <div className="absolute inset-0 opacity-30"
+                  style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.5) 5px, rgba(255,255,255,0.5) 10px)' }}
                 />
-              )}
+              </div>
             </div>
 
             {/* Seek input */}
@@ -327,52 +273,31 @@ export function PlaybackControls() {
               max={playbackDuration}
               value={seekPosition}
               onChange={(e) => handleSeek(Number(e.target.value))}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 touch-manipulation"
-              style={{
-                touchAction: "none",
-                WebkitAppearance: "none",
-              }}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               aria-label="Seek position"
             />
           </div>
         </div>
       )}
 
-      {/* Controls */}
-      <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 relative">
+      {/* Controls - Manga Panel Buttons */}
+      <div className="flex items-center justify-center gap-3 sm:gap-4 relative bg-white border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+
         {/* Like Button */}
         {currentTrack && (
           <button
             onClick={handleLikeToggle}
             disabled={isLoadingLike}
-            aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
             className={cn(
-              "p-2.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 touch-manipulation will-animate glass-modern border",
-              isLiked ? "border-2" : "border border-white/10",
-              isLoadingLike && "opacity-50 cursor-not-allowed"
+              "p-2 border-2 border-black transition-transform active:scale-95",
+              isLiked ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
             )}
-            style={{
-              borderColor: isLiked
-                ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1)
-                : "rgba(255,255,255,0.1)",
-              color: isLiked ? character.colors.glow : "rgba(255,255,255,0.7)",
-              background: isLiked
-                ? `linear-gradient(135deg, ${character.colors.primary}30, ${character.colors.glow}20)`
-                : "rgba(0,0,0,0.4)",
-              boxShadow: isLiked
-                ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20`
-                : "none",
-            }}
+            aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
           >
-            {isLoadingLike ? (
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
+            {isLiked ? (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
             ) : (
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
             )}
           </button>
         )}
@@ -380,219 +305,81 @@ export function PlaybackControls() {
         {/* Shuffle */}
         <button
           onClick={handleShuffleToggle}
-          aria-label={shuffleMode ? "Disable shuffle" : "Enable shuffle"}
           className={cn(
-            "p-2.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 touch-manipulation will-animate glass-modern",
-            shuffleMode ? "border-2" : "border border-white/10"
+            "p-2 border-2 border-black transition-transform active:scale-95",
+            shuffleMode ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
           )}
-          style={{
-            borderColor: shuffleMode ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1) : "rgba(255,255,255,0.1)",
-            color: shuffleMode ? textColor : "rgba(255,255,255,0.7)",
-            background: shuffleMode
-              ? `linear-gradient(135deg, ${character.colors.primary}30, ${character.colors.glow}20)`
-              : "rgba(0,0,0,0.4)",
-            boxShadow: shuffleMode
-              ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20, 0 0 0 1px ${character.colors.glow}30`
-              : "none",
-          }}
         >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
-          </svg>
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" /></svg>
         </button>
 
         {/* Previous */}
         <button
           onClick={handlePrevious}
-          aria-label="Previous track"
-          className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl glass-modern border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-110 active:scale-95 group relative touch-manipulation will-animate"
-          style={{
-            borderColor: buttonPulse === "prev"
-              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.9)
-              : "rgba(255,255,255,0.15)",
-            background: buttonPulse === "prev"
-              ? `linear-gradient(135deg, ${character.colors.primary}25, ${character.colors.glow}15)`
-              : "rgba(0,0,0,0.4)",
-            boxShadow: buttonPulse === "prev"
-              ? `0 0 25px ${character.colors.glow}70, inset 0 0 10px ${character.colors.glow}20`
-              : "0 2px 8px rgba(0,0,0,0.3)",
-            transform: buttonPulse === "prev" ? "scale(1.15)" : "scale(1)",
-            color: buttonPulse === "prev" ? textColor : "rgba(255,255,255,0.9)",
-          }}
+          className="p-3 border-2 border-black bg-white text-black hover:bg-gray-100 active:bg-black active:text-white transition-colors"
         >
-          <svg
-            className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 group-hover:scale-110"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            style={{
-              filter: buttonPulse === "prev" ? `drop-shadow(0 0 8px ${character.colors.glow})` : "none",
-            }}
-          >
-            <path d="M6 6h2v12H6zm7 6l-6-6v12l6-6z" />
-          </svg>
-          {buttonPulse === "prev" && (
-            <div
-              className="absolute inset-0 rounded-lg animate-ping opacity-75"
-              style={{ background: character.colors.glow }}
-            />
-          )}
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" /></svg>
         </button>
 
-        {/* Play/Pause - Main button */}
+        {/* Play/Pause - Larger Impact Button */}
         <button
           onClick={handlePlayPause}
-          className="p-4 sm:p-5 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-2xl hover:scale-110 active:scale-95 relative overflow-hidden group touch-manipulation will-animate domain-border"
-          style={{
-            background: isPaused
-              ? `linear-gradient(135deg, ${character.colors.primary} 0%, ${character.colors.glow} 50%, ${character.colors.secondary || character.colors.glow} 100%)`
-              : `linear-gradient(135deg, ${character.colors.secondary || character.colors.glow} 0%, ${character.colors.glow} 50%, ${character.colors.primary} 100%)`,
-            backgroundSize: '200% 200%',
-            boxShadow: `0 10px 40px ${character.colors.glow}${(beatIntensity ?? 0) > 0.5 ? 'AA' : '70'}, 0 0 0 2px rgba(255,255,255,0.1), inset 0 2px 0 rgba(255,255,255,0.3)`,
-            transform: buttonPulse === "play" || ((beatIntensity ?? 0) > 0.7) ? "scale(1.15)" : "scale(1)",
-            animation: 'cursed-energy-flow 3s ease infinite',
-            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          }}
-          aria-label={isPaused ? "Play" : "Pause"}
+          className="p-4 border-2 border-black bg-black text-white hover:bg-gray-900 active:scale-95 transition-transform shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"
         >
-          {(beatIntensity ?? 0) > 0.6 && (
-            <div
-              className="absolute inset-0 rounded-2xl opacity-70"
-              style={{
-                background: `radial-gradient(circle, ${character.colors.glow}80, transparent)`,
-                animation: "pulse 0.5s ease-out",
-              }}
-            />
-          )}
-
           {isPaused ? (
-            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-lg relative z-10 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
+            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
           ) : (
-            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-lg relative z-10" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 4h4v16H6zm8 0h4v16h-4z" />
-            </svg>
+            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
           )}
         </button>
 
         {/* Next */}
         <button
           onClick={handleNext}
-          aria-label="Next track"
-          className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl glass-modern border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-110 active:scale-95 group relative touch-manipulation will-animate"
-          style={{
-            borderColor: buttonPulse === "next"
-              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.9)
-              : "rgba(255,255,255,0.15)",
-            background: buttonPulse === "next"
-              ? `linear-gradient(135deg, ${character.colors.primary}25, ${character.colors.glow}15)`
-              : "rgba(0,0,0,0.4)",
-            boxShadow: buttonPulse === "next"
-              ? `0 0 25px ${character.colors.glow}70, inset 0 0 10px ${character.colors.glow}20`
-              : "0 2px 8px rgba(0,0,0,0.3)",
-            transform: buttonPulse === "next" ? "scale(1.15)" : "scale(1)",
-            color: buttonPulse === "next" ? textColor : "rgba(255,255,255,0.9)",
-          }}
+          className="p-3 border-2 border-black bg-white text-black hover:bg-gray-100 active:bg-black active:text-white transition-colors"
         >
-          <svg
-            className="w-5 h-5 sm:w-6 sm:h-6 transition-all duration-300 group-hover:scale-110"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            style={{
-              filter: buttonPulse === "next" ? `drop-shadow(0 0 8px ${character.colors.glow})` : "none",
-            }}
-          >
-            <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
-          </svg>
-          {buttonPulse === "next" && (
-            <div
-              className="absolute inset-0 rounded-lg animate-ping opacity-75"
-              style={{ background: character.colors.glow }}
-            />
-          )}
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
         </button>
 
-        {/* Repeat - Enhanced with better icons */}
+        {/* Repeat */}
         <button
           onClick={handleRepeatToggle}
-          aria-label={`Repeat mode: ${repeatMode === "off" ? "off" : repeatMode === "context" ? "all" : "one"}`}
           className={cn(
-            "p-2.5 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 relative touch-manipulation will-animate glass-modern",
-            repeatMode !== "off" ? "border-2" : "border border-white/10"
+            "p-2 border-2 border-black transition-transform active:scale-95",
+            repeatMode !== "off" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
           )}
-          style={{
-            borderColor: repeatMode !== "off"
-              ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 1)
-              : "rgba(255,255,255,0.1)",
-            background: repeatMode !== "off"
-              ? `linear-gradient(135deg, ${character.colors.primary}30, ${character.colors.glow}20)`
-              : "rgba(0,0,0,0.4)",
-            color: repeatMode !== "off" ? textColor : "rgba(255,255,255,0.7)",
-            boxShadow: repeatMode !== "off"
-              ? `0 0 20px ${character.colors.glow}60, inset 0 0 15px ${character.colors.glow}20, 0 0 0 1px ${character.colors.glow}30`
-              : "none",
-          }}
         >
           {repeatMode === "track" ? (
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
-              <circle cx="12" cy="12" r="3" fill="currentColor" />
-            </svg>
+            <div className="relative">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" /></svg>
+              <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-white text-black border border-black px-0.5 rounded-full">1</span>
+            </div>
           ) : (
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
-            </svg>
-          )}
-          {repeatMode === "track" && (
-            <span
-              className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full animate-pulse"
-              style={{
-                backgroundColor: character.colors.glow,
-                boxShadow: `0 0 10px ${character.colors.glow}, 0 0 20px ${character.colors.glow}60`,
-              }}
-            />
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" /></svg>
           )}
         </button>
 
-        {/* Volume - Inline horizontal slider */}
+        {/* Volume */}
         <div
-          className="relative flex items-center gap-2 group"
-          onMouseEnter={() => {
-            setIsVolumeHovered(true)
-            if (volumeTimeoutRef.current) clearTimeout(volumeTimeoutRef.current)
-          }}
-          onMouseLeave={() => {
-            volumeTimeoutRef.current = setTimeout(() => setIsVolumeHovered(false), 2000)
-          }}
+          className="relative flex items-center group"
+          onMouseEnter={() => setIsVolumeHovered(true)}
+          onMouseLeave={() => setIsVolumeHovered(false)}
         >
           <button
             onClick={() => handleVolumeChange(volume === 0 ? 50 : 0)}
-            className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl glass-modern border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-110 active:scale-95 will-animate flex-shrink-0"
-            style={{
-              background: "rgba(0,0,0,0.4)",
-              color: "rgba(255,255,255,0.9)",
-            }}
-            aria-label={volume === 0 ? "Unmute" : "Mute"}
+            className="p-2 border-2 border-black bg-white text-black hover:bg-gray-100"
           >
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5 transition-colors"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {volume === 0 ? (
-                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
-              ) : volume < 50 ? (
-                <path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z" />
-              ) : (
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-              )}
-            </svg>
+            {volume === 0 ? (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" /></svg>
+            ) : (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" /></svg>
+            )}
           </button>
 
-          {/* Volume slider - visible on hover or always on desktop */}
+          {/* Pop-up vertical volume slider for cleaner look */}
           <div className={cn(
-            "flex items-center gap-2 transition-all duration-300 overflow-hidden",
-            isVolumeHovered || isDesktop ? "w-24 opacity-100" : "w-0 opacity-0"
+            "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-2 bg-white border-2 border-black transition-all duration-200 shadow-lg",
+            isVolumeHovered ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
           )}>
             <input
               type="range"
@@ -600,23 +387,12 @@ export function PlaybackControls() {
               max="100"
               value={volume}
               onChange={(e) => handleVolumeChange(Number(e.target.value))}
-              className="flex-1 accent-jujutsu-energy touch-manipulation"
-              style={{
-                accentColor: character.colors.glow,
-              }}
-              aria-label="Volume"
+              className="h-24 w-4 appearance-none slider-vertical bg-transparent"
+              style={{ writingMode: 'vertical-lr', WebkitAppearance: 'slider-vertical' }}
             />
-            <span
-              className="text-xs w-8 font-mono font-semibold flex-shrink-0"
-              style={{
-                color: textColor,
-                textShadow: `0 0 8px ${character.colors.glow}40`,
-              }}
-            >
-              {volume}
-            </span>
           </div>
         </div>
+
       </div>
     </div>
   )

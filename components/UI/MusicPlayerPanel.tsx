@@ -62,21 +62,14 @@ export function MusicPlayerPanel() {
       <motion.div
         layout
         className={cn(
-          "pointer-events-auto relative overflow-hidden backdrop-blur-3xl",
-          "rounded-t-3xl sm:rounded-[2rem] w-full sm:w-auto",
+          "pointer-events-auto relative overflow-hidden bg-white",
+          "rounded-none w-full sm:w-auto border-4 border-black",
           "transition-colors duration-500"
         )}
         style={{
           width: isExpanded ? (typeof window !== 'undefined' && window.innerWidth < 640 ? "100%" : "480px") : "100%",
           maxWidth: isExpanded ? "580px" : "none",
-          backgroundColor: `${character.colors.primary}10`,
-          borderColor: borderColor,
-          borderWidth: "1px",
-          boxShadow: `
-            0 -10px 40px rgba(0,0,0,0.4),
-            0 0 50px ${character.colors.glow}20,
-            inset 0 0 0 1px rgba(255,255,255,0.05)
-          `,
+          boxShadow: `8px 8px 0px 0px rgba(0,0,0,1)`,
         }}
         initial={false}
         animate={{
@@ -90,58 +83,48 @@ export function MusicPlayerPanel() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Animated Background Gradient */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          animate={{
-            background: `radial-gradient(circle at 50% 100%, ${character.colors.glow}30, transparent 70%)`,
-            opacity: [0.3, 0.5, 0.3],
+        {/* Manga Halftone Background Pattern */}
+        <div
+          className="absolute inset-0 opacity-10 pointer-events-none"
+          style={{
+            backgroundImage: 'radial-gradient(#000 1px, transparent 1px)',
+            backgroundSize: '8px 8px'
           }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
 
         {/* Header Section */}
         <motion.div
           layout="position"
-          className="relative px-5 py-4 flex items-center justify-between z-10 border-b border-white/5"
+          className="relative px-5 py-4 flex items-center justify-between z-10 border-b-2 border-black"
         >
           <div className="flex items-center gap-4">
-            {/* Character Orb */}
+            {/* Character Orb - Black & White Style */}
             <div className="relative">
               <motion.div
-                className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border border-white/10"
-                style={{ backgroundColor: character.colors.primary }}
+                className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2 border-black bg-white"
                 animate={{
-                  boxShadow: `0 0 ${10 + (beatIntensity || 0) * 20}px ${character.colors.glow}`,
+                  boxShadow: `4px 4px 0px 0px ${character.colors.primary}`,
                 }}
               >
                 {/* Character Icon/Image could go here */}
                 <div
-                  className="w-full h-full bg-cover bg-center opacity-80"
+                  className="w-full h-full bg-cover bg-center grayscale contrast-125"
                   style={{
                     backgroundImage: `url(/characters/${selectedCharacter}.png)`,
                     backgroundSize: 'cover'
                   }}
                 />
               </motion.div>
-              {(beatIntensity || 0) > 0.5 && (
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  style={{ borderColor: character.colors.glow, borderWidth: 2 }}
-                  animate={{ scale: [1, 1.5], opacity: [1, 0] }}
-                  transition={{ duration: 0.5 }}
-                />
-              )}
             </div>
 
             <div className="flex flex-col">
               <motion.span
-                className="font-mono font-black text-sm tracking-widest uppercase"
-                style={{ color: textColor, textShadow: `0 0 10px ${character.colors.glow}` }}
+                className="font-black text-sm tracking-widest uppercase italic"
+                style={{ color: 'black' }}
               >
                 {character.japaneseName}
               </motion.span>
-              <span className="text-xs font-medium opacity-70" style={{ color: textColor }}>
+              <span className="text-xs font-bold text-black opacity-100">
                 {character.name} <span className="mx-1">•</span> {character.technique}
               </span>
             </div>
@@ -149,13 +132,13 @@ export function MusicPlayerPanel() {
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors border-2 border-transparent hover:border-black"
           >
             <motion.div
               animate={{ rotate: isExpanded ? 180 : 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={textColor} strokeWidth="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3">
                 <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </motion.div>
@@ -188,34 +171,34 @@ export function MusicPlayerPanel() {
               transition={{ duration: 0.3 }}
               className="flex flex-col"
             >
-              {/* Visualization Area */}
-              <div className="h-32 sm:h-48 relative w-full bg-black/20 flex items-center justify-center overflow-hidden">
+              {/* Visualization Area - Framed Panel */}
+              <div className="h-32 sm:h-48 relative w-full bg-white border-b-2 border-black flex items-center justify-center overflow-hidden">
                 <WaveformVisualization />
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
+                {/* Removed gradient overlay */}
 
                 {currentTrack ? (
                   <motion.div
                     className="absolute inset-0 flex items-center justify-center pointer-events-none"
                     animate={{
-                      scale: 1 + (beatIntensity || 0) * 0.1,
-                      rotate: (beatIntensity || 0) * 2 - 1
+                      scale: 1 + (beatIntensity || 0) * 0.05,
+                      rotate: (beatIntensity || 0)
                     }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
-                    <div className="relative w-24 h-24 sm:w-32 sm:h-32 shadow-2xl rounded-lg overflow-hidden border border-white/10">
+                    <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10">
                       {currentTrack.image && (
                         <Image
                           src={currentTrack.image}
                           alt="Album Art"
                           fill
-                          className="object-cover"
+                          className="object-cover grayscale contrast-125"
                           unoptimized
                         />
                       )}
                     </div>
                   </motion.div>
                 ) : (
-                  <div className="text-xs font-mono opacity-50" style={{ color: textColor }}>
+                  <div className="text-xs font-black tracking-widest opacity-50 text-black">
                     NO SIGNAL
                   </div>
                 )}
@@ -227,18 +210,17 @@ export function MusicPlayerPanel() {
                   {currentTrack ? (
                     <>
                       <motion.h3
-                        className="text-lg sm:text-2xl font-black leading-tight tracking-tight mb-1"
-                        style={{ color: textColor }}
+                        className="text-lg sm:text-2xl font-black leading-tight tracking-tight mb-1 text-black"
                         layout
                       >
                         {currentTrack.name}
                       </motion.h3>
-                      <p className="text-sm sm:text-base opacity-75 font-medium" style={{ color: textColor }}>
+                      <p className="text-sm sm:text-base font-bold text-gray-600">
                         {currentTrack.artist}
                       </p>
                     </>
                   ) : (
-                    <p className="opacity-50 text-sm" style={{ color: textColor }}>Waiting for playback...</p>
+                    <p className="opacity-50 text-sm font-bold text-black">Waiting for playback...</p>
                   )}
                 </div>
 
@@ -249,18 +231,18 @@ export function MusicPlayerPanel() {
 
                 {/* Analysis Metrics */}
                 {trackData && !isLoadingAnalysis && (
-                  <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-white/5">
-                    <Metric label="BPM" value={Math.round(trackData.bpm)} color={character.colors.glow} />
-                    <Metric label="ENERGY" value={`${Math.round(trackData.energy * 100)}%`} color={character.colors.glow} />
-                    <Metric label="VALENCE" value={`${Math.round(trackData.valence * 100)}%`} color={character.colors.glow} />
+                  <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t-2 border-black">
+                    <Metric label="BPM" value={Math.round(trackData.bpm)} color="black" />
+                    <Metric label="ENERGY" value={`${Math.round(trackData.energy * 100)}%`} color="black" />
+                    <Metric label="VALENCE" value={`${Math.round(trackData.valence * 100)}%`} color="black" />
                   </div>
                 )}
               </div>
 
               {/* Footer / Quick Actions */}
-              <div className="px-6 py-4 bg-black/20 border-t border-white/5 flex gap-2 overflow-x-auto no-scrollbar">
+              <div className="px-6 py-4 bg-white border-t-2 border-black flex gap-2 overflow-x-auto no-scrollbar">
                 <Search />
-                <div className="w-[1px] bg-white/10 mx-1" />
+                <div className="w-[2px] bg-black mx-1" />
                 <Playlists />
                 <Favorites />
                 <Queue />
@@ -269,7 +251,7 @@ export function MusicPlayerPanel() {
                   variant="ghost"
                   size="sm"
                   onClick={signOutAction}
-                  className="text-[10px] uppercase tracking-widest opacity-60 hover:opacity-100"
+                  className="text-[10px] uppercase font-bold tracking-widest text-black hover:bg-black hover:text-white border-2 border-transparent hover:border-black"
                 >
                   Eject
                 </Button>

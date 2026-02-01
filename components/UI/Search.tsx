@@ -30,7 +30,7 @@ export function Search() {
       const handleTokenUpdate = (newToken: string) => {
         useSpotifyStore.getState().setToken(newToken)
       }
-      
+
       const response = await searchTracks(debouncedQuery, accessToken, 20, handleTokenUpdate)
       if (response) {
         setResults(response.tracks)
@@ -106,122 +106,100 @@ export function Search() {
   return (
     <div ref={searchRef} className="relative pointer-events-auto">
       <div className="relative">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setIsOpen(true)}
-                placeholder="Search for tracks..."
-                className="w-full px-4 py-2.5 bg-black/20 border-2 rounded-lg focus:outline-none text-white placeholder-gray-400 text-sm font-mono transition-all duration-200"
-                style={{
-                  borderColor: isOpen ? getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.8) : "rgba(255,255,255,0.15)",
-                  boxShadow: isOpen ? `0 0 20px ${character.colors.glow}30` : "none",
-                }}
-              />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setIsOpen(true)}
+          placeholder="SEARCH TRACKS..."
+          className="w-full px-4 py-2.5 bg-white border-2 border-black rounded-none focus:outline-none text-black placeholder-gray-500 text-sm font-black font-mono tracking-wider transition-all duration-200"
+          style={{
+            boxShadow: isOpen ? `4px 4px 0px 0px ${character.colors.primary}` : "none",
+          }}
+        />
         <svg
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-black pointer-events-none"
           fill="none"
           stroke="currentColor"
+          strokeWidth="3"
           viewBox="0 0 24 24"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-              {isSearching && (
-                <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
-                  <div 
-                    className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"
-                    style={{
-                      borderColor: `${character.colors.glow}40`,
-                      borderTopColor: character.colors.glow,
-                    }}
-                  />
-                </div>
-              )}
+        {isSearching && (
+          <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
+            <div
+              className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"
+            />
+          </div>
+        )}
       </div>
 
       {isOpen && results.length > 0 && (
-        <div 
-          className="absolute top-full left-0 right-0 mt-2 glass-modern domain-border rounded-lg shadow-2xl z-50 max-h-[400px] flex flex-col overflow-hidden animate-spring-in will-animate"
-          style={{
-            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
-            boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${character.colors.glow}30`,
-          }}
+        <div
+          className="absolute top-full left-0 right-0 mt-2 bg-white border-4 border-black z-50 max-h-[400px] flex flex-col overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
         >
-          <div className="p-4 border-b border-gray-800">
+          {/* Manga Halftone Background */}
+          <div
+            className="absolute inset-0 opacity-10 pointer-events-none z-0"
+            style={{
+              backgroundImage: 'radial-gradient(#000 1px, transparent 1px)',
+              backgroundSize: '4px 4px'
+            }}
+          />
+
+          <div className="p-4 border-b-2 border-black z-10 bg-white">
             <div className="relative">
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search for tracks..."
-                className="w-full px-4 py-2 bg-black/50 border border-gray-700 rounded-lg focus:border-jujutsu-energy focus:outline-none text-white placeholder-gray-500"
+                placeholder="SEARCH..."
+                className="w-full px-4 py-2 bg-gray-50 border-2 border-black rounded-none focus:outline-none text-black placeholder-gray-400 font-bold uppercase"
                 autoFocus
               />
               {isSearching && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="w-5 h-5 border-2 border-jujutsu-energy border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 </div>
               )}
             </div>
           </div>
 
-          <div className="overflow-y-auto flex-1">
-            <div className="p-2">
+          <div className="overflow-y-auto flex-1 z-10">
+            <div className="p-2 space-y-1">
               {results.map((track, index) => (
                 <button
                   key={track.id}
-                    onClick={() => handleTrackSelect(track)}
-                    className="w-full p-3 hover:bg-white/5 rounded-lg transition-all duration-300 text-left group will-animate animate-spring-in glass-modern"
-                    style={{
-                      border: `1px solid transparent`,
-                      animationDelay: `${index * 0.03}s`,
-                      transform: "translateX(0)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.4)
-                      e.currentTarget.style.transform = "translateX(4px)"
-                      e.currentTarget.style.boxShadow = `0 4px 12px ${character.colors.glow}20`
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "transparent"
-                      e.currentTarget.style.transform = "translateX(0)"
-                      e.currentTarget.style.boxShadow = "none"
-                    }}
-                  >
-                    <div className="flex items-center gap-3">
-                      {track.image && (
-                        <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
-                          <Image
-                            src={track.image}
-                            alt={track.album}
-                            fill
-                            className="object-cover"
-                            sizes="48px"
-                            unoptimized
-                          />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div 
-                          className="text-white font-medium truncate transition-colors text-sm"
-                          style={{
-                            color: "white",
-                          }}
-                        >
-                          {track.name}
-                        </div>
-                      <div className="text-gray-400 text-xs truncate">
-                        {track.artist}
-                      </div>
+                  onClick={() => handleTrackSelect(track)}
+                  className="w-full p-2 hover:bg-black hover:text-white transition-all duration-100 text-left group border border-transparent hover:border-black flex items-center gap-3 relative overflow-hidden"
+                >
+                  {track.image && (
+                    <div className="relative w-10 h-10 border border-black flex-shrink-0 bg-gray-200">
+                      <Image
+                        src={track.image}
+                        alt={track.album}
+                        fill
+                        className="object-cover grayscale contrast-125 group-hover:grayscale-0"
+                        sizes="40px"
+                        unoptimized
+                      />
                     </div>
-                    <div className="text-gray-500 text-xs font-mono">
-                      {formatDuration(track.duration)}
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black uppercase truncate text-sm">
+                      {track.name}
                     </div>
+                    <div className="text-xs font-bold truncate opacity-70 group-hover:opacity-100">
+                      {track.artist}
+                    </div>
+                  </div>
+                  <div className="text-xs font-mono font-bold opacity-50 group-hover:opacity-100">
+                    {formatDuration(track.duration)}
                   </div>
                 </button>
               ))}
@@ -230,11 +208,8 @@ export function Search() {
         </div>
       )}
       {isOpen && debouncedQuery.trim() && results.length === 0 && !isSearching && (
-        <div 
-          className="absolute top-full left-0 right-0 mt-2 bg-black/95 backdrop-blur-sm border-2 rounded-lg shadow-2xl z-50 p-4 text-center text-gray-500 text-xs"
-          style={{
-            borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.6),
-          }}
+        <div
+          className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-black p-4 text-center text-black font-bold uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
           No results found
         </div>

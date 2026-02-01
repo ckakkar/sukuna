@@ -9,7 +9,6 @@ import { Vector2, Vector3, Uniform } from "three"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 
 // Cast to any to avoid "Type 'undefined' is not assignable to type 'Element'" errors
-const ChromaticAberrationAny = ChromaticAberration as unknown as React.FC<any>
 const NoiseAny = Noise as unknown as React.FC<any>
 const VignetteAny = Vignette as unknown as React.FC<any>
 
@@ -144,7 +143,6 @@ export function MangaPostProcess() {
   } = useSpotifyStore()
 
   const [isMobile, setIsMobile] = useState(false)
-  const offsetRef = useRef(new Vector2(0, 0))
   const impactTimerRef = useRef(0)
   const flashTimerRef = useRef(0)
   const lastImpactIdRef = useRef(impactFrameId)
@@ -168,14 +166,7 @@ export function MangaPostProcess() {
     const beat = beatIntensity ?? 0
     const energy = intensity ?? 0
 
-    // 1. Chromatic Aberration (Glitchy on beats)
-    // -----------------------------------------
-    const baseAberration = 0.002
-    const beatKick = beat > 0.8 ? beat * 0.01 : 0
-    offsetRef.current.set(
-      baseAberration + beatKick,
-      baseAberration + beatKick
-    )
+
 
     // 2. Impact Frame Animation
     // -----------------------------------------
@@ -201,12 +192,7 @@ export function MangaPostProcess() {
       {/* 1. Manga Halftone & Ink - The Core Aesthetic */}
       {!isMobile ? <MangaEffect /> : <></>}
 
-      {/* 2. Chromatic Aberration - Impact/Disorientation */}
-      <ChromaticAberrationAny
-        offset={offsetRef.current}
-        radialModulation={false}
-        modulationOffset={0}
-      />
+
 
       {/* 3. Noise - Paper Texture */}
       <NoiseAny

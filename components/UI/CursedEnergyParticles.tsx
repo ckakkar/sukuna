@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useState, useRef, useMemo } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
-import { CHARACTERS } from "@/lib/types/character"
 
 interface Particle {
   id: number
@@ -11,91 +10,82 @@ interface Particle {
   size: number
   speedX: number
   speedY: number
-  opacity: number
-  color: string
+  type: 'ink' | 'line' | 'dot'
+  rotation: number
   life: number
   maxLife: number
 }
 
 export function CursedEnergyParticles() {
-  const { selectedCharacter, beatIntensity, intensity } = useSpotifyStore()
+  const { beatIntensity } = useSpotifyStore()
   const [particles, setParticles] = useState<Particle[]>([])
   const animationFrameRef = useRef<number | undefined>(undefined)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const character = useMemo(() => CHARACTERS[selectedCharacter], [selectedCharacter])
 
   useEffect(() => {
-    // Optimized particle count based on device capability
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    const particleCount = isMobile ? 12 : 20
-    
-    const initialParticles: Particle[] = Array.from({ length: particleCount }, (_, i) => {
-      const angle = (i / particleCount) * Math.PI * 2
-      const distance = Math.random() * 80 + 20
-      return {
-        id: i,
-        x: 50 + Math.cos(angle) * distance,
-        y: 50 + Math.sin(angle) * distance,
-        size: Math.random() * 2.5 + 1,
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.4 + 0.2,
-        color: character.colors.glow,
-        life: Math.random() * 100,
-        maxLife: 150 + Math.random() * 150,
-      }
-    })
+    // Generate initial ink particles
+    const particleCount = 25
+
+    const initialParticles: Particle[] = Array.from({ length: particleCount }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 8 + 2,
+      speedX: (Math.random() - 0.5) * 0.5,
+      speedY: (Math.random() - 0.5) * 0.5,
+      type: Math.random() > 0.7 ? 'line' : (Math.random() > 0.5 ? 'ink' : 'dot'),
+      rotation: Math.random() * 360,
+      life: Math.random() * 100,
+      maxLife: 100 + Math.random() * 100,
+    }))
     setParticles(initialParticles)
-  }, [selectedCharacter, character.colors.glow])
+  }, [])
 
   useEffect(() => {
     let lastTime = 0
-    const targetFPS = 30 // Limit to 30fps for better performance
+    const targetFPS = 30
     const frameInterval = 1000 / targetFPS
-    
+
     const animate = (currentTime: number) => {
-      // Throttle animation frame rate
       if (currentTime - lastTime < frameInterval) {
         animationFrameRef.current = requestAnimationFrame(animate)
         return
       }
       lastTime = currentTime
-      
+
       setParticles((prev) =>
         prev.map((particle) => {
           let newX = particle.x + particle.speedX
           let newY = particle.y + particle.speedY
           let newLife = particle.life + 1
 
-          // Wrap around edges
-          if (newX < 0) newX = 100
-          if (newX > 100) newX = 0
-          if (newY < 0) newY = 100
-          if (newY > 100) newY = 0
+          // Beat impact
+          const beatKick = (beatIntensity || 0) > 0.6 ? (beatIntensity || 0) * 2 : 1
 
-          // Reset life when max is reached
-          if (newLife > particle.maxLife) {
-            newLife = 0
-            newX = 50 + (Math.random() - 0.5) * 20
-            newY = 50 + (Math.random() - 0.5) * 20
+          // Move particles faster on beat
+          if (beatKick > 1) {
+            newX += particle.speedX * 2
+            newY += particle.speedY * 2
           }
 
-          // Optimized beat intensity effects - reduced multipliers
-          const beatMultiplier = beatIntensity ? 1 + beatIntensity * 0.25 : 1
-          const intensityMultiplier = intensity ? 1 + intensity * 0.2 : 1
+          // Wrap around edges
+          if (newX < -10) newX = 110
+          if (newX > 110) newX = -10
+          if (newY < -10) newY = 110
+          if (newY > 110) newY = -10
+
+          // Respawn logic
+          if (newLife > particle.maxLife) {
+            newLife = 0
+            newX = Math.random() * 100
+            newY = Math.random() * 100
+          }
 
           return {
             ...particle,
             x: newX,
             y: newY,
             life: newLife,
-            speedX: particle.speedX * (1 + (beatIntensity ?? 0) * 0.05),
-            speedY: particle.speedY * (1 + (beatIntensity ?? 0) * 0.05),
-            size: particle.size * beatMultiplier,
-            opacity: Math.min(
-              0.8,
-              particle.opacity * intensityMultiplier * (1 + (beatIntensity ?? 0) * 0.2)
-            ),
+            rotation: particle.rotation + (particle.type === 'ink' ? 0.2 : 0),
           }
         })
       )
@@ -110,32 +100,32 @@ export function CursedEnergyParticles() {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [beatIntensity, intensity])
+  }, [beatIntensity])
 
   return (
-    <div
-      ref={containerRef}
-      className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
-      aria-hidden="true"
-    >
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden mix-blend-multiply">
       {particles.map((particle) => (
         <div
           key={particle.id}
-          className="absolute rounded-full animate-particle-float will-animate"
+          className="absolute will-animate"
           style={{
             left: `${particle.x}%`,
             top: `${particle.y}%`,
-            width: `${particle.size}px`,
-            height: `${particle.size}px`,
-            backgroundColor: particle.color,
-            opacity: particle.opacity,
-            boxShadow: `0 0 ${particle.size * 4}px ${particle.color}, 0 0 ${particle.size * 8}px ${particle.color}80`,
-            filter: `blur(${particle.size * 0.5}px)`,
-            transform: `translate(-50%, -50%) scale(${1 + (beatIntensity ?? 0) * 0.3})`,
-            transition: 'transform 0.1s ease-out, opacity 0.1s ease-out',
+            width: particle.type === 'line' ? `${particle.size * 4}px` : `${particle.size}px`,
+            height: particle.type === 'line' ? '2px' : `${particle.size}px`,
+            backgroundColor: '#0a0a0a',
+            borderRadius: particle.type === 'dot' ? '50%' : '2px', // Ink shapes aren't perfect circles
+            opacity: 0.6,
+            transform: `translate(-50%, -50%) rotate(${particle.rotation}deg) scale(${1 + (beatIntensity || 0) * 0.2})`,
+            clipPath: particle.type === 'ink' ? 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' : 'none', // Rough ink shape
           }}
         />
       ))}
+
+      {/* Heavy impact lines on beat */}
+      {(beatIntensity || 0) > 0.8 && (
+        <div className="absolute inset-0 bg-[url('/speed-lines.png')] bg-cover opacity-10 animate-pulse" />
+      )}
     </div>
   )
 }

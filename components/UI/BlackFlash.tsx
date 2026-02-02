@@ -62,192 +62,61 @@ export function BlackFlash() {
         transition: phase === "shake" ? "transform 0.05s linear" : "none",
       }}
     >
-      {/* Phase 1: Black flash */}
+      {/* Phase 1: Inverted Flash (Impact Frame) */}
       {phase === "flash" && (
-        <div className="absolute inset-0 bg-black animate-black-flash" />
+        <div className="absolute inset-0 bg-white invert animate-flash-invert z-50 mix-blend-difference" />
       )}
 
-      {/* Phase 2: White lightning cracks */}
+      {/* Phase 2: Sketchy Impact Lines */}
       {phase === "lightning" && (
-        <div className="absolute inset-0">
-          {[...Array(8)].map((_, i) => {
-            const angle = (i / 8) * Math.PI * 2
-            const length = 30 + Math.random() * 20
-            const startX = 50 + Math.cos(angle) * 20
-            const startY = 50 + Math.sin(angle) * 20
-            const endX = startX + Math.cos(angle) * length
-            const endY = startY + Math.sin(angle) * length
-
-            return (
-              <svg
-                key={i}
-                className="absolute inset-0 w-full h-full"
-                style={{
-                  opacity: 0.9,
-                  animation: `lightning-crack 0.2s ease-out ${i * 0.02}s forwards`,
-                }}
-              >
-                <line
-                  x1={`${startX}%`}
-                  y1={`${startY}%`}
-                  x2={`${endX}%`}
-                  y2={`${endY}%`}
-                  stroke="white"
-                  strokeWidth="3"
-                  filter="url(#glow)"
-                />
-                <defs>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-              </svg>
-            )
-          })}
+        <div className="absolute inset-0 z-40 bg-white">
+          {/* Jagged sketchy lines */}
+          <div className="absolute inset-0 bg-[url('/speed-lines.png')] bg-cover opacity-50 contrast-200" />
+          <div className="absolute inset-0 border-[40px] border-black clip-path-jagged" />
         </div>
       )}
 
-      {/* Phase 3 & 4: Impact text */}
+      {/* Phase 3 & 4: Impact Text (Bold Kanji) */}
       {(phase === "freeze" || phase === "impact") && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center z-50">
           <div
-            className="text-8xl sm:text-9xl md:text-[12rem] font-black tracking-widest"
+            className="text-[12rem] sm:text-[16rem] font-black tracking-tighter leading-none"
             style={{
-              color: "#ffffff",
-              textShadow: `0 0 40px #ffffff, 0 0 80px #ffffff, 0 0 120px ${character.colors.glow}`,
-              animation: phase === "impact" ? "impact-zoom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards" : "none",
-              transform: phase === "freeze" ? "scale(0.8)" : "scale(1)",
-              opacity: phase === "freeze" ? 0 : 1,
+              color: "#000000",
+              WebkitTextStroke: "4px white",
+              animation: phase === "impact" ? "impact-shake 0.1s cubic-bezier(.36,.07,.19,.97) both" : "none",
+              transform: "scale(1.2)",
+              filter: "contrast(1.5)",
             }}
           >
             黒閃
           </div>
+          {/* Rough ink splatters behind text */}
+          <div className="absolute w-[600px] h-[600px] bg-black rounded-full opacity-20 blur-xl -z-10 animate-pulse-fast" />
         </div>
-      )}
-
-      {/* Particle explosion */}
-      {phase === "impact" && (
-        <div className="absolute inset-0">
-          {[...Array(30)].map((_, i) => {
-            const angle = (i / 30) * Math.PI * 2
-            const distance = 20 + Math.random() * 30
-            const endX = Math.cos(angle) * distance
-            const endY = Math.sin(angle) * distance
-
-            return (
-              <div
-                key={i}
-                className="absolute w-2 h-2 rounded-full"
-                style={{
-                  left: "50%",
-                  top: "50%",
-                  backgroundColor: "#ffffff",
-                  boxShadow: `0 0 10px #ffffff, 0 0 20px ${character.colors.glow}`,
-                  animation: `particle-explode 0.4s ease-out forwards`,
-                  transform: `translate(-50%, -50%)`,
-                  "--end-x": `${endX}vw`,
-                  "--end-y": `${endY}vw`,
-                } as React.CSSProperties}
-              />
-            )
-          })}
-        </div>
-      )}
-
-      {/* Chromatic aberration overlay */}
-      {phase === "shake" && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `linear-gradient(90deg, 
-              rgba(255, 0, 0, 0.1) 0%, 
-              transparent 50%, 
-              rgba(0, 0, 255, 0.1) 100%)`,
-            mixBlendMode: "screen",
-            animation: "chromatic-aberration 0.2s ease-out",
-          }}
-        />
       )}
 
       <style jsx>{`
-        @keyframes black-flash {
-          0% {
-            opacity: 0;
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-          }
+        .clip-path-jagged {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 20%, 5% 25%, 0% 30%, 5% 35%, 0% 40%, 0% 0%);
         }
 
-        @keyframes lightning-crack {
-          0% {
-            opacity: 0;
-            stroke-dasharray: 0 1000;
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0.3;
-            stroke-dasharray: 1000 0;
-          }
+        @keyframes flash-invert {
+            0% { filter: invert(0); }
+            50% { filter: invert(1); }
+            100% { filter: invert(0); }
         }
 
-        @keyframes impact-zoom {
-          0% {
-            transform: scale(0.5);
-            opacity: 0;
-          }
-          50% {
-            transform: scale(1.1);
-          }
-          100% {
-            transform: scale(1);
-            opacity: 1;
-          }
+        @keyframes impact-shake {
+            10%, 90% { transform: translate3d(-4px, 0, 0) scale(1.2); }
+            20%, 80% { transform: translate3d(8px, 0, 0) scale(1.2); }
+            30%, 50%, 70% { transform: translate3d(-16px, 0, 0) scale(1.2); }
+            40%, 60% { transform: translate3d(16px, 0, 0) scale(1.2); }
         }
-
-        @keyframes particle-explode {
-          0% {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(0);
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-            transform: translate(
-              calc(-50% + var(--end-x)),
-              calc(-50% + var(--end-y))
-            ) scale(1.5);
-          }
-        }
-
-        @keyframes chromatic-aberration {
-          0% {
-            transform: translateX(-5px);
-            opacity: 0.3;
-          }
-          50% {
-            transform: translateX(5px);
-            opacity: 0.5;
-          }
-          100% {
-            transform: translateX(0);
-            opacity: 0;
-          }
-        }
-
-        .animate-black-flash {
-          animation: black-flash 0.016s ease-out;
+        
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.1); }
         }
       `}</style>
     </div>

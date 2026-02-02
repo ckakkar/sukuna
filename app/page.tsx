@@ -23,7 +23,6 @@ import { AppEnhancements } from "@/components/AppEnhancements"
 import { HandSigns } from "@/components/UI/HandSigns"
 import { Onboarding } from "@/components/UI/Onboarding"
 import { UIEnhancements } from "@/components/UI/UIEnhancements"
-import { ScrollAnimations } from "@/components/UI/ScrollAnimations"
 
 export default async function Home() {
   const session = await auth()
@@ -32,24 +31,15 @@ export default async function Home() {
     <ErrorBoundary>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-jujutsu-energy focus:text-white focus:rounded-lg focus:font-mono focus:text-sm"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-manga-ink focus:text-white focus:rounded-lg focus:text-sm focus:outline-none focus:ring-2 focus:ring-manga-ink/20"
       >
         Skip to main content
       </a>
-      <main id="main-content" className="relative w-screen h-screen min-h-screen bg-black overflow-hidden">
-        {/* Phase 5 Enhancements */}
+      <main id="main-content" className="relative w-screen h-screen min-h-screen bg-manga-paper overflow-hidden">
         {session && <AppEnhancements />}
-        
-        {/* UI Enhancements - Torii gates, scanlines, fog */}
         {session && <UIEnhancements />}
-        
-        {/* Scroll Animations (GSAP ScrollTrigger) */}
-        {session && <ScrollAnimations />}
-        
-        {/* Onboarding Experience */}
         {session && <Onboarding />}
-        
-        {/* Kanji Rain Background */}
+        {/* Kanji Rain */}
         {session && <KanjiRain />}
         
         {/* Cursed Energy Particles Background */}
@@ -58,9 +48,9 @@ export default async function Home() {
         {/* Cursed Energy Cursor Trail */}
         {session && <CursedEnergyTrail />}
         
-        {/* Only show 3D Scene after login */}
+        {/* 3D Scene - clean frame */}
         {session && (
-          <div className="absolute inset-0 animate-fade-in">
+          <div className="absolute inset-4 sm:inset-6 md:inset-10 animate-fade-in rounded-2xl bg-neutral-950 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
             <SceneWrapper />
           </div>
         )}

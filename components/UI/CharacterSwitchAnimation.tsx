@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS, type CharacterType } from "@/lib/types/character"
 import { CHARACTER_QUOTES } from "@/lib/data/characterQuotes"
-import { getVisibleTextColor } from "@/lib/utils/colorUtils"
 
 type AnimationPhase = "exit" | "void" | "entrance" | null
 
@@ -63,7 +62,6 @@ export function CharacterSwitchAnimation() {
   const character = CHARACTERS[selectedCharacter]
   const quotes = CHARACTER_QUOTES[selectedCharacter]
   const randomQuote = quotes?.[Math.floor(Math.random() * quotes.length)]
-  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
@@ -95,12 +93,10 @@ export function CharacterSwitchAnimation() {
             {[...Array(30)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-1 h-1 rounded-full"
+                className="absolute w-1 h-1 rounded-full bg-manga-ink"
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
-                  background: character.colors.glow,
-                  boxShadow: `0 0 8px ${character.colors.glow}`,
                   animation: `void-particle ${1 + Math.random()}s ease-in-out infinite`,
                   animationDelay: `${Math.random() * 0.5}s`,
                 }}
@@ -118,18 +114,15 @@ export function CharacterSwitchAnimation() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            {/* Background flash with energy wave */}
+            {/* Manga ink wash */}
             <motion.div
-              className="absolute inset-0"
+              className="absolute inset-0 bg-manga-ink/20"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              style={{
-                background: `radial-gradient(circle at center, ${character.colors.glow}60, transparent 70%)`,
-              }}
             />
             
-            {/* Speed lines radiating from center */}
+            {/* Manga speed lines radiating from center */}
             {[...Array(12)].map((_, i) => {
               const angle = (i / 12) * Math.PI * 2
               return (
@@ -137,7 +130,7 @@ export function CharacterSwitchAnimation() {
                   key={i}
                   className="absolute inset-0"
                   style={{
-                    background: `linear-gradient(${(angle * 180) / Math.PI}deg, transparent 0%, ${character.colors.glow}40 50%, transparent 100%)`,
+                    background: `linear-gradient(${(angle * 180) / Math.PI}deg, transparent 0%, rgba(10,10,10,0.15) 50%, transparent 100%)`,
                     animation: `speed-line 0.8s ease-out forwards`,
                     transform: `rotate(${angle}rad)`,
                     transformOrigin: "center",
@@ -151,7 +144,7 @@ export function CharacterSwitchAnimation() {
               {/* Character image with entrance animation */}
               {character.imagePath && (
                 <motion.div
-                  className="relative w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 mb-4 sm:mb-6 rounded-xl sm:rounded-2xl overflow-hidden domain-border"
+                  className="relative w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 mb-4 sm:mb-6 overflow-hidden border-4 border-manga-ink shadow-[8px_8px_0px_0px_#0a0a0a] bg-manga-panel"
                   initial={{ scale: 0, rotateY: 180, opacity: 0 }}
                   animate={{ scale: 1, rotateY: 0, opacity: 1 }}
                   transition={{
@@ -160,24 +153,15 @@ export function CharacterSwitchAnimation() {
                     damping: 20,
                     duration: 0.8,
                   }}
-                  style={{
-                    boxShadow: `inset 0 0 30px ${character.colors.glow}60, 0 0 60px ${character.colors.glow}40`,
-                  }}
                 >
                   <Image
                     src={character.imagePath}
                     alt={character.name}
                     fill
-                    className="object-cover"
+                    className="object-cover grayscale"
                     unoptimized
                     onError={(e) => {
                       e.currentTarget.style.display = "none"
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: `linear-gradient(to top, ${character.colors.glow}80, transparent)`,
                     }}
                   />
                 </motion.div>
@@ -185,7 +169,7 @@ export function CharacterSwitchAnimation() {
 
               {/* Character name with impact frame */}
               <motion.div
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-2 sm:mb-3 md:mb-4 tracking-widest"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-manga font-black mb-2 sm:mb-3 md:mb-4 tracking-widest text-manga-ink"
                 initial={{ scale: 0.5, opacity: 0, y: 50 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 transition={{
@@ -195,8 +179,8 @@ export function CharacterSwitchAnimation() {
                   delay: 0.3,
                 }}
                 style={{
-                  color: textColor,
-                  textShadow: `0 0 40px ${character.colors.glow}80, 0 0 80px ${character.colors.glow}60`,
+                  textShadow: "3px 3px 0px #d4d4d4, 6px 6px 0px #a3a3a3",
+                  WebkitTextStroke: "2px #0a0a0a",
                 }}
               >
                 {character.japaneseName}
@@ -211,23 +195,11 @@ export function CharacterSwitchAnimation() {
                   transition={{ delay: 0.6, duration: 0.5 }}
                 >
                   {randomQuote.japanese && (
-                    <div
-                      className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-2 sm:mb-3"
-                      style={{
-                        color: character.colors.glow,
-                        textShadow: `0 0 20px ${character.colors.glow}60`,
-                      }}
-                    >
+                    <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-jp font-bold mb-2 sm:mb-3 text-manga-ink">
                       「{randomQuote.japanese}」
                     </div>
                   )}
-                  <div
-                    className="text-sm sm:text-base md:text-lg lg:text-xl font-mono"
-                    style={{
-                      color: character.colors.secondary || character.colors.glow,
-                      textShadow: `0 0 15px ${character.colors.glow}40`,
-                    }}
-                  >
+                  <div className="text-sm sm:text-base md:text-lg lg:text-xl font-mono text-manga-ink/90">
                     {randomQuote.text}
                   </div>
                 </motion.div>
@@ -280,11 +252,8 @@ function ExitTechnique({ character }: { character: typeof CHARACTERS[CharacterTy
   // Default exit
   return (
     <div
-      className="absolute inset-0"
-      style={{
-        background: `radial-gradient(circle at center, ${character.colors.glow}60, transparent 70%)`,
-        animation: "fade-out 0.8s ease-out forwards",
-      }}
+      className="absolute inset-0 bg-manga-ink/30"
+      style={{ animation: "fade-out 0.8s ease-out forwards" }}
     />
   )
 }
@@ -297,7 +266,7 @@ function CleaveExit({ character }: { character: typeof CHARACTERS[CharacterType]
           key={i}
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(${-15 + i * 15}deg, transparent 0%, ${character.colors.glow}80 50%, transparent 100%)`,
+            background: `linear-gradient(${-15 + i * 15}deg, transparent 0%, rgba(10,10,10,0.3) 50%, transparent 100%)`,
             animation: `cleave-exit 0.6s ease-out ${i * 0.1}s forwards`,
             opacity: 0,
           }}
@@ -328,7 +297,7 @@ function BlueExit({ character }: { character: typeof CHARACTERS[CharacterType] }
       <div
         className="absolute w-full h-full rounded-full"
         style={{
-          background: `radial-gradient(circle, ${character.colors.glow}60, transparent 70%)`,
+          background: "radial-gradient(circle, rgba(10,10,10,0.2), transparent 70%)",
           animation: "blue-implode 0.8s ease-out forwards",
           transform: "scale(2)",
         }}
@@ -350,8 +319,8 @@ function ClapExit({ character }: { character: typeof CHARACTERS[CharacterType] }
     <div className="absolute inset-0">
       <div
         className="absolute inset-0"
-        style={{
-          background: `linear-gradient(90deg, ${character.colors.glow}40 0%, transparent 50%, ${character.colors.glow}40 100%)`,
+          style={{
+          background: "linear-gradient(90deg, rgba(10,10,10,0.2) 0%, transparent 50%, rgba(10,10,10,0.2) 100%)",
           animation: "clap-flash 0.4s ease-out forwards",
           opacity: 0,
         }}

@@ -20,13 +20,18 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
 
-  # Example Vercel deployment job.
+  # Vercel deployment job
   # Configure these secrets in your GitHub repo settings if you want
   # fully automated deploys:
   #   - VERCEL_TOKEN
@@ -51,6 +56,11 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
 
       - name: Install dependencies
         run: npm ci

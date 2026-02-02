@@ -135,7 +135,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 {isRetryable && (
                   <button
                     onClick={this.handleRetry}
-                    className="px-6 py-3 bg-jujutsu-energy text-white font-mono text-sm rounded hover:bg-jujutsu-domain transition-colors touch-manipulation min-h-[44px] focus:outline-none focus:ring-2 focus:ring-jujutsu-energy focus:ring-offset-2 focus:ring-offset-black"
+                    className="px-6 py-3 bg-manga-ink text-manga-paper font-mono text-sm font-bold border-2 border-manga-ink touch-manipulation min-h-[44px] focus:outline-none focus:ring-2 focus:ring-manga-ink focus:ring-offset-2 hover:shadow-[4px_4px_0px_0px_#0a0a0a] transition-all"
                     aria-label="Retry operation"
                   >
                     Retry ({3 - this.state.retryCount} attempts left)

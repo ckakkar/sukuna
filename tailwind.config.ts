@@ -10,16 +10,26 @@ const config: Config = {
     extend: {
       colors: {
         manga: {
-          paper: '#f4f4f0', // Warm white paper texture
-          ink: '#0a0a0a',   // Deep black ink
-          panel: '#ffffff', // Pure white for active areas
-          tone: '#d4d4d4',  // Screentone gray
+          paper: '#fafaf9',
+          ink: '#1c1917',
+          panel: '#ffffff',
+          tone: '#e7e5e4',
         },
+        'jujutsu-energy': '#1c1917',
+        'jujutsu-domain': '#57534e',
       },
       fontFamily: {
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
-        manga: ['"Comic Neue"', 'Impact', 'sans-serif'], // Comic-like font
-        jp: ['"Noto Serif JP"', 'serif'],
+        mono: ['ui-monospace', 'SF Mono', 'Monaco', 'Consolas', 'monospace'],
+        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+        jp: ['"Noto Sans JP"', 'system-ui', 'sans-serif'],
+      },
+      transitionTimingFunction: {
+        'fluid': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'smooth': 'cubic-bezier(0.65, 0, 0.35, 1)',
+      },
+      transitionDuration: {
+        '400': '400ms',
+        '500': '500ms',
       },
       backgroundImage: {
         'halftone': 'radial-gradient(circle, #0a0a0a 1px, transparent 1.2px)',
@@ -34,10 +44,10 @@ const config: Config = {
         'ink-sm': '2px 2px 0px 0px #0a0a0a',
       },
       animation: {
-        'ink-spread': 'inkSpread 0.5s ease-out forwards',
-        'page-turn': 'pageTurn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards',
-        'pulse-ink': 'pulseInk 2s ease-in-out infinite',
-        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+        'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'fade-up': 'fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'spring-in': 'springIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards',
       },
       keyframes: {
         inkSpread: {
@@ -57,7 +67,23 @@ const config: Config = {
           '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
           '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
           '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
-        }
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(16px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.96)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        springIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95) translateY(8px)' },
+          '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+        },
       },
       spacing: {
         '128': '32rem',

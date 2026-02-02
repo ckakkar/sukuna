@@ -115,16 +115,16 @@ export function CursedEnergyParticles() {
             height: particle.type === 'line' ? '2px' : `${particle.size}px`,
             backgroundColor: '#0a0a0a',
             borderRadius: particle.type === 'dot' ? '50%' : '2px', // Ink shapes aren't perfect circles
-            opacity: 0.6,
+            opacity: 0.25,
             transform: `translate(-50%, -50%) rotate(${particle.rotation}deg) scale(${1 + (beatIntensity || 0) * 0.2})`,
             clipPath: particle.type === 'ink' ? 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)' : 'none', // Rough ink shape
           }}
         />
       ))}
 
-      {/* Heavy impact lines on beat */}
+      {/* Manga speed lines on beat */}
       {(beatIntensity || 0) > 0.8 && (
-        <div className="absolute inset-0 bg-[url('/speed-lines.png')] bg-cover opacity-10 animate-pulse" />
+        <div className="absolute inset-0 speed-lines opacity-20" />
       )}
     </div>
   )

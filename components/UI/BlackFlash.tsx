@@ -67,12 +67,11 @@ export function BlackFlash() {
         <div className="absolute inset-0 bg-white invert animate-flash-invert z-50 mix-blend-difference" />
       )}
 
-      {/* Phase 2: Sketchy Impact Lines */}
+      {/* Phase 2: Manga impact lines */}
       {phase === "lightning" && (
-        <div className="absolute inset-0 z-40 bg-white">
-          {/* Jagged sketchy lines */}
-          <div className="absolute inset-0 bg-[url('/speed-lines.png')] bg-cover opacity-50 contrast-200" />
-          <div className="absolute inset-0 border-[40px] border-black clip-path-jagged" />
+        <div className="absolute inset-0 z-40 bg-manga-paper">
+          <div className="absolute inset-0 speed-lines opacity-40" />
+          <div className="absolute inset-0 border-[40px] border-manga-ink clip-path-jagged" />
         </div>
       )}
 

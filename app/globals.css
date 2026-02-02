@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-smooth: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 350ms;
+  --duration-slow: 500ms;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -13,14 +22,12 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: #f4f4f0;
-  /* Manga Paper */
-  color: #0a0a0a;
-  /* Manga Ink */
+  background-color: #fafaf9;
+  color: #1c1917;
   font-smooth: antialiased;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
@@ -31,107 +38,94 @@ body {
   isolation: isolate;
 }
 
-/* Manga Scrollbar */
+/* Minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f4f4f0;
-  border-left: 2px solid #0a0a0a;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0a0a0a;
-  border: 2px solid #f4f4f0;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #333;
+  background: rgba(0, 0, 0, 0.25);
 }
 
-/* Selection */
 ::selection {
-  background-color: #0a0a0a;
-  color: #f4f4f0;
+  background-color: rgba(0, 0, 0, 0.08);
+  color: #1c1917;
 }
 
 ::-moz-selection {
-  background-color: #0a0a0a;
-  color: #f4f4f0;
+  background-color: rgba(0, 0, 0, 0.08);
+  color: #1c1917;
 }
 
-/* Focus States - Sharp Lines */
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible,
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid #0a0a0a;
+  outline: 1px solid rgba(0, 0, 0, 0.2);
   outline-offset: 2px;
-  box-shadow: none;
 }
 
-/* Halftone Pattern Utility */
-.bg-halftone {
-  background-image: radial-gradient(#0a0a0a 1px, transparent 1px);
-  background-size: 8px 8px;
-  /* Classic screentone size */
-  opacity: 0.1;
+/* Fluid transitions */
+.transition-fluid {
+  transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
-/* Panel Style (Manga Frame) */
-.manga-panel {
-  background-color: #ffffff;
-  border: 3px solid #0a0a0a;
-  box-shadow: 4px 4px 0px 0px #0a0a0a;
-  transition: all 0.2s ease-out;
+/* Subtle panel */
+.manga-panel,
+.glass-modern,
+.glass {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
 .manga-panel:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #0a0a0a;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
 }
 
-.manga-panel-flat {
-  background-color: #ffffff;
-  border: 2px solid #0a0a0a;
+.domain-border {
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-/* Speed Lines Overlay */
-.speed-lines-overlay {
+/* Halftone - very subtle */
+.bg-halftone {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+.speed-lines {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(90deg,
-      transparent,
-      transparent 48%,
-      rgba(10, 10, 10, 0.05) 50%,
-      transparent 52%);
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 1%,
+    rgba(0, 0, 0, 0.02) 2%,
+    transparent 3%
+  );
   pointer-events: none;
-  z-index: 0;
 }
 
-/* Typography Enhancements */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Impact', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* Utilities */
 .text-stroke {
-  -webkit-text-stroke: 1px #0a0a0a;
+  -webkit-text-stroke: 1px currentColor;
   color: transparent;
 }
 
-.text-stroke-white {
-  -webkit-text-stroke: 1px #ffffff;
-  color: #0a0a0a;
+.text-manga-impact {
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }

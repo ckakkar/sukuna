@@ -124,14 +124,12 @@ export function KanjiRain() {
       {drops.map((drop) => (
         <div
           key={drop.id}
-          className="absolute font-serif select-none"
+          className="absolute font-jp select-none text-manga-ink"
           style={{
             left: `${drop.x}%`,
             top: `${drop.y}%`,
             fontSize: `${drop.size}px`,
-            opacity: drop.opacity,
-            color: character.colors.glow,
-            textShadow: `0 0 ${4 + (beatIntensity ?? 0) * 8}px ${character.colors.glow}60`,
+            opacity: drop.opacity * 0.25,
             transform: `translateX(-50%) rotate(${Math.sin(drop.id) * 5}deg)`,
             transition: "opacity 0.3s ease-out",
             willChange: "transform",

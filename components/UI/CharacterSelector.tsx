@@ -27,67 +27,46 @@ export function CharacterSelector() {
       {/* Trigger Button - Character Portrait */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="group relative w-12 h-12 sm:w-16 sm:h-16"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        className="group relative w-11 h-11 sm:w-14 sm:h-14 rounded-xl overflow-hidden shadow-md"
+        whileHover={{ scale: 1.04, y: -2 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
-        <div
-          className="absolute inset-0 bg-white border-2 border-black transform rotate-3 transition-transform group-hover:rotate-6"
-          style={{ backgroundColor: currentChar.colors.primary }}
-        >
-          {/* Manga hatching pattern */}
+        {imageUrl ? (
+          <div className="relative w-full h-full">
+            <Image
+              src={imageUrl}
+              alt={currentChar.name}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              unoptimized
+            />
+          </div>
+        ) : (
           <div
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)',
-              backgroundSize: '10px 10px'
-            }}
-          />
-        </div>
-
-        <div className="absolute inset-0 flex items-center justify-center border-2 border-black bg-white overflow-hidden">
-          {imageUrl ? (
-            <div className="relative w-full h-full">
-              <Image
-                src={imageUrl}
-                alt={currentChar.name}
-                fill
-                className="object-cover"
-                unoptimized // External URL
-              />
-              {/* Values overlay */}
-              <div className="absolute inset-0 bg-black/10 mix-blend-multiply" />
-            </div>
-          ) : (
-            <span className="font-bold font-jp text-lg sm:text-xl text-black">
-              {currentChar.japaneseName.charAt(0)}
-            </span>
-          )}
-        </div>
-
-        {/* Floating Tooltip */}
-        <div className="absolute top-full right-0 mt-2 px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest transform -skew-x-12 hidden sm:block">
-          ROSTER
-        </div>
+            className="w-full h-full flex items-center justify-center font-semibold text-white text-lg"
+            style={{ backgroundColor: currentChar.colors.primary }}
+          >
+            {currentChar.japaneseName.charAt(0)}
+          </div>
+        )}
       </motion.button>
 
-      {/* Roster Overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="absolute top-0 right-16 sm:right-20 w-[280px] sm:w-[320px] bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4"
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-0 right-14 sm:right-16 w-[260px] sm:w-[300px] rounded-2xl bg-white/95 backdrop-blur-xl border border-black/5 shadow-xl p-4"
           >
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4 border-b-2 border-black pb-2">
-              <h3 className="font-black text-xl italic tracking-tighter">SELECT SORCERER</h3>
-              <span className="bg-black text-white px-2 py-0.5 text-xs font-bold">1 / {roster.length}</span>
+            <div className="flex justify-between items-center mb-3 pb-2 border-b border-black/5">
+              <h3 className="font-semibold text-sm text-manga-ink">Character</h3>
+              <span className="text-xs text-manga-ink/50">{roster.length} sorcerers</span>
             </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-1.5 max-h-[320px] overflow-y-auto">
               {roster.map((char) => (
                 <CharacterOption
                   key={char.id}
@@ -98,12 +77,6 @@ export function CharacterSelector() {
               ))}
             </div>
 
-            {/* Footer decoration */}
-            <div className="mt-4 flex gap-1 justify-end">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="w-2 h-2 bg-black rounded-full" />
-              ))}
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -118,55 +91,30 @@ function CharacterOption({ char, isSelected, onSelect }: { char: typeof CHARACTE
     <motion.button
       onClick={onSelect}
       className={cn(
-        "relative w-full h-16 border-2 border-black overflow-hidden group transition-all duration-200",
-        isSelected ? "bg-black" : "bg-white hover:bg-gray-100"
+        "relative w-full h-14 rounded-xl overflow-hidden flex items-center gap-3 px-3 transition-all duration-300",
+        isSelected
+          ? "bg-manga-ink text-white ring-1 ring-manga-ink"
+          : "bg-manga-tone/30 hover:bg-manga-tone/50 text-manga-ink"
       )}
-      whileHover={{ x: -4 }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
     >
-      {/* Background Image Parallax/Slice */}
       {imageUrl && (
-        <div className="absolute inset-0 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-300">
+        <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
           <Image src={imageUrl} alt={char.name} fill className="object-cover" unoptimized />
-          <div className="absolute inset-0 bg-white/50 mix-blend-overlay" />
         </div>
       )}
-
-      {/* Helper color slice if no image or overlay */}
-      <div
-        className="absolute inset-0 transform -skew-x-12 scale-150 origin-left opacity-20 group-hover:opacity-40 transition-opacity mix-blend-multiply"
-        style={{ backgroundColor: char.colors.primary }}
-      />
-
-      <div className="relative h-full flex items-center px-4 justify-between">
-        <div className="flex flex-col items-start z-10">
-          <span className={cn(
-            "font-black text-lg italic uppercase leading-none drop-shadow-md",
-            isSelected ? "text-white" : "text-black"
-          )}>
-            {char.name}
-          </span>
-          <span className={cn(
-            "text-xs font-jp font-bold",
-            isSelected ? "text-gray-300" : "text-gray-600"
-          )}>
-            {char.technique}
-          </span>
-        </div>
-
-        {/* Kanji Vertical */}
-        <span
-          className={cn(
-            "font-jp font-black text-2xl opacity-20 pointer-events-none absolute right-2 writing-vertical",
-            isSelected ? "text-white" : "text-black"
-          )}
-        >
-          {char.japaneseName}
+      <div className="flex flex-col items-start flex-1 min-w-0 text-left">
+        <span className="font-semibold text-sm truncate w-full">{char.name}</span>
+        <span className={cn(
+          "text-xs truncate w-full",
+          isSelected ? "text-white/70" : "text-manga-ink/60"
+        )}>
+          {char.technique}
         </span>
       </div>
-
-      {/* Selection Indicator */}
       {isSelected && (
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-white animate-pulse" />
+        <div className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
       )}
     </motion.button>
   )

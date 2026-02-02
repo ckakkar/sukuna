@@ -24,13 +24,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseStyles = "font-mono font-semibold tracking-wider transition-all duration-200 rounded-lg relative overflow-hidden touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
+    const baseStyles = "font-medium tracking-wide transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] rounded-xl relative overflow-hidden touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
     
     const variants = {
-      primary: "bg-gradient-to-r from-jujutsu-energy to-jujutsu-domain text-white hover:from-jujutsu-domain hover:to-jujutsu-energy active:scale-95",
-      secondary: "bg-black/40 border-2 border-white/20 text-white hover:bg-white/10 hover:border-white/30 active:scale-95",
-      ghost: "bg-transparent text-white hover:bg-white/10 active:scale-95",
-      danger: "bg-red-900/30 border-2 border-red-800/60 text-red-400 hover:border-red-500 hover:bg-red-900/50 active:scale-95",
+      primary: "bg-manga-ink text-white hover:bg-manga-ink/90 active:scale-[0.98] shadow-md hover:shadow-lg",
+      secondary: "bg-manga-tone/50 text-manga-ink hover:bg-manga-tone border border-black/5",
+      ghost: "bg-transparent text-manga-ink hover:bg-black/5",
+      danger: "bg-red-50 text-red-600 hover:bg-red-100",
     }
     
     const sizes = {
@@ -49,9 +49,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           className
         )}
         disabled={disabled || isLoading}
-        style={{
-          boxShadow: glowColor ? `0 0 20px ${glowColor}40` : undefined,
-        }}
+        style={glowColor ? {} : undefined}
         {...props}
       >
         {isLoading && (

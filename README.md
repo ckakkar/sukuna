@@ -2,7 +2,9 @@
 
 A high-performance, **Jujutsu Kaisen**-themed 3D audio-reactive web application built with Next.js 15, React Three Fiber, and Spotify integration. Experience your music through the lens of cursed energy visualization with cinematic domain expansions, character-specific themes, and real-time audio analysis.
 
-![Jujutsu Kaisen](https://img.shields.io/badge/Jujutsu%20Kaisen-Inspired-9333ea?style=for-the-badge)
+**Manga-themed design throughout** — ink strokes, screentone halftones, speed lines, and panel-style framing for an authentic manga aesthetic.
+
+![Jujutsu Kaisen](https://img.shields.io/badge/呪術廻戦-Manga%20Themed-0a0a0a?style=for-the-badge)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
 ![Three.js](https://img.shields.io/badge/Three.js-r165-green?style=for-the-badge&logo=three.js)
@@ -82,9 +84,9 @@ A high-performance, **Jujutsu Kaisen**-themed 3D audio-reactive web application 
   - Halftone dot screen effects
   - Chromatic aberration (intensity-based)
   - Noise and grain effects
-  - Impact frame flashes on strong beats
+  - Black Flash impact frames on strong beats
   - Slash effects for cleave techniques
-  - Vignette effects
+  - Manga-style ink overlays
 
 - **Dynamic Lighting**
   - Beat-reactive point lights
@@ -112,6 +114,14 @@ A high-performance, **Jujutsu Kaisen**-themed 3D audio-reactive web application 
 
 ### 🎮 User Interface
 
+- **Manga Design System**
+  - Cream paper (`#f4f4f0`) and black ink (`#0a0a0a`) palette
+  - Offset ink shadows (e.g. `8px 8px 0px #0a0a0a`)
+  - Halftone and screentone textures
+  - Speed lines on beats
+  - Panel-style frames and speech bubbles
+  - No glass/blur — solid manga aesthetic
+
 - **Music Player Panel**
   - Current track display
   - Playback controls
@@ -125,7 +135,7 @@ A high-performance, **Jujutsu Kaisen**-themed 3D audio-reactive web application 
   - Cursed energy intensity indicator
   - Character technique display
   - Beat-reactive text animations
-  - Glass morphism design
+  - Manga typography and ink-style panels
 
 - **Additional UI Components**
   - Search interface
@@ -179,19 +189,21 @@ A high-performance, **Jujutsu Kaisen**-themed 3D audio-reactive web application 
 ### 🎨 Visual Effects
 
 - **Cursed Energy Particles**
-  - Background particle system
-  - Character-themed colors
+  - Manga ink-style particles (dots, lines, brush strokes)
+  - Screentone halftone patterns
+  - Speed lines on beat drops
   - Performance-optimized rendering
 
 - **Character Switch Animation**
-  - Smooth transitions between characters
+  - Manga-style speed line transitions
   - Quote display during switch
-  - Fade in/out effects
+  - Ink wash and panel reveals
 
 - **Domain Expansion Animation**
-  - Barrier sphere expansion
+  - Manga ink barrier rings
+  - Kanji burst effects
   - Volume dampening during expansion
-  - Cinematic transitions
+  - Cinematic panel-style transitions
 
 ---
 
@@ -290,7 +302,7 @@ Each character includes:
 - **Unique Techniques**: Character-specific cursed techniques
 - **Character Images**: PNG images in `/public/characters/`
 - **Dynamic Quotes**: Character-specific quotes with Japanese translations
-- **Themed UI**: All UI elements adapt to character colors
+- **Manga UI**: Main UI uses manga ink/paper; character colors appear in 3D scene
 
 ---
 
@@ -313,7 +325,7 @@ sukuna/
 │   ├── UI/                      # UI components
 │   │   ├── shared/             # Reusable UI components
 │   │   │   ├── Button.tsx      # Button component with variants
-│   │   │   ├── Card.tsx        # Glass morphism card
+│   │   │   ├── Card.tsx        # Manga panel card
 │   │   │   ├── ErrorBoundary.tsx # Error boundary component
 │   │   │   ├── LoadingSpinner.tsx # Loading indicator
 │   │   │   ├── Toast.tsx       # Toast notification
@@ -379,6 +391,7 @@ sukuna/
 │   └── useSpotifyStore.ts      # Zustand store (auth, playback, character, domain)
 │
 ├── public/                       # Static assets
+│   ├── wasm/                   # Rust WASM module (npm run build:wasm)
 │   └── characters/             # Character PNG images
 │       ├── choso.png
 │       ├── gojo.png
@@ -400,6 +413,11 @@ sukuna/
 ├── tailwind.config.ts           # Tailwind CSS configuration
 ├── tsconfig.json                # TypeScript configuration
 │
+├── rust-audio/                  # Rust WASM audio module
+│   ├── src/lib.rs              # FFT, beat detection, frequency spectrum
+│   └── Cargo.toml
+├── lib/wasm/                    # WASM loader
+│   └── rustAudio.ts            # Loads Rust module, JS fallback
 ├── README.md                    # This file
 ├── REFINEMENTS.md               # Codebase refinements documentation
 └── DOMAIN_EXPANSION_OFFERINGS.md # Future domain expansion features
@@ -478,6 +496,8 @@ sukuna/
    yarn dev
    ```
 
+   **Optional – Rust/WASM for faster audio processing**: With [Rust](https://rustup.rs) installed, run `npm run build:wasm` before `npm run build` or `npm run dev`. This compiles the audio analysis module to WebAssembly for faster beat detection and frequency spectrum analysis. The app works without it (JS fallback).
+
 7. **Open your browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
 
@@ -554,43 +574,43 @@ Main music player interface displaying:
 Top overlay displaying:
 - Domain expansion title (Japanese & English)
 - Character technique
-- Cursed energy intensity indicator
-- Beat-reactive animations
-- Character-themed colors
+- Manga typography with ink-style text
+- Beat-reactive impact text (ドン)
+- Panel-style character signature
 
 #### **CharacterSelector**
 Character selection interface:
-- Grid of all 8 characters
-- Character preview with colors
+- Roster-style grid of all 8 characters
+- Manga panel cards with ink borders
 - Domain expansion names
-- Smooth selection animations
+- Panel-style selection animations
 
 #### **CharacterSelectionModal**
 First-time character picker:
-- Appears on first login
-- Full-screen modal
-- Character information display
-- Confirmation flow
+- Manga page layout with cream background
+- Panel-style character cards with ink borders
+- Grayscale character images with manga aesthetic
+- Confirmation animation with speech bubble quotes
 
 #### **CharacterSwitchAnimation**
-Smooth character transition:
-- Fade animations
-- Quote display during switch
-- Character-specific effects
+Manga-style character transition:
+- Ink wash and speed line animations
+- Quote display in panel format
+- Technique-specific exit effects (Cleave, Blue, Boogie Woogie)
 
 #### **BackgroundQuotes**
-Random character quotes:
-- Displays every 10-15 seconds
-- Character-specific quotes
+Random character quotes (on click):
+- Manga speech bubble styling
+- Ink borders and offset shadows
 - Japanese & English text
-- Smooth fade animations
+- Panel-style presentation
 
 #### **DomainExpansion**
 Domain expansion animation:
-- Barrier sphere expansion
+- Manga ink barrier rings
+- Kanji burst (呪術式領域)
 - Volume dampening
-- State transitions
-- Character-specific effects
+- Ink-style particle explosions
 
 #### **PlaybackControls**
 Compact playback controls:
@@ -633,38 +653,39 @@ Favorites management:
 - Play favorites
 
 #### **JJKLoginScreen**
-Themed login screen:
-- Jujutsu Kaisen aesthetic
-- Spotify OAuth button
-- Character-themed design
+Manga-themed login screen:
+- Cream paper background with halftone overlay
+- Ink-stroke typography and offset shadows
+- Manga panel-style login button
+- Speed lines and page frame
 
 #### **CursedEnergyParticles**
-Background particle system:
-- Character-themed colors
-- Performance-optimized
-- Subtle animation
+Manga ink particle system:
+- Ink dots, lines, and brush-like shapes
+- Black ink on paper aesthetic
+- Speed lines on high-intensity beats
+- Performance-optimized rendering
 
 ### Shared UI Components
 
 #### **Button**
-Reusable button component:
-- Variants: `primary`, `secondary`, `ghost`, `danger`
+Reusable button component (manga style):
+- Variants: `primary` (black ink), `secondary`, `ghost`, `danger`
+- Offset shadow on primary buttons
 - Sizes: `sm`, `md`, `lg`
 - Loading states
 - Disabled states
-- Icon support
 
 #### **Card**
-Glass morphism card:
+Manga panel card:
 - Variants: `default`, `elevated`, `outlined`
-- Backdrop blur
-- Border effects
-- Character-themed borders
+- Solid borders with offset ink shadows
+- Manga panel framing
 
 #### **LoadingSpinner**
 Animated loading indicator:
 - Customizable size
-- Character-themed colors
+- Manga ink styling
 - Smooth rotation
 
 #### **Toast**
@@ -672,7 +693,7 @@ Toast notification system:
 - Success, error, info variants
 - Auto-dismiss
 - Stack management
-- Character-themed styling
+- Manga panel styling
 
 #### **ErrorBoundary**
 Error boundary component:
@@ -801,6 +822,29 @@ Responsive media query hook:
 
 ## 🎨 Design System
 
+### Manga Theme
+
+The entire UI uses a **manga aesthetic**:
+
+- **Color Palette**
+  - `manga-paper`: `#f4f4f0` — Warm cream paper background
+  - `manga-ink`: `#0a0a0a` — Deep black ink for text and borders
+  - `manga-panel`: `#ffffff` — White for panels and cards
+  - `manga-tone`: `#d4d4d4` — Screentone gray
+
+- **Visual Elements**
+  - **Offset shadows**: `4px 4px 0px #0a0a0a` (ink drop shadow)
+  - **Halftone patterns**: Radial dot screens for texture
+  - **Speed lines**: Action-line overlays on beats
+  - **Borders**: Bold 2–4px black ink borders, no rounded corners
+  - **Typography**: `font-manga` (Impact/Comic Neue), `font-jp` (Noto Serif JP)
+
+- **Component Styling**
+  - Panels: White background, black border, offset shadow
+  - Speech bubbles: Manga-style with tails
+  - Buttons: Solid black with offset shadow on hover
+  - No glass/blur effects — solid manga ink and paper
+
 ### UI Constants
 
 Located in `lib/constants/ui.ts`:
@@ -809,7 +853,6 @@ Located in `lib/constants/ui.ts`:
 - **Z-Index Layers**: `BACKGROUND` (0), `SCENE` (1), `OVERLAY` (10), `MODAL` (50), `TOOLTIP` (100)
 - **Spacing Scale**: `XS` (4px), `SM` (8px), `MD` (16px), `LG` (24px), `XL` (32px), `XXL` (48px)
 - **Border Radius**: `SM` (8px), `MD` (12px), `LG` (16px), `XL` (24px), `FULL` (9999px)
-- **Blur Effects**: `SM` (8px), `MD` (16px), `XL` (32px), `XXL` (64px)
 - **Opacity Levels**: `DISABLED` (0.3), `HOVER` (0.8), `ACTIVE` (0.6), `GHOST` (0.5)
 - **Breakpoints**: `SM` (640px), `MD` (768px), `LG` (1024px), `XL` (1280px), `2XL` (1536px)
 
@@ -821,33 +864,14 @@ Located in `lib/constants/ui.ts`:
 - `SPRING`: `cubic-bezier(0.34, 1.56, 0.64, 1)`
 - `SMOOTH`: `cubic-bezier(0.25, 0.46, 0.45, 0.94)`
 
-### Color System
+### Character Colors (3D & Internal)
 
-Each character has a 4-color system:
-- **Primary**: Main color for UI elements
-- **Secondary**: Supporting color
-- **Accent**: Highlight color
-- **Glow**: Glow/emission color
+Character color palettes are used for the 3D visualizer and internal logic:
 
-Plus 3-level energy gradients (RGB):
-- **Low**: Low intensity energy
-- **Mid**: Medium intensity energy
-- **High**: High intensity energy
+- **Primary, Secondary, Accent, Glow**: 4-color system per character
+- **Energy Gradients**: Low/mid/high intensity RGB values
 
-### Typography
-
-- **Font Family**: System fonts with monospace for technical text
-- **Font Sizes**: Responsive scale (10px - base)
-- **Font Weights**: 400 (normal), 500 (medium), 600 (semibold), 700 (bold)
-- **Letter Spacing**: Wide tracking for domain names
-
-### Glass Morphism
-
-Glass morphism cards feature:
-- Backdrop blur
-- Semi-transparent backgrounds
-- Subtle borders
-- Character-themed glows
+The main UI shell uses manga ink/paper; character colors appear in the 3D scene and lyric-mood features.
 
 ---
 
@@ -901,12 +925,12 @@ Glass morphism cards feature:
 - **Frame Rate Control**: Adaptive quality based on device
 - **LOD System**: Level of detail for 3D models (future)
 
-### General Optimizations
+### Rust WebAssembly (Audio)
 
-- **Debouncing**: Debounced search and expensive operations
-- **Throttling**: Throttled scroll and resize handlers
-- **Image Optimization**: Next.js Image component (where applicable)
-- **Bundle Size**: Tree-shaking, minimal dependencies
+- **Beat detection**: `calculate_intensity()` runs in Rust WASM when available
+- **Frequency spectrum**: `analyze_frequency_spectrum()` processes timbre data in Rust
+- **FFT support**: rustfft for potential real-time FFT (when needed)
+- **Fallback**: Pure JS implementations when WASM is unavailable
 
 ---
 
@@ -961,8 +985,11 @@ Glass morphism cards feature:
 # Development server
 npm run dev
 
-# Production build
+# Production build (includes optional WASM build if Rust is available)
 npm run build
+
+# Build Rust audio module to WebAssembly (requires Rust + wasm-pack)
+npm run build:wasm
 
 # Start production server
 npm start
@@ -1082,4 +1109,5 @@ For issues, questions, or suggestions, please open an issue on GitHub.
 
 ---
 
-**Built with cursed energy and React** ⚡
+**Built with cursed energy and React** ⚡  
+*Manga-themed from login to domain expansion*

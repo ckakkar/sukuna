@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
-import { getVisibleTextColor } from "@/lib/utils/colorUtils"
 import { Button } from "./shared/Button"
 
 const ONBOARDING_STORAGE_KEY = "jjk-visualizer-onboarding-completed"
@@ -92,63 +91,48 @@ export function Onboarding() {
   if (!isVisible) return null
 
   const step = steps[currentStep]
-  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-[10000] flex items-center justify-center pointer-events-auto"
+          className="fixed inset-0 z-[10000] flex items-center justify-center pointer-events-auto p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             onClick={handleSkip}
           />
 
-          {/* Onboarding Card */}
           <motion.div
-            className="relative z-10 w-full max-w-2xl mx-4 glass-modern rounded-3xl p-8 sm:p-12 border-2"
-            style={{
-              borderColor: character.colors.glow,
-              boxShadow: `0 20px 60px rgba(0,0,0,0.8), 0 0 40px ${character.colors.glow}60`,
-              background: `linear-gradient(135deg, ${character.colors.primary}20, ${character.colors.glow}10)`,
-            }}
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="relative z-10 w-full max-w-lg mx-4 rounded-2xl bg-white/95 backdrop-blur-xl border border-black/5 shadow-xl p-8 sm:p-10"
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Progress indicator */}
-            <div className="mb-6">
+            <div className="mb-6 relative z-10">
               <div className="flex justify-between items-center mb-2">
-                <span
-                  className="text-sm font-mono"
-                  style={{ color: textColor }}
-                >
-                  Step {currentStep + 1} of {steps.length}
+                <span className="text-xs font-medium text-manga-ink/60">
+                  {currentStep + 1} of {steps.length}
                 </span>
                 <button
                   onClick={handleSkip}
-                  className="text-sm opacity-70 hover:opacity-100 transition-opacity"
-                  style={{ color: textColor }}
+                  className="text-sm font-medium text-manga-ink/60 hover:text-manga-ink transition-colors"
                 >
                   Skip
                 </button>
               </div>
-              <div className="h-1 bg-black/40 rounded-full overflow-hidden">
+              <div className="h-1 bg-manga-tone/50 rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full"
-                  style={{
-                    background: `linear-gradient(90deg, ${character.colors.primary}, ${character.colors.glow})`,
-                  }}
+                  className="h-full bg-manga-ink rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
                   transition={{ duration: 0.3 }}
@@ -164,35 +148,23 @@ export function Onboarding() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
+                className="relative z-10"
               >
-                <h2
-                  className="text-3xl sm:text-4xl font-bold mb-4 font-mono tracking-wider"
-                  style={{
-                    color: textColor,
-                    textShadow: `0 0 20px ${character.colors.glow}60`,
-                  }}
-                >
+                <h2 className="text-xl sm:text-2xl font-semibold mb-3 text-manga-ink">
                   {step.title}
                 </h2>
-                <p
-                  className="text-lg sm:text-xl mb-8 leading-relaxed opacity-90"
-                  style={{ color: textColor }}
-                >
+                <p className="text-sm sm:text-base mb-8 leading-relaxed text-manga-ink/70">
                   {step.description}
                 </p>
               </motion.div>
             </AnimatePresence>
 
-            {/* Navigation buttons */}
-            <div className="flex justify-between items-center gap-4">
+            {/* Navigation buttons - Manga action buttons */}
+            <div className="flex justify-between items-center gap-4 relative z-10">
               <Button
                 onClick={handlePrevious}
                 disabled={currentStep === 0}
                 variant="secondary"
-                style={{
-                  borderColor: character.colors.glow,
-                  color: textColor,
-                }}
               >
                 Previous
               </Button>
@@ -202,15 +174,9 @@ export function Onboarding() {
                   <button
                     key={index}
                     onClick={() => setCurrentStep(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentStep ? "w-8" : ""
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      index === currentStep ? "w-6 bg-manga-ink" : "w-1.5 bg-manga-tone"
                     }`}
-                    style={{
-                      backgroundColor:
-                        index === currentStep
-                          ? character.colors.glow
-                          : "rgba(255,255,255,0.3)",
-                    }}
                     aria-label={`Go to step ${index + 1}`}
                   />
                 ))}
@@ -218,10 +184,6 @@ export function Onboarding() {
 
               <Button
                 onClick={handleNext}
-                style={{
-                  background: `linear-gradient(135deg, ${character.colors.primary}, ${character.colors.glow})`,
-                  color: textColor,
-                }}
               >
                 {currentStep === steps.length - 1 ? "Begin" : "Next"}
               </Button>

@@ -2,45 +2,24 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
-
-// Singleton to hold Wasm module reference
-let wasmModule: any = null
-let audioAnalyzer: any = null
+import { loadRustAudio } from "@/lib/wasm/rustAudio"
 
 /**
  * useBeatDetector
- * 
+ *
  * Detects beats in real-time using Spotify's audio analysis segments
  * and updates the store with beat intensity for visualizations.
- * Uses Rust WebAssembly for intensity calculations.
+ * Uses Rust WebAssembly for fast intensity calculations when available.
  */
 export function useBeatDetector() {
   const { trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat } = useSpotifyStore()
   const lastBeatTimeRef = useRef(0)
   const beatIntensityRef = useRef(0)
   const animationFrameRef = useRef<number | undefined>(undefined)
-  const [isWasmReady, setIsWasmReady] = useState(false)
+  const [rustAnalyzer, setRustAnalyzer] = useState<Awaited<ReturnType<typeof loadRustAudio>>>(null)
 
-  // Initialize Wasm module
   useEffect(() => {
-    const initWasm = async () => {
-      if (!wasmModule) {
-        try {
-          // Dynamic import to avoid SSR issues
-          // @ts-ignore
-          const wasm = await import("@/lib/wasm/rust_audio.js")
-          await wasm.default() // Initialize Wasm
-          wasmModule = wasm
-          audioAnalyzer = new wasm.AudioAnalyzer(1024)
-          console.log("Rust Audio Analyzer initialized")
-        } catch (e) {
-          console.error("Failed to load Wasm module:", e)
-        }
-      }
-      setIsWasmReady(true)
-    }
-
-    initWasm()
+    loadRustAudio().then(setRustAnalyzer)
   }, [])
 
   useEffect(() => {
@@ -69,9 +48,9 @@ export function useBeatDetector() {
 
         let intensity = 0
 
-        if (isWasmReady && audioAnalyzer) {
-          // Rust computation
-          intensity = audioAnalyzer.calculate_intensity(
+        if (rustAnalyzer) {
+          // Rust WASM - fast computation
+          intensity = rustAnalyzer.calculate_intensity(
             loudness,
             confidence,
             timbreEnergy,
@@ -115,5 +94,5 @@ export function useBeatDetector() {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat, isWasmReady])
+  }, [trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat, rustAnalyzer])
 }

@@ -3,16 +3,13 @@
 import { useEffect, useState } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
-import { getVisibleTextColor } from "@/lib/utils/colorUtils"
 import { cn } from "@/lib/utils/cn"
 
 export function DomainExpansion() {
-  const { isDomainExpanding, selectedCharacter, songDomainExpansionName, lyricMoodColor } = useSpotifyStore()
+  const { isDomainExpanding, selectedCharacter, songDomainExpansionName } = useSpotifyStore()
   const [show, setShow] = useState(false)
   const [phase, setPhase] = useState<"pre" | "main" | "post">("pre")
   const character = CHARACTERS[selectedCharacter]
-  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
-  const songColor = lyricMoodColor ?? character.colors.glow
 
   useEffect(() => {
     if (isDomainExpanding) {
@@ -43,46 +40,41 @@ export function DomainExpansion() {
 
   return (
     <div className="absolute inset-0 z-50 pointer-events-none overflow-hidden">
-      {/* Background energy surge */}
+      {/* Background - manga ink wash */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 bg-manga-ink/20"
         style={{
-          background: `radial-gradient(circle at 50% 50%, ${character.colors.glow}60 0%, ${character.colors.primary}40 30%, transparent 70%)`,
           animation: phase === "main" ? "expandPulse 1.7s ease-out forwards" : "none",
           opacity: phase === "post" ? 0 : 1,
         }}
       />
 
-      {/* Expanding barrier circles */}
+      {/* Expanding barrier circles - manga ink rings */}
       <div className="absolute inset-0 flex items-center justify-center">
         {[...Array(5)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full border-4"
+            className="absolute rounded-full border-4 border-manga-ink"
             style={{
               width: "200%",
               height: "200%",
-              borderColor: i % 2 === 0 ? character.colors.glow : character.colors.secondary || character.colors.glow,
               opacity: 0,
               animation: phase === "main" 
                 ? `expandCircle ${1.5 + i * 0.3}s ease-out ${i * 0.15}s forwards`
                 : "none",
-              boxShadow: `0 0 30px ${character.colors.glow}, inset 0 0 30px ${character.colors.glow}40`,
             }}
           />
         ))}
       </div>
 
-      {/* Kanji characters burst */}
+      {/* Kanji characters burst - manga style */}
       {phase === "pre" && (
         <div className="absolute inset-0 flex items-center justify-center">
           {["呪", "術", "式", "領", "域"].map((kanji, i) => (
             <div
               key={kanji}
-              className="absolute text-6xl font-black opacity-0"
+              className="absolute text-6xl font-jp font-black opacity-0 text-manga-ink"
               style={{
-                color: character.colors.glow,
-                textShadow: `0 0 40px ${character.colors.glow}, 0 0 80px ${character.colors.glow}`,
                 animation: `burstKanji 0.8s ease-out ${i * 0.1}s forwards`,
                 transform: `rotate(${i * 72}deg) translateY(-100px)`,
               }}
@@ -104,46 +96,27 @@ export function DomainExpansion() {
       >
         {/* Domain Expansion text */}
         <div
-          className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-black tracking-widest relative animate-cursed-text-reveal"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-manga font-black tracking-widest relative text-manga-ink"
           style={{
-            color: textColor,
-            textShadow: `0 0 40px ${character.colors.glow}, 0 0 80px ${character.colors.glow}, 0 0 120px ${character.colors.glow}80`,
-            animation: "textGlow 1s ease-in-out infinite alternate, barrier-pulse 2s ease-in-out infinite",
+            textShadow: "4px 4px 0px #d4d4d4, 8px 8px 0px #a3a3a3",
+            WebkitTextStroke: "2px #0a0a0a",
           }}
         >
           領域展開
           
-          {/* Glitch effect overlay */}
-          <div
-            className="absolute inset-0 opacity-70"
-            style={{
-              color: character.colors.secondary || character.colors.glow,
-              animation: "glitchText 0.3s infinite",
-            }}
-          >
-            領域展開
-          </div>
         </div>
 
-        {/* Divider line with particles */}
+        {/* Divider line - manga ink */}
         <div className="relative w-96 h-2">
-          <div 
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-current to-transparent"
-            style={{ 
-              color: textColor,
-              boxShadow: `0 0 20px ${character.colors.glow}`,
-            }}
-          />
+          <div className="absolute inset-0 bg-manga-ink" />
           {[...Array(12)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-2 h-2 rounded-full"
+              className="absolute w-2 h-2 rounded-full bg-manga-paper border-2 border-manga-ink"
               style={{
                 left: `${(i / 11) * 100}%`,
                 top: "50%",
                 transform: "translate(-50%, -50%)",
-                backgroundColor: character.colors.glow,
-                boxShadow: `0 0 15px ${character.colors.glow}`,
                 animation: `particleBounce 0.6s ease-in-out ${i * 0.05}s infinite alternate`,
               }}
             />
@@ -152,50 +125,36 @@ export function DomainExpansion() {
 
         {/* Domain name - Japanese */}
         <div
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.4em] relative"
-          style={{
-            color: character.colors.accent || character.colors.glow || textColor,
-            textShadow: `0 0 30px ${character.colors.glow}, 0 0 60px ${character.colors.glow}70`,
-            animation: "slideUp 0.8s ease-out 0.3s both",
-          }}
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-jp font-bold tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.4em] relative text-manga-ink"
+          style={{ animation: "slideUp 0.8s ease-out 0.3s both" }}
         >
           {character.domainJapanese}
           
-          {/* Underline animation */}
+          {/* Underline */}
           <div
-            className="absolute -bottom-4 left-0 right-0 h-1 rounded-full"
-            style={{
-              background: `linear-gradient(90deg, transparent, ${character.colors.glow}, transparent)`,
-              animation: "expandWidth 1s ease-out 0.5s both",
-            }}
+            className="absolute -bottom-4 left-0 right-0 h-1 bg-manga-ink"
+            style={{ animation: "expandWidth 1s ease-out 0.5s both" }}
           />
         </div>
 
-        {/* Domain name - English (character or song's LLM-generated name) */}
+        {/* Domain name - English */}
         <div
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono tracking-widest uppercase"
-          style={{
-            color: character.colors.secondary || character.colors.glow || textColor,
-            textShadow: `0 0 20px ${songColor}80`,
-            animation: "slideUp 0.8s ease-out 0.6s both",
-          }}
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono tracking-widest uppercase text-manga-ink/90"
+          style={{ animation: "slideUp 0.8s ease-out 0.6s both" }}
         >
           {songDomainExpansionName || character.domain}
         </div>
 
         {/* Technique name */}
         <div
-          className="text-sm font-mono tracking-[0.3em] uppercase opacity-80"
-          style={{ 
-            color: character.colors.accent || textColor,
-            animation: "fadeInUp 0.6s ease-out 0.9s both",
-          }}
+          className="text-sm font-mono tracking-[0.3em] uppercase text-manga-ink/80"
+          style={{ animation: "fadeInUp 0.6s ease-out 0.9s both" }}
         >
           {character.techniqueJapanese} ・ {character.technique}
         </div>
       </div>
 
-      {/* Particle explosion effect */}
+      {/* Manga ink particle explosion */}
       <div className="absolute inset-0">
         {phase === "main" && [...Array(60)].map((_, i) => {
           const angle = (i / 60) * Math.PI * 2
@@ -207,35 +166,31 @@ export function DomainExpansion() {
           return (
             <div
               key={i}
-              className="absolute w-1 h-1 rounded-full opacity-0"
+              className="absolute w-1 h-1 rounded-full opacity-0 bg-manga-ink"
               style={{
                 left: "50%",
                 top: "50%",
-                backgroundColor: i % 3 === 0 ? character.colors.glow : character.colors.secondary || character.colors.glow,
                 animation: `explodeParticle ${duration}s ease-out forwards`,
                 "--end-x": `${endX}vw`,
                 "--end-y": `${endY}vw`,
-                boxShadow: `0 0 10px ${character.colors.glow}`,
               } as React.CSSProperties}
             />
           )
         })}
       </div>
 
-      {/* Shockwave rings */}
+      {/* Shockwave rings - manga ink */}
       {phase === "main" && [...Array(3)].map((_, i) => (
         <div
           key={i}
-          className="absolute rounded-full border-2"
+          className="absolute rounded-full border-2 border-manga-ink"
           style={{
             left: "50%",
             top: "50%",
             width: 0,
             height: 0,
-            borderColor: character.colors.glow,
             transform: "translate(-50%, -50%)",
             animation: `shockwave 1.5s ease-out ${i * 0.3}s forwards`,
-            boxShadow: `0 0 40px ${character.colors.glow}`,
           }}
         />
       ))}
@@ -280,34 +235,6 @@ export function DomainExpansion() {
           100% {
             opacity: 0;
             transform: rotate(var(--rotation, 0deg)) translateY(-200px) scale(1.5);
-          }
-        }
-
-        @keyframes textGlow {
-          0% {
-            text-shadow: 0 0 40px currentColor, 0 0 80px currentColor;
-          }
-          100% {
-            text-shadow: 0 0 60px currentColor, 0 0 120px currentColor, 0 0 180px currentColor;
-          }
-        }
-
-        @keyframes glitchText {
-          0%, 100% {
-            transform: translate(0);
-            opacity: 0.7;
-          }
-          25% {
-            transform: translate(-3px, 3px);
-            opacity: 0.5;
-          }
-          50% {
-            transform: translate(3px, -3px);
-            opacity: 0.8;
-          }
-          75% {
-            transform: translate(-2px, -2px);
-            opacity: 0.6;
           }
         }
 

@@ -3,7 +3,6 @@
 import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
-import { CHARACTERS } from "@/lib/types/character"
 import { cn } from "@/lib/utils/cn"
 
 interface LoadingStateProps {
@@ -17,8 +16,7 @@ export function LoadingState({
   type = "general",
   className 
 }: LoadingStateProps) {
-  const { selectedCharacter, isLoadingAnalysis } = useSpotifyStore()
-  const character = CHARACTERS[selectedCharacter]
+  const { isLoadingAnalysis } = useSpotifyStore()
   
   const loadingMessages = useMemo(() => {
     switch (type) {
@@ -38,62 +36,25 @@ export function LoadingState({
   if (!isActive) return null
 
   return (
-    <div className={cn("fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm", className)}>
-      <div className="text-center space-y-6">
-        {/* Cursed Energy Spinner */}
+    <div className={cn("fixed inset-0 z-50 flex items-center justify-center bg-manga-ink/70", className)}>
+      <div className="text-center space-y-6 bg-manga-panel border-4 border-manga-ink p-8 shadow-[8px_8px_0px_0px_#0a0a0a]">
+        {/* Manga ink spinner */}
         <div className="relative w-20 h-20 mx-auto">
           <motion.div
-            className="absolute inset-0 rounded-full border-4 border-transparent"
-            style={{
-              borderTopColor: character.colors.glow,
-              borderRightColor: character.colors.glow,
-            }}
-            animate={{
-              rotate: 360,
-            }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-              ease: "linear",
-            }}
+            className="absolute inset-0 rounded-full border-4 border-manga-tone border-t-manga-ink"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           />
           <motion.div
-            className="absolute inset-2 rounded-full border-4 border-transparent"
-            style={{
-              borderBottomColor: character.colors.accent,
-              borderLeftColor: character.colors.accent,
-            }}
-            animate={{
-              rotate: -360,
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-          {/* Pulsing core */}
-          <motion.div
-            className="absolute inset-4 rounded-full"
-            style={{
-              background: `radial-gradient(circle, ${character.colors.glow}, transparent)`,
-              boxShadow: `0 0 20px ${character.colors.glow}`,
-            }}
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.6, 1, 0.6],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            className="absolute inset-2 rounded-full border-4 border-transparent border-b-manga-ink border-l-manga-ink"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
           />
         </div>
 
         {/* Loading Text */}
         <motion.div
-          className="font-mono text-sm sm:text-base text-white/90"
+          className="font-mono text-sm sm:text-base font-bold text-manga-ink"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -101,38 +62,14 @@ export function LoadingState({
           {loadingMessages}
         </motion.div>
 
-        {/* Energy Particles */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 8 }).map((_, i) => (
+        {/* Manga ink dots */}
+        <div className="flex gap-2 justify-center">
+          {Array.from({ length: 3 }).map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 rounded-full"
-              style={{
-                background: character.colors.glow,
-                boxShadow: `0 0 6px ${character.colors.glow}`,
-                left: "50%",
-                top: "50%",
-              }}
-              animate={{
-                x: [
-                  0,
-                  Math.cos((i / 8) * Math.PI * 2) * 100,
-                  Math.cos((i / 8) * Math.PI * 2) * 150,
-                ],
-                y: [
-                  0,
-                  Math.sin((i / 8) * Math.PI * 2) * 100,
-                  Math.sin((i / 8) * Math.PI * 2) * 150,
-                ],
-                opacity: [1, 0.8, 0],
-                scale: [1, 1.5, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: i * 0.1,
-                ease: "easeOut",
-              }}
+              className="w-2 h-2 rounded-full bg-manga-ink"
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
             />
           ))}
         </div>

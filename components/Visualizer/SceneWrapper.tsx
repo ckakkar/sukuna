@@ -13,78 +13,19 @@ const Scene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-950/20 to-black flex items-center justify-center">
-        <div className="text-center space-y-6">
-          {/* Hexagonal loader */}
-          <div className="relative w-24 h-24 mx-auto">
+      <div className="absolute inset-0 flex items-center justify-center bg-manga-tone/30 rounded-2xl">
+        <div className="text-center space-y-4">
+          <div className="relative w-12 h-12 mx-auto">
+            <div className="absolute inset-0 border-2 border-manga-ink/20 rounded-full" />
             <div 
-              className="absolute inset-0 border-4 border-purple-500/30"
-              style={{
-                clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                animation: 'spin 2s linear infinite',
-              }}
-            />
-            <div 
-              className="absolute inset-2 border-4 border-purple-500/50"
-              style={{
-                clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                animation: 'spin 1.5s linear infinite reverse',
-              }}
-            />
-            <div 
-              className="absolute inset-4 border-4 border-purple-500"
-              style={{
-                clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                animation: 'spin 1s linear infinite',
-                boxShadow: '0 0 30px rgba(147, 51, 234, 0.8)',
-              }}
+              className="absolute inset-0 border-2 border-transparent border-t-manga-ink/60 rounded-full"
+              style={{ animation: 'spin 0.8s linear infinite' }}
             />
           </div>
-
-          <div className="space-y-3">
-            <div className="text-jujutsu-energy font-mono text-xl animate-pulse font-bold tracking-[0.4em]">
-              領域展開
-            </div>
-            <div className="text-gray-400 font-mono text-sm animate-pulse tracking-wider">
-              Expanding Domain...
-            </div>
-          </div>
-
-          {/* Cursed energy particles */}
-          <div className="flex gap-2 justify-center">
-            <div 
-              className="w-3 h-3 bg-jujutsu-energy rounded-full animate-bounce" 
-              style={{ 
-                animationDelay: "0ms",
-                boxShadow: '0 0 15px rgba(147, 51, 234, 0.8)',
-              }} 
-            />
-            <div 
-              className="w-3 h-3 bg-jujutsu-energy rounded-full animate-bounce" 
-              style={{ 
-                animationDelay: "150ms",
-                boxShadow: '0 0 15px rgba(147, 51, 234, 0.8)',
-              }} 
-            />
-            <div 
-              className="w-3 h-3 bg-jujutsu-energy rounded-full animate-bounce" 
-              style={{ 
-                animationDelay: "300ms",
-                boxShadow: '0 0 15px rgba(147, 51, 234, 0.8)',
-              }} 
-            />
-          </div>
+          <div className="text-sm font-medium text-manga-ink/60">Loading...</div>
         </div>
-
         <style jsx>{`
-          @keyframes spin {
-            from {
-              transform: rotate(0deg);
-            }
-            to {
-              transform: rotate(360deg);
-            }
-          }
+          @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         `}</style>
       </div>
     ),

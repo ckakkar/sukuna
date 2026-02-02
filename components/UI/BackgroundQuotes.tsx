@@ -4,7 +4,6 @@ import { useEffect, useState, useRef, useCallback } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { CHARACTERS } from "@/lib/types/character"
 import { CHARACTER_QUOTES, type CharacterQuote } from "@/lib/data/characterQuotes"
-import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { cn } from "@/lib/utils/cn"
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery"
 
@@ -154,7 +153,6 @@ export function BackgroundQuotes() {
   if (!hasSelectedCharacter || quotes.length === 0) return null
 
   const character = CHARACTERS[selectedCharacter]
-  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
 
   return (
     <>
@@ -173,77 +171,32 @@ export function BackgroundQuotes() {
         >
           <div
             className={cn(
-              "glass-modern domain-border rounded-lg px-3.5 py-2.5 max-w-[280px] sm:max-w-[320px]",
-              "animate-spring-in shadow-2xl",
-              "backdrop-blur-xl relative overflow-hidden"
+              "bg-white/95 backdrop-blur-xl border border-black/5 px-4 py-3 max-w-[280px] sm:max-w-[320px]",
+              "animate-spring-in relative overflow-hidden rounded-2xl shadow-lg"
             )}
-            style={{
-              borderColor: getVisibleBorderColor(character.colors.primary, character.colors.glow, 0.7),
-              boxShadow: `0 8px 32px rgba(0,0,0,0.7), 0 0 24px ${character.colors.glow}50, inset 0 0 20px ${character.colors.glow}15, 0 0 0 1px ${character.colors.glow}20`,
-              background: `linear-gradient(135deg, ${character.colors.primary}25 0%, ${character.colors.glow}15 50%, ${character.colors.primary}20 100%)`,
-              backgroundSize: '200% 200%',
-              animation: 'cursed-energy-flow 4s ease infinite',
-            }}
           >
-            {/* Animated background glow */}
-            <div 
-              className="absolute inset-0 opacity-30 animate-barrier-pulse pointer-events-none"
-              style={{
-                background: `radial-gradient(circle at center, ${character.colors.glow}40, transparent 70%)`,
-              }}
-            />
-            {/* Content wrapper with relative positioning */}
+            
+            {/* Content wrapper */}
             <div className="relative z-10">
               {/* Japanese quote */}
               {quote.japanese && (
-                <div
-                  className="text-sm sm:text-base font-bold mb-1 text-center leading-tight"
-                  style={{
-                    color: character.colors.glow,
-                    textShadow: `0 0 12px ${character.colors.glow}80, 0 0 20px ${character.colors.glow}60`,
-                  }}
-                >
+                <div className="text-sm sm:text-base font-jp font-bold mb-1 text-center leading-tight text-manga-ink">
                   「{quote.japanese}」
                 </div>
               )}
               
               {/* English quote */}
-              <div
-                className="text-xs sm:text-sm font-mono text-center leading-relaxed"
-                style={{
-                  color: textColor,
-                  textShadow: `0 0 6px ${character.colors.glow}50`,
-                }}
-              >
+              <div className="text-xs sm:text-sm font-mono text-center leading-relaxed text-manga-ink">
                 {quote.text}
               </div>
               
-              {/* Context (if available) */}
+              {/* Context */}
               {quote.context && (
-                <div
-                  className="text-[10px] font-mono text-center mt-1 opacity-70 leading-tight"
-                  style={{
-                    color: character.colors.secondary || character.colors.glow,
-                  }}
-                >
+                <div className="text-[10px] font-mono text-center mt-1 text-manga-ink/70 leading-tight">
                   — {quote.context}
                 </div>
               )}
             </div>
-            
-            {/* Decorative corner accents */}
-            <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 rounded-tl-lg opacity-50" 
-              style={{ borderColor: character.colors.glow }} 
-            />
-            <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 rounded-tr-lg opacity-50" 
-              style={{ borderColor: character.colors.glow }} 
-            />
-            <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 rounded-bl-lg opacity-50" 
-              style={{ borderColor: character.colors.glow }} 
-            />
-            <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 rounded-br-lg opacity-50" 
-              style={{ borderColor: character.colors.glow }} 
-            />
           </div>
         </div>
       ))}

@@ -1,6 +1,22 @@
 use wasm_bindgen::prelude::*;
 use rustfft::{FftPlanner, num_complex::Complex};
 
+/// Frequency spectrum result: bass, mid, treble (0-1)
+#[wasm_bindgen]
+pub struct FrequencySpectrum {
+    pub bass: f32,
+    pub mid: f32,
+    pub treble: f32,
+}
+
+#[wasm_bindgen]
+impl FrequencySpectrum {
+    #[wasm_bindgen(constructor)]
+    pub fn new(bass: f32, mid: f32, treble: f32) -> FrequencySpectrum {
+        FrequencySpectrum { bass, mid, treble }
+    }
+}
+
 #[wasm_bindgen]
 pub struct AudioAnalyzer {
     planner: FftPlanner<f32>,
@@ -68,14 +84,32 @@ impl AudioAnalyzer {
         let base_intensity = loudness * confidence;
         let timbre_boost = normalized_timbre * 0.3;
         
-        // Simulating a more complex S-curve for phase boost in Rust
         let phase_boost = if beat_phase < 0.15 {
             let x = beat_phase / 0.15;
-            (1.0 - x * x) * 0.2 // Quadratic falloff
+            (1.0 - x * x) * 0.2
         } else {
             0.0
         };
 
         ((base_intensity + timbre_boost + phase_boost) * 1.5).min(1.0)
+    }
+
+    /// Analyze frequency spectrum from 12-dimensional timbre vector (Spotify format).
+    /// Returns bass (0-3), mid (4-7), treble (8-11) bands normalized 0-1.
+    #[wasm_bindgen]
+    pub fn analyze_frequency_spectrum(&self, timbre: Vec<f32>) -> FrequencySpectrum {
+        if timbre.len() < 12 {
+            return FrequencySpectrum { bass: 0.0, mid: 0.0, treble: 0.0 };
+        }
+        
+        let bass_avg = (timbre[0] + timbre[1] + timbre[2] + timbre[3]) / 4.0;
+        let mid_avg = (timbre[4] + timbre[5] + timbre[6] + timbre[7]) / 4.0;
+        let treble_avg = (timbre[8] + timbre[9] + timbre[10] + timbre[11]) / 4.0;
+        
+        let bass = (bass_avg + 0.5).max(0.0).min(1.0);
+        let mid = (mid_avg + 0.5).max(0.0).min(1.0);
+        let treble = (treble_avg + 0.5).max(0.0).min(1.0);
+        
+        FrequencySpectrum { bass, mid, treble }
     }
 }

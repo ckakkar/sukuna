@@ -132,7 +132,7 @@ export function MusicPlayerPanel() {
                 {character.japaneseName}
               </motion.span>
               <span className="text-xs font-bold font-mono text-black uppercase tracking-tighter">
-                {character.name} <span className="mx-1 text-xs">///</span> {character.technique}
+                {character.name} <span className="mx-1 text-xs">{"///"}</span> {character.technique}
               </span>
             </div>
           </div>

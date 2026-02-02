@@ -114,7 +114,7 @@ export function Search() {
           placeholder="SEARCH TRACKS..."
           className="w-full px-4 py-2.5 bg-white border-2 border-black rounded-none focus:outline-none text-black placeholder-gray-500 text-sm font-black font-mono tracking-wider transition-all duration-200"
           style={{
-            boxShadow: isOpen ? `4px 4px 0px 0px ${character.colors.primary}` : "none",
+            boxShadow: isOpen ? `4px 4px 0px 0px #0a0a0a` : "none",
           }}
         />
         <svg

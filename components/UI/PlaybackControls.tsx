@@ -1,11 +1,8 @@
 "use client"
-
 import { useSpotifyStore } from "@/store/useSpotifyStore"
 import { useEffect, useState, useRef, useCallback } from "react"
 import { setVolume, seekToPosition, setRepeatMode, setShuffleMode } from "@/lib/spotify-actions"
 import { checkSavedTrack, saveTrack, removeSavedTrack } from "@/lib/spotify-actions"
-import { CHARACTERS } from "@/lib/types/character"
-import { getVisibleTextColor, getVisibleBorderColor } from "@/lib/utils/colorUtils"
 import { cn } from "@/lib/utils/cn"
 import { formatTime } from "@/lib/utils/format"
 
@@ -17,13 +14,11 @@ export function PlaybackControls() {
     playerInstance,
     playbackPosition,
     playbackDuration,
-    selectedCharacter,
     repeatMode,
     shuffleMode,
     volume,
     isLiked,
     currentTrack,
-    beatIntensity,
     setRepeatMode: setStoreRepeatMode,
     setShuffleMode: setStoreShuffleMode,
     setVolume: setStoreVolume,
@@ -33,23 +28,9 @@ export function PlaybackControls() {
   const [canControl, setCanControl] = useState(false)
   const [isSeeking, setIsSeeking] = useState(false)
   const [seekPosition, setSeekPosition] = useState(0)
-  const [buttonPulse, setButtonPulse] = useState<string | null>(null)
   const [isLoadingLike, setIsLoadingLike] = useState(false)
   const [isVolumeHovered, setIsVolumeHovered] = useState(false)
-  const [isDesktop, setIsDesktop] = useState(false)
   const volumeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  const character = CHARACTERS[selectedCharacter]
-  const textColor = getVisibleTextColor(character.colors.primary, character.colors.glow, character.colors.secondary)
-
-  useEffect(() => {
-    const checkDesktop = () => {
-      setIsDesktop(window.innerWidth >= 768)
-    }
-    checkDesktop()
-    window.addEventListener('resize', checkDesktop)
-    return () => window.removeEventListener('resize', checkDesktop)
-  }, [])
 
   useEffect(() => {
     setCanControl(!!accessToken && !!deviceId)
@@ -70,16 +51,6 @@ export function PlaybackControls() {
     }
   }, [currentTrack?.id, accessToken, setStoreIsLiked])
 
-
-
-  // Beat pulse animation
-  useEffect(() => {
-    if (beatIntensity && beatIntensity > 0.7) {
-      const timeout = setTimeout(() => setButtonPulse(null), 150)
-      return () => clearTimeout(timeout)
-    }
-  }, [beatIntensity])
-
   const handleSeek = async (newPosition: number) => {
     if (!accessToken || !deviceId || !playerInstance) return
     setIsSeeking(true)
@@ -99,7 +70,6 @@ export function PlaybackControls() {
 
   const handlePlayPause = async () => {
     if (!playerInstance) return
-    setButtonPulse("play")
     try {
       await playerInstance.togglePlay()
     } catch (error) {
@@ -109,7 +79,6 @@ export function PlaybackControls() {
 
   const handlePrevious = async () => {
     if (!playerInstance) return
-    setButtonPulse("prev")
     try {
       await playerInstance.previousTrack()
     } catch (error) {
@@ -119,7 +88,6 @@ export function PlaybackControls() {
 
   const handleNext = async () => {
     if (!playerInstance) return
-    setButtonPulse("next")
     try {
       await playerInstance.nextTrack()
     } catch (error) {
@@ -246,7 +214,7 @@ export function PlaybackControls() {
             <span className="text-black bg-white px-1 border border-black">{formatTime(playbackDuration)}</span>
           </div>
 
-          <div className="relative group h-4">
+          <div className="relative group h-3">
             {/* Track background */}
             <div
               className="absolute inset-0 bg-white border-2 border-black"
@@ -256,13 +224,11 @@ export function PlaybackControls() {
 
               {/* Progress fill - Solid Black */}
               <div
-                className="h-full bg-black transition-all duration-100 ease-linear relative"
+                className="h-full bg-black relative"
                 style={{ width: `${progress}%` }}
               >
-                {/* Diagonal stripe pattern for active bar */}
-                <div className="absolute inset-0 opacity-30"
-                  style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.5) 5px, rgba(255,255,255,0.5) 10px)' }}
-                />
+                {/* Glitch/Scratch effect at end of bar */}
+                <div className="absolute top-0 right-0 w-1 h-full bg-white opacity-50 mix-blend-difference" />
               </div>
             </div>
 
@@ -281,7 +247,10 @@ export function PlaybackControls() {
       )}
 
       {/* Controls - Manga Panel Buttons */}
-      <div className="flex items-center justify-center gap-3 sm:gap-4 relative bg-white border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="flex items-center justify-center gap-2 sm:gap-4 relative bg-white border-3 border-black p-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+
+        {/* Background Tone */}
+        <div className="absolute inset-0 bg-halftone opacity-5 pointer-events-none" />
 
         {/* Like Button */}
         {currentTrack && (
@@ -289,16 +258,13 @@ export function PlaybackControls() {
             onClick={handleLikeToggle}
             disabled={isLoadingLike}
             className={cn(
-              "p-2 border-2 border-black transition-transform active:scale-95",
-              isLiked ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
+              "p-2 border-2 border-black transition-all active:translate-y-1 active:shadow-none",
+              isLiked ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100",
+              !isLiked && "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             )}
             aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
           >
-            {isLiked ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-            )}
+            <svg className="w-5 h-5" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
           </button>
         )}
 
@@ -306,8 +272,9 @@ export function PlaybackControls() {
         <button
           onClick={handleShuffleToggle}
           className={cn(
-            "p-2 border-2 border-black transition-transform active:scale-95",
-            shuffleMode ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
+            "p-2 border-2 border-black transition-all active:translate-y-1 active:shadow-none",
+            shuffleMode ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100",
+            !shuffleMode && "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           )}
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" /></svg>
@@ -316,7 +283,7 @@ export function PlaybackControls() {
         {/* Previous */}
         <button
           onClick={handlePrevious}
-          className="p-3 border-2 border-black bg-white text-black hover:bg-gray-100 active:bg-black active:text-white transition-colors"
+          className="p-3 border-2 border-black bg-white text-black hover:bg-black hover:text-white transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none"
         >
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" /></svg>
         </button>
@@ -324,7 +291,7 @@ export function PlaybackControls() {
         {/* Play/Pause - Larger Impact Button */}
         <button
           onClick={handlePlayPause}
-          className="p-4 border-2 border-black bg-black text-white hover:bg-gray-900 active:scale-95 transition-transform shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"
+          className="p-4 border-3 border-black bg-black text-white hover:bg-white hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none"
         >
           {isPaused ? (
             <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
@@ -336,7 +303,7 @@ export function PlaybackControls() {
         {/* Next */}
         <button
           onClick={handleNext}
-          className="p-3 border-2 border-black bg-white text-black hover:bg-gray-100 active:bg-black active:text-white transition-colors"
+          className="p-3 border-2 border-black bg-white text-black hover:bg-black hover:text-white transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none"
         >
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
         </button>
@@ -345,14 +312,15 @@ export function PlaybackControls() {
         <button
           onClick={handleRepeatToggle}
           className={cn(
-            "p-2 border-2 border-black transition-transform active:scale-95",
-            repeatMode !== "off" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
+            "p-2 border-2 border-black transition-all active:translate-y-1 active:shadow-none",
+            repeatMode !== "off" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100",
+            repeatMode === "off" && "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
           )}
         >
           {repeatMode === "track" ? (
             <div className="relative">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" /></svg>
-              <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-white text-black border border-black px-0.5 rounded-full">1</span>
+              <span className="absolute -top-1 -right-1 text-[8px] font-bold bg-white text-black border border-black px-0.5" style={{ lineHeight: 0.8 }}>1</span>
             </div>
           ) : (
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" /></svg>
@@ -367,7 +335,7 @@ export function PlaybackControls() {
         >
           <button
             onClick={() => handleVolumeChange(volume === 0 ? 50 : 0)}
-            className="p-2 border-2 border-black bg-white text-black hover:bg-gray-100"
+            className="p-2 border-2 border-black bg-white text-black hover:bg-gray-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all"
           >
             {volume === 0 ? (
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" /></svg>
@@ -378,7 +346,7 @@ export function PlaybackControls() {
 
           {/* Pop-up vertical volume slider for cleaner look */}
           <div className={cn(
-            "absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-2 bg-white border-2 border-black transition-all duration-200 shadow-lg",
+            "absolute bottom-full left-1/2 -translate-x-1/2 mb-3 p-2 bg-white border-2 border-black font-manga transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
             isVolumeHovered ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
           )}>
             <input
@@ -387,9 +355,10 @@ export function PlaybackControls() {
               max="100"
               value={volume}
               onChange={(e) => handleVolumeChange(Number(e.target.value))}
-              className="h-24 w-4 appearance-none slider-vertical bg-transparent"
+              className="h-24 w-4 appearance-none slider-vertical bg-transparent accent-black"
               style={{ writingMode: 'vertical-lr', WebkitAppearance: 'slider-vertical' }}
             />
+            <div className="text-center font-bold text-xs mt-1 border-t border-black pt-1">{volume}</div>
           </div>
         </div>
 

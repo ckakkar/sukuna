@@ -2,8 +2,6 @@
 
 import { useRef, useEffect } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
-import { CHARACTERS } from "@/lib/types/character"
-import { getVisibleTextColor, hexToRgb } from "@/lib/utils/colorUtils"
 
 export function WaveformVisualization() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -12,12 +10,9 @@ export function WaveformVisualization() {
     trackData,
     playbackPosition,
     playbackDuration,
-    frequencySpectrum,
     beatIntensity,
-    selectedCharacter,
     isPaused,
   } = useSpotifyStore()
-  const character = CHARACTERS[selectedCharacter]
 
   useEffect(() => {
     if (!canvasRef.current || !trackData || isPaused) return
@@ -27,99 +22,89 @@ export function WaveformVisualization() {
     if (!ctx) return
 
     const draw = () => {
-      const width = canvas.width
-      const height = canvas.height
-      const currentTime = playbackPosition / 1000
-      const duration = playbackDuration / 1000
+      // Need to account for pixel ratio in drawing coords if we scaled context,
+      // but simpler to just use canvas dimensions directly relative to logic.
+      // We will reset transform to ensure clean frame.
+      const dpr = window.devicePixelRatio || 1
+      const rect = canvas.getBoundingClientRect()
 
-      // Clear canvas
-      ctx.fillStyle = "rgba(0, 0, 0, 0.1)"
-      ctx.fillRect(0, 0, width, height)
+      // Ensure canvas size matches display size
+      if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
+        canvas.width = rect.width * dpr
+        canvas.height = rect.height * dpr
+        ctx.scale(dpr, dpr)
+      }
+
+      const width = rect.width
+      const height = rect.height
+      const currentTime = playbackPosition / 1000
+
+      // Clear canvas with paper color (or transparent if parent handles bg)
+      ctx.clearRect(0, 0, width, height)
+
+      // Add noise texture overlay (simulated)
+      if (Math.random() > 0.8) {
+        ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.1})`
+        ctx.fillRect(0, 0, width, height)
+      }
 
       // Draw waveform from segments
       if (trackData.segments && trackData.segments.length > 0) {
         const segments = trackData.segments
-        const segmentWidth = width / segments.length
+        // Limit number of bars for cleaner look
+        const barCount = Math.floor(width / 6)
+        const segmentStep = Math.ceil(segments.length / barCount)
 
-        segments.forEach((segment, index) => {
-          const x = (index / segments.length) * width
-          const segmentTime = segment.start
-          const isCurrent = currentTime >= segmentTime && currentTime < segmentTime + segment.duration
+        for (let i = 0; i < barCount; i++) {
+          const segmentIndex = i * segmentStep
+          if (segmentIndex >= segments.length) break
 
-          // Calculate amplitude from loudness
-          const amplitude = Math.abs(segment.loudness_max) / 60 // Normalize
+          const segment = segments[segmentIndex]
+
+          // Calculate amplitude
+          let amplitude = Math.abs(segment.loudness_max) / 60
+
+          // Beat reaction
+          if (beatIntensity && beatIntensity > 0.5) {
+            amplitude *= (1 + (beatIntensity - 0.5))
+          }
+
           const barHeight = amplitude * height * 0.8
+          const x = i * 6
+          const y = (height - barHeight) / 2
 
-          // Color based on frequency spectrum if available
-          let color = character.colors.glow
-          if (frequencySpectrum && isCurrent) {
-            // Mix colors based on frequency bands
-            const { bass, mid, treble } = frequencySpectrum
-            // Convert hex to RGB for mixing
-            const primaryRgb = hexToRgb(character.colors.primary)
-            const glowRgb = hexToRgb(character.colors.glow)
-            const secondaryRgb = hexToRgb(character.colors.secondary || character.colors.glow)
-            
-            if (primaryRgb && glowRgb && secondaryRgb) {
-              const r = Math.floor(primaryRgb.r * bass + glowRgb.r * mid + secondaryRgb.r * treble)
-              const g = Math.floor(primaryRgb.g * bass + glowRgb.g * mid + secondaryRgb.g * treble)
-              const b = Math.floor(primaryRgb.b * bass + glowRgb.b * mid + secondaryRgb.b * treble)
-              color = `rgb(${r}, ${g}, ${b})`
-            }
-          }
+          // Current position playhead logic
+          const segmentTime = segment.start
+          const isPast = currentTime > segmentTime
 
-          // Draw waveform bar
-          ctx.fillStyle = isCurrent
-            ? character.colors.glow
-            : `${character.colors.glow}40`
-          ctx.fillRect(x, height / 2 - barHeight / 2, segmentWidth * 0.8, barHeight)
+          ctx.fillStyle = isPast ? "#0a0a0a" : "#d4d4d4"
 
-          // Beat pulse effect
-          if (isCurrent && beatIntensity && beatIntensity > 0.5) {
-            ctx.fillStyle = character.colors.glow
-            ctx.globalAlpha = beatIntensity
-            ctx.fillRect(x, height / 2 - barHeight / 2, segmentWidth * 0.8, barHeight)
-            ctx.globalAlpha = 1
-          }
-        })
+          // Draw ragged/ink bar
+          // Add slight random offset for hand-drawn feel
+          const xOffset = (Math.random() - 0.5) * 1
+          const hOffset = (Math.random() - 0.5) * 2
+
+          ctx.fillRect(x + xOffset, y + hOffset, 4, barHeight)
+        }
       }
 
-      // Draw progress indicator
-      if (duration > 0) {
-        const progress = (currentTime / duration) * width
-        ctx.strokeStyle = character.colors.glow
-        ctx.lineWidth = 2
-        ctx.beginPath()
-        ctx.moveTo(progress, 0)
-        ctx.lineTo(progress, height)
-        ctx.stroke()
-
-        // Glow effect on progress line
-        ctx.shadowBlur = 10
-        ctx.shadowColor = character.colors.glow
-        ctx.stroke()
-        ctx.shadowBlur = 0
-      }
+      // Playhead Line
+      /* 
+      const progress = playbackDuration > 0 ? (playbackPosition / playbackDuration) * width : 0
+      ctx.strokeStyle = "#0a0a0a"
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(progress, 0)
+      ctx.lineTo(progress, height)
+      ctx.stroke() 
+      */
 
       animationFrameRef.current = requestAnimationFrame(draw)
     }
 
-    // Set canvas size
-    const resizeCanvas = () => {
-      if (canvasRef.current) {
-        const rect = canvasRef.current.getBoundingClientRect()
-        canvas.width = rect.width * window.devicePixelRatio
-        canvas.height = rect.height * window.devicePixelRatio
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
-      }
-    }
-
-    resizeCanvas()
-    window.addEventListener("resize", resizeCanvas)
     animationFrameRef.current = requestAnimationFrame(draw)
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas)
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
       }
@@ -128,22 +113,17 @@ export function WaveformVisualization() {
     trackData,
     playbackPosition,
     playbackDuration,
-    frequencySpectrum,
     beatIntensity,
-    character,
     isPaused,
   ])
 
   if (!trackData) return null
 
   return (
-    <div className="w-full h-20 sm:h-24 rounded-lg overflow-hidden glass-modern">
+    <div className="w-full h-full relative">
       <canvas
         ref={canvasRef}
-        className="w-full h-full"
-        style={{
-          background: `linear-gradient(135deg, ${character.colors.primary}10, ${character.colors.glow}05)`,
-        }}
+        className="w-full h-full block"
       />
     </div>
   )

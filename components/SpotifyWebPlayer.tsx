@@ -106,7 +106,6 @@ export function SpotifyWebPlayer() {
         setPlayerInstance(player)
 
         player.addListener("ready", ({ device_id }: { device_id: string }) => {
-          console.log("Spotify player ready with device ID:", device_id)
           setDeviceId(device_id)
 
           fetch("https://api.spotify.com/v1/me/player", {

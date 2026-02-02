@@ -1,26 +1,19 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { useSpotifyStore } from "@/store/useSpotifyStore"
-import { loadRustAudio } from "@/lib/wasm/rustAudio"
 
 /**
  * useBeatDetector
  *
  * Detects beats in real-time using Spotify's audio analysis segments
  * and updates the store with beat intensity for visualizations.
- * Uses Rust WebAssembly for fast intensity calculations when available.
  */
 export function useBeatDetector() {
   const { trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat } = useSpotifyStore()
   const lastBeatTimeRef = useRef(0)
   const beatIntensityRef = useRef(0)
   const animationFrameRef = useRef<number | undefined>(undefined)
-  const [rustAnalyzer, setRustAnalyzer] = useState<Awaited<ReturnType<typeof loadRustAudio>>>(null)
-
-  useEffect(() => {
-    loadRustAudio().then(setRustAnalyzer)
-  }, [])
 
   useEffect(() => {
     if (!trackData || isPaused) {
@@ -46,24 +39,11 @@ export function useBeatDetector() {
         const confidence = segment.confidence
         const timbreEnergy = segment.timbre.reduce((sum, val) => sum + Math.abs(val), 0) / segment.timbre.length
 
-        let intensity = 0
-
-        if (rustAnalyzer) {
-          // Rust WASM - fast computation
-          intensity = rustAnalyzer.calculate_intensity(
-            loudness,
-            confidence,
-            timbreEnergy,
-            beatPhase
-          )
-        } else {
-          // Fallback JS computation
-          const normalizedTimbre = Math.min(timbreEnergy / 10, 1)
-          const baseIntensity = loudness * confidence
-          const timbreBoost = normalizedTimbre * 0.3
-          const phaseBoost = beatPhase < 0.15 ? (1 - beatPhase / 0.15) * 0.2 : 0
-          intensity = Math.min((baseIntensity + timbreBoost + phaseBoost) * 1.5, 1)
-        }
+        const normalizedTimbre = Math.min(timbreEnergy / 10, 1)
+        const baseIntensity = loudness * confidence
+        const timbreBoost = normalizedTimbre * 0.3
+        const phaseBoost = beatPhase < 0.15 ? (1 - beatPhase / 0.15) * 0.2 : 0
+        const intensity = Math.min((baseIntensity + timbreBoost + phaseBoost) * 1.5, 1)
 
         // Detect beat with improved timing
         const timeSinceLastBeat = Date.now() - lastBeatTimeRef.current
@@ -94,5 +74,5 @@ export function useBeatDetector() {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat, rustAnalyzer])
+  }, [trackData, playbackPosition, isPaused, bpm, setBeatIntensity, registerBeat])
 }

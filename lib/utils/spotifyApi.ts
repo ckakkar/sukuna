@@ -70,7 +70,6 @@ export async function spotifyFetch(
 
     // If 401, try to refresh token and retry once
     if (response.status === 401) {
-      console.log("Token expired, attempting refresh...")
       const newToken = await refreshAccessToken()
       
       if (newToken && onTokenUpdate) {

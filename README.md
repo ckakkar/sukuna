@@ -391,7 +391,6 @@ sukuna/
 │   └── useSpotifyStore.ts      # Zustand store (auth, playback, character, domain)
 │
 ├── public/                       # Static assets
-│   ├── wasm/                   # Rust WASM module (npm run build:wasm)
 │   └── characters/             # Character PNG images
 │       ├── choso.png
 │       ├── gojo.png
@@ -413,14 +412,7 @@ sukuna/
 ├── tailwind.config.ts           # Tailwind CSS configuration
 ├── tsconfig.json                # TypeScript configuration
 │
-├── rust-audio/                  # Rust WASM audio module
-│   ├── src/lib.rs              # FFT, beat detection, frequency spectrum
-│   └── Cargo.toml
-├── lib/wasm/                    # WASM loader
-│   └── rustAudio.ts            # Loads Rust module, JS fallback
-├── README.md                    # This file
-├── REFINEMENTS.md               # Codebase refinements documentation
-└── DOMAIN_EXPANSION_OFFERINGS.md # Future domain expansion features
+└── README.md                    # This file
 ```
 
 ---
@@ -495,8 +487,6 @@ sukuna/
    # or
    yarn dev
    ```
-
-   **Optional – Rust/WASM for faster audio processing**: With [Rust](https://rustup.rs) installed, run `npm run build:wasm` before `npm run build` or `npm run dev`. This compiles the audio analysis module to WebAssembly for faster beat detection and frequency spectrum analysis. The app works without it (JS fallback).
 
 7. **Open your browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
@@ -925,13 +915,6 @@ The main UI shell uses manga ink/paper; character colors appear in the 3D scene 
 - **Frame Rate Control**: Adaptive quality based on device
 - **LOD System**: Level of detail for 3D models (future)
 
-### Rust WebAssembly (Audio)
-
-- **Beat detection**: `calculate_intensity()` runs in Rust WASM when available
-- **Frequency spectrum**: `analyze_frequency_spectrum()` processes timbre data in Rust
-- **FFT support**: rustfft for potential real-time FFT (when needed)
-- **Fallback**: Pure JS implementations when WASM is unavailable
-
 ---
 
 ## 🛠️ Tech Stack
@@ -985,11 +968,8 @@ The main UI shell uses manga ink/paper; character colors appear in the 3D scene 
 # Development server
 npm run dev
 
-# Production build (includes optional WASM build if Rust is available)
+# Production build
 npm run build
-
-# Build Rust audio module to WebAssembly (requires Rust + wasm-pack)
-npm run build:wasm
 
 # Start production server
 npm start

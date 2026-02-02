@@ -107,7 +107,6 @@ export async function searchTracks(
 
     // Handle 401 by refreshing token
     if (response.status === 401 && onTokenUpdate) {
-      console.log("Token expired during search, refreshing...")
       const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" })
       if (sessionResponse.ok) {
         const session = await sessionResponse.json()
@@ -237,7 +236,6 @@ export async function getUserPlaylists(
 
       // Handle 401 by refreshing token
       if (response.status === 401 && onTokenUpdate) {
-        console.log("Token expired, refreshing...")
         const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" })
         if (sessionResponse.ok) {
           const session = await sessionResponse.json()
@@ -290,7 +288,6 @@ export async function getUserPlaylists(
       }
     }
 
-    console.log(`Successfully fetched ${playlists.length} playlists`)
     return playlists
   } catch (error) {
     console.error("Error fetching playlists:", error)

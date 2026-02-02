@@ -20,11 +20,6 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
       - name: Install dependencies
         run: npm ci
 
@@ -56,11 +51,6 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
 
       - name: Install dependencies
         run: npm ci

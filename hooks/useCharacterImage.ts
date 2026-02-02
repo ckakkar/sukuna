@@ -79,7 +79,6 @@ export function useCharacterImage(characterId: CharacterType) {
                     }
                 }
             } catch (err) {
-                console.warn(`Failed to fetch image for ${characterId}`, err)
             } finally {
                 setIsLoading(false)
             }

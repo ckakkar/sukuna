@@ -26,7 +26,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo)
+    if (process.env.NODE_ENV === "development") {
+      console.error("ErrorBoundary caught an error:", error, errorInfo)
+    }
     this.setState({ errorInfo })
     
     // Log to error tracking service (if available)
@@ -118,8 +120,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 {this.state.error?.message || "Unknown error occurred"}
               </div>
 
-              {/* Error Details (Collapsible) */}
-              {this.state.errorInfo && (
+              {/* Error Details (Development only) */}
+              {process.env.NODE_ENV === "development" && this.state.errorInfo && (
                 <details className="text-left">
                   <summary className="text-gray-500 text-xs font-mono cursor-pointer hover:text-gray-400 mb-2">
                     Technical Details

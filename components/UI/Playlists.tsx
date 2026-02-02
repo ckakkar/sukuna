@@ -33,7 +33,6 @@ export function Playlists() {
     setIsLoading(true)
     setError(null)
     try {
-      console.log("Loading playlists with token:", accessToken.substring(0, 20) + "...")
       
       // Handle token update if refresh happens
       const handleTokenUpdate = (newToken: string) => {
@@ -41,7 +40,6 @@ export function Playlists() {
       }
       
       const data = await getUserPlaylists(accessToken, 50, handleTokenUpdate)
-      console.log("Playlists loaded:", data.length, "playlists found")
       
       if (data.length === 0) {
         setError("No playlists found. Make sure you have playlists in your Spotify account and that you've granted playlist access permissions.")

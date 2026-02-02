@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Ensure three.js (an ESM-only package) is properly transpiled by Next.js
+  poweredByHeader: false,
   transpilePackages: ["three"],
   images: {
     remotePatterns: [
@@ -22,12 +22,17 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config) => {
-    config.experiments = {
-      ...config.experiments,
-      asyncWebAssembly: true,
-    }
-    return config
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+    ]
   },
 }
 
